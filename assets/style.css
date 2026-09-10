@@ -49,7 +49,7 @@ body {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* When in fullscreen mode */
+/* When in fullscreen mode or on actual mobile devices */
 body.fullscreen-mode {
     padding: 0;
     background: var(--gray-bg);
@@ -58,10 +58,44 @@ body.fullscreen-mode {
 body.fullscreen-mode .simulator-container {
     max-width: 100%;
     height: 100vh;
+    height: 100dvh;
     max-height: 100vh;
     border-radius: 0;
     padding: 0;
     box-shadow: none;
+    background: transparent;
+}
+
+/* Automatically remove the phone frame and fake notch on actual mobile screens */
+@media (max-width: 768px) {
+    body {
+        padding: 0 !important;
+        background: var(--gray-bg) !important;
+        align-items: stretch !important;
+    }
+    .simulator-container {
+        max-width: 100% !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+    .mobile-screen {
+        border-radius: 0 !important;
+        height: 100% !important;
+    }
+    .phone-notch {
+        display: none !important;
+    }
+    .app-header {
+        padding-top: 14px !important;
+    }
+    #screenModeBtn {
+        display: none !important;
+    }
 }
 
 /* Mobile Screen */
