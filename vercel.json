@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "farm-management-mobile-app",
+  "cleanUrls": true,
+  "routes": [
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}

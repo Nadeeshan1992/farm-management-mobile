@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AgriCow - Dairy & Cattle Farm Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="simulator-container">
+    <div class="mobile-screen">
+        
+        <!-- Phone Top Notch -->
+        <div class="phone-notch">
+            <div class="notch-speaker"></div>
+            <div class="notch-camera"></div>
+        </div>
+
+        <!-- Toast Alert Notification -->
+        <div id="toastMsg" class="toast-msg"></div>
+
+        <!-- Mobile Header -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="farm-logo">🐄</div>
+                <div class="header-title">
+                    <h1>AgriCow Dairy</h1>
+                    <p>Smart Herd Manager</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="openModal('modalThiCalculator')" title="Heat Stress THI Tool">
+                    <i class="fa-solid fa-temperature-half text-amber-600"></i>
+                </button>
+                <button class="icon-btn" onclick="switchTab('alerts')" title="Alerts & Reminders">
+                    <i class="fa-regular fa-bell"></i>
+                    <span id="bellBadge" class="badge-count" style="display:none;">0</span>
+                </button>
+                <button class="icon-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen / Phone Frame">
+                    <i id="screenModeIcon" class="fa-solid fa-expand"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Screen Content -->
+        <main class="screen-content">
+
+            <!-- ================= TAB 1: DASHBOARD ================= -->
+            <div id="view-dashboard" class="tab-view">
+                
+                <!-- Farm Status Pill -->
+                <div class="status-pill-bar">
+                    <span><i class="fa-solid fa-circle text-emerald-500 mr-1 text-[10px]"></i> System Live &bull; XAMPP MySQL Connected</span>
+                    <span class="font-bold cursor-pointer" onclick="switchTab('alerts')">View Alerts &rarr;</span>
+                </div>
+
+                <!-- 8 KPI Cards Matching Image 3 -->
+                <div class="kpi-grid">
+                    <!-- 1. Total Cows -->
+                    <div class="kpi-card" onclick="switchTab('herd')">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Total Herd</span>
+                            <span class="kpi-icon text-emerald-700">🐄</span>
+                        </div>
+                        <div class="kpi-value" id="kpiTotalCows">25</div>
+                        <div class="kpi-sub">Active Registered</div>
+                    </div>
+
+                    <!-- 2. Possible Heat (Yellow Alert) -->
+                    <div class="kpi-card yellow-alert" onclick="switchTab('breeding')">
+                        <div class="kpi-header">
+                            <span class="kpi-label text-amber-800">Possible Heat</span>
+                            <span class="kpi-icon text-amber-500"><i class="fa-solid fa-fire"></i></span>
+                        </div>
+                        <div class="kpi-value text-amber-900" id="kpiPossibleHeat">2</div>
+                        <div class="kpi-sub text-amber-700">Yellow alert (Estrus)</div>
+                    </div>
+
+                    <!-- 3. AI / Breeding Due (Red Alert) -->
+                    <div class="kpi-card red-alert" onclick="switchTab('breeding')">
+                        <div class="kpi-header">
+                            <span class="kpi-label text-red-800">AI Breeding Due</span>
+                            <span class="kpi-icon text-red-500"><i class="fa-solid fa-syringe"></i></span>
+                        </div>
+                        <div class="kpi-value text-red-900" id="kpiAiDue">1</div>
+                        <div class="kpi-sub text-red-700">Urgent AI Window (Red)</div>
+                    </div>
+
+                    <!-- 4. Pregnant -->
+                    <div class="kpi-card green-kpi" onclick="switchTab('breeding'); setTimeout(() => document.getElementById('btnSubTabPregnant').click(), 100);">
+                        <div class="kpi-header">
+                            <span class="kpi-label text-emerald-800">Pregnant Cows</span>
+                            <span class="kpi-icon text-emerald-600"><i class="fa-solid fa-heart"></i></span>
+                        </div>
+                        <div class="kpi-value text-emerald-900" id="kpiPregnant">12</div>
+                        <div class="kpi-sub text-emerald-700">Gestation active</div>
+                    </div>
+
+                    <!-- 5. Expected Calving -->
+                    <div class="kpi-card" onclick="switchTab('breeding'); setTimeout(() => document.getElementById('btnSubTabPregnant').click(), 100);">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Expected Calving</span>
+                            <span class="kpi-icon text-purple-600"><i class="fa-solid fa-baby"></i></span>
+                        </div>
+                        <div class="kpi-value text-purple-900" id="kpiExpectedCalving">2</div>
+                        <div class="kpi-sub">Within next 30 days</div>
+                    </div>
+
+                    <!-- 6. Milk Production -->
+                    <div class="kpi-card blue-kpi" onclick="switchTab('milk')">
+                        <div class="kpi-header">
+                            <span class="kpi-label text-blue-800">Daily Milk</span>
+                            <span class="kpi-icon text-blue-500"><i class="fa-solid fa-droplet"></i></span>
+                        </div>
+                        <div class="kpi-value text-blue-900 text-lg" id="kpiMilkProd">145 L/day</div>
+                        <div class="kpi-sub text-blue-700">Herd production</div>
+                    </div>
+
+                    <!-- 7. Health Alerts -->
+                    <div class="kpi-card red-alert" onclick="switchTab('health')">
+                        <div class="kpi-header">
+                            <span class="kpi-label text-red-800">Health Alerts</span>
+                            <span class="kpi-icon text-red-500"><i class="fa-solid fa-notes-medical"></i></span>
+                        </div>
+                        <div class="kpi-value text-red-900" id="kpiHealthAlerts">3</div>
+                        <div class="kpi-sub text-red-700">Active treatments</div>
+                    </div>
+
+                    <!-- 8. Vaccination Due -->
+                    <div class="kpi-card" onclick="switchTab('health'); setTimeout(() => document.getElementById('btnSubTabVax').click(), 100);">
+                        <div class="kpi-header">
+                            <span class="kpi-label">Vaccination Due</span>
+                            <span class="kpi-icon text-teal-600"><i class="fa-solid fa-shield-virus"></i></span>
+                        </div>
+                        <div class="kpi-value text-teal-900" id="kpiVaccinationDue">2</div>
+                        <div class="kpi-sub">Reminders active</div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons Row -->
+                <div class="section-title">
+                    <span>Quick Actions</span>
+                </div>
+                <div class="grid grid-cols-4 gap-2 mb-3">
+                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openModal('modalLogMilk')">
+                        <i class="fa-solid fa-glass-water text-emerald-600 text-lg"></i>
+                        <span class="text-[10px] font-bold text-slate-700">Log Milk</span>
+                    </button>
+                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openModal('modalLogHeat')">
+                        <i class="fa-solid fa-fire text-amber-500 text-lg"></i>
+                        <span class="text-[10px] font-bold text-slate-700">Heat/Estrus</span>
+                    </button>
+                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openLogAiModal()">
+                        <i class="fa-solid fa-syringe text-purple-600 text-lg"></i>
+                        <span class="text-[10px] font-bold text-slate-700">AI Breeding</span>
+                    </button>
+                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openModal('modalAddCow')">
+                        <i class="fa-solid fa-plus-circle text-blue-600 text-lg"></i>
+                        <span class="text-[10px] font-bold text-slate-700">+ Add Cow</span>
+                    </button>
+                </div>
+
+                <!-- 7-Day Milk Production Trend Chart -->
+                <div class="section-title">
+                    <span>Weekly Milk Production Trend</span>
+                    <span class="section-link" onclick="switchTab('milk')">View Details &rarr;</span>
+                </div>
+                <div class="app-card mb-3">
+                    <div class="h-44 w-full">
+                        <canvas id="milkChartCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Urgent Notifications Preview -->
+                <div class="section-title">
+                    <span>Urgent Notifications</span>
+                    <span class="section-link" onclick="switchTab('alerts')">All (12) &rarr;</span>
+                </div>
+                <div id="dashUrgentAlerts">
+                    <!-- Rendered by app.js -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 2: HERD REGISTRY ================= -->
+            <div id="view-herd" class="tab-view" style="display:none;">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="section-title mb-0">
+                        <span>Herd Directory</span>
+                    </div>
+                    <button class="px-3 py-1.5 bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm" onclick="openModal('modalAddCow')">
+                        <i class="fa-solid fa-plus mr-1"></i> Register Cow
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="cowSearchInput" class="search-input" placeholder="Search by Ear Tag, Cow Name, Breed..." oninput="onCowSearch(this)">
+                </div>
+
+                <!-- Filter Chips -->
+                <div class="filter-scroll" id="herdFilters">
+                    <button class="filter-chip active" data-status="All" onclick="filterHerd('All', this)">All Herd</button>
+                    <button class="filter-chip" data-status="In heat" onclick="filterHerd('In heat', this)">In Heat</button>
+                    <button class="filter-chip" data-status="Pregnant" onclick="filterHerd('Pregnant', this)">Pregnant</button>
+                    <button class="filter-chip" data-status="Fresh" onclick="filterHerd('Fresh', this)">Fresh</button>
+                    <button class="filter-chip" data-status="Dry" onclick="filterHerd('Dry', this)">Dry</button>
+                    <button class="filter-chip" data-status="Open" onclick="filterHerd('Open', this)">Open</button>
+                </div>
+
+                <!-- Cow Cards List -->
+                <div id="cowListContainer">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 3: MILK LOG ================= -->
+            <div id="view-milk" class="tab-view" style="display:none;">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="section-title mb-0">
+                        <span>Milk Production Records</span>
+                    </div>
+                    <button class="px-3 py-1.5 bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm" onclick="openModal('modalLogMilk')">
+                        <i class="fa-solid fa-plus mr-1"></i> Record Milk
+                    </button>
+                </div>
+
+                <!-- Milk Averages KPI Strip -->
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                    <div class="app-card p-2.5 text-center">
+                        <div class="text-[10px] text-slate-500 font-semibold uppercase">Daily Avg / Cow</div>
+                        <div class="text-sm font-bold text-slate-800 mt-1" id="milkDailyAvg">--</div>
+                    </div>
+                    <div class="app-card p-2.5 text-center">
+                        <div class="text-[10px] text-slate-500 font-semibold uppercase">Weekly Total/Day</div>
+                        <div class="text-sm font-bold text-slate-800 mt-1" id="milkWeeklyAvg">--</div>
+                    </div>
+                    <div class="app-card p-2.5 text-center">
+                        <div class="text-[10px] text-slate-500 font-semibold uppercase">Monthly Avg/Day</div>
+                        <div class="text-sm font-bold text-slate-800 mt-1" id="milkMonthlyAvg">--</div>
+                    </div>
+                </div>
+
+                <div class="text-xs font-bold text-slate-600 mb-2">Recent Milk Yield Logs & Drop Alerts:</div>
+                <div id="milkLogsContainer">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 4: BREEDING & CALVING ================= -->
+            <div id="view-breeding" class="tab-view" style="display:none;">
+                <div class="section-title">
+                    <span>Reproduction & Calving</span>
+                </div>
+
+                <!-- Subtabs -->
+                <div class="filter-scroll" id="breedingSubTabs">
+                    <button class="filter-chip active" onclick="switchBreedingSubTab('heats', this)">Heat Detection</button>
+                    <button class="filter-chip" onclick="switchBreedingSubTab('ai', this)">AI Services</button>
+                    <button id="btnSubTabPregnant" class="filter-chip" onclick="switchBreedingSubTab('pregnant', this)">Pregnant (Gestation)</button>
+                    <button class="filter-chip" onclick="switchBreedingSubTab('calvings', this)">Calving Logs</button>
+                </div>
+
+                <div id="breedingContentContainer">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 5: HEALTH & VACCINES ================= -->
+            <div id="view-health" class="tab-view" style="display:none;">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="section-title mb-0">
+                        <span>Veterinary & Herd Health</span>
+                    </div>
+                    <button class="px-3 py-1.5 bg-red-600 text-white rounded-xl text-xs font-bold shadow-sm" onclick="openLogHealthModal()">
+                        <i class="fa-solid fa-plus mr-1"></i> Health Event
+                    </button>
+                </div>
+
+                <!-- Subtabs -->
+                <div class="filter-scroll" id="healthSubTabs">
+                    <button class="filter-chip active" onclick="switchHealthSubTab('health', this)">Treatments & Vet</button>
+                    <button id="btnSubTabVax" class="filter-chip" onclick="switchHealthSubTab('vaccines', this)">Vaccination Schedule</button>
+                    <button class="filter-chip" onclick="switchHealthSubTab('growth', this)">Weight & ADG Growth</button>
+                </div>
+
+                <div id="healthContentContainer">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 6: NOTIFICATIONS / ALERTS ================= -->
+            <div id="view-alerts" class="tab-view" style="display:none;">
+                <div class="section-title">
+                    <span>Farm Notifications & Reminders</span>
+                </div>
+
+                <!-- Notification category filter chips -->
+                <div class="filter-scroll" id="alertFilters">
+                    <button class="filter-chip active" onclick="filterAlerts('all', this)">All</button>
+                    <button class="filter-chip" onclick="filterAlerts('possible_heat', this)">Possible Heat</button>
+                    <button class="filter-chip" onclick="filterAlerts('ai_breeding_reminder', this)">AI Reminders</button>
+                    <button class="filter-chip" onclick="filterAlerts('pregnancy_check', this)">Pregnancy Due</button>
+                    <button class="filter-chip" onclick="filterAlerts('expected_calving', this)">Calving Soon</button>
+                    <button class="filter-chip" onclick="filterAlerts('vaccination', this)">Vaccination Due</button>
+                    <button class="filter-chip" onclick="filterAlerts('treatment_follow_up', this)">Treatment Follow-up</button>
+                    <button class="filter-chip" onclick="filterAlerts('milk_decrease', this)">Milk Drops</button>
+                </div>
+
+                <div id="alertsListContainer">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Floating Action Button Menu -->
+        <div class="fab-container">
+            <div class="fab-menu" id="fabMenu">
+                <div class="fab-menu-item" onclick="openModal('modalLogMilk')">
+                    <i class="fa-solid fa-glass-water text-emerald-600"></i>
+                    <span>Log Daily Milk</span>
+                </div>
+                <div class="fab-menu-item" onclick="openModal('modalLogHeat')">
+                    <i class="fa-solid fa-fire text-amber-500"></i>
+                    <span>Report Estrus / Heat</span>
+                </div>
+                <div class="fab-menu-item" onclick="openLogAiModal()">
+                    <i class="fa-solid fa-syringe text-purple-600"></i>
+                    <span>Record AI Insemination</span>
+                </div>
+                <div class="fab-menu-item" onclick="openLogCalvingModal()">
+                    <i class="fa-solid fa-baby text-indigo-600"></i>
+                    <span>Record Calving</span>
+                </div>
+                <div class="fab-menu-item" onclick="openLogHealthModal()">
+                    <i class="fa-solid fa-heart-pulse text-red-500"></i>
+                    <span>Record Health Issue</span>
+                </div>
+                <div class="fab-menu-item" onclick="openLogVaccineModal()">
+                    <i class="fa-solid fa-shield-virus text-teal-600"></i>
+                    <span>Record Vaccination</span>
+                </div>
+                <div class="fab-menu-item" onclick="openModal('modalAddCow')">
+                    <i class="fa-solid fa-plus text-blue-600"></i>
+                    <span>Register New Cow</span>
+                </div>
+            </div>
+            <button class="fab-btn" id="fabMainBtn">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+
+        <!-- Bottom Tab Navigation Bar -->
+        <nav class="bottom-nav">
+            <div class="nav-tab active" data-tab="dashboard">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dash</span>
+            </div>
+            <div class="nav-tab" data-tab="herd">
+                <i class="fa-solid fa-cow"></i>
+                <span>Herd</span>
+            </div>
+            <div class="nav-tab" data-tab="milk">
+                <i class="fa-solid fa-glass-water"></i>
+                <span>Milk</span>
+            </div>
+            <div class="nav-tab" data-tab="breeding">
+                <i class="fa-solid fa-dna"></i>
+                <span>Breeding</span>
+            </div>
+            <div class="nav-tab" data-tab="health">
+                <i class="fa-solid fa-stethoscope"></i>
+                <span>Health</span>
+            </div>
+            <div class="nav-tab" data-tab="alerts">
+                <i class="fa-solid fa-bell"></i>
+                <span>Alerts</span>
+            </div>
+        </nav>
+
+        <!-- ================= MODALS & BOTTOM SHEETS ================= -->
+
+        <!-- 1. Modal: Register New Cow -->
+        <div id="modalAddCow" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Register Animal Profile</span>
+                    <button class="sheet-close" onclick="closeModal('modalAddCow')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formAddCow" onsubmit="submitNewCow(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Animal ID / Ear Tag *</label>
+                                <input type="text" id="newCowTag" class="form-control" placeholder="e.g. COW-126" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cow Name *</label>
+                                <input type="text" id="newCowName" class="form-control" placeholder="e.g. Bella" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Breed</label>
+                                <select id="newCowBreed" class="form-control">
+                                    <option value="Holstein Friesian">Holstein Friesian</option>
+                                    <option value="Jersey">Jersey</option>
+                                    <option value="Brown Swiss">Brown Swiss</option>
+                                    <option value="Ayrshire">Ayrshire</option>
+                                    <option value="Guernsey">Guernsey</option>
+                                    <option value="Gir">Gir</option>
+                                    <option value="Sahiwal">Sahiwal</option>
+                                    <option value="Crossbred">Crossbred</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" id="newCowDob" class="form-control" value="2022-01-15">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Source</label>
+                                <select id="newCowSource" class="form-control">
+                                    <option value="born on farm">Born on farm</option>
+                                    <option value="purchased">Purchased</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Parity (Lactation #)</label>
+                                <input type="number" id="newCowParity" class="form-control" value="1" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Current Reproductive Status</label>
+                            <select id="newCowStatus" class="form-control">
+                                <option value="Open">Open</option>
+                                <option value="In heat">In heat</option>
+                                <option value="Pregnant">Pregnant</option>
+                                <option value="Fresh">Fresh</option>
+                                <option value="Dry">Dry</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Save Animal Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Modal: Log Milk Record -->
+        <div id="modalLogMilk" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Log Daily Milk Yield</span>
+                    <button class="sheet-close" onclick="closeModal('modalLogMilk')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formLogMilk" onsubmit="submitMilkRecord(event)">
+                        <div class="form-group">
+                            <label class="form-label">Select Cow *</label>
+                            <select id="milkCowSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" id="milkRecordDate" class="form-control" value="2026-09-10">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Morning Yield (L)</label>
+                                <input type="number" step="0.1" id="milkMorningYield" class="form-control" placeholder="0.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Evening Yield (L)</label>
+                                <input type="number" step="0.1" id="milkEveningYield" class="form-control" placeholder="0.0" required>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">Note: System automatically calculates daily total and flags drops &ge; 15%.</p>
+                        <button type="submit" class="btn-submit">Record Milk Yield</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Modal: Log Heat / Estrus -->
+        <div id="modalLogHeat" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Heat / Estrus Detection</span>
+                    <button class="sheet-close" onclick="closeModal('modalLogHeat')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formLogHeat" onsubmit="submitHeatRecord(event)">
+                        <div class="form-group">
+                            <label class="form-label">Select Cow *</label>
+                            <select id="heatCowSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date</label>
+                                <input type="date" id="heatDate" class="form-control" value="2026-09-10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Time</label>
+                                <input type="time" id="heatTime" class="form-control" value="06:30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">App Output Status *</label>
+                            <select id="heatStatus" class="form-control">
+                                <option value="Possible Heat">Possible Heat (Yellow Badge)</option>
+                                <option value="AI Reminder">Recommended Breeding / AI Reminder (Red Badge)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Symptoms & Notes</label>
+                            <textarea id="heatNotes" class="form-control" rows="2" placeholder="e.g. Mounting, mucus discharge, restlessness..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Save Heat Event</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Modal: Log AI Breeding -->
+        <div id="modalLogAi" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Record AI Insemination</span>
+                    <button class="sheet-close" onclick="closeModal('modalLogAi')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formLogAi" onsubmit="submitAiRecord(event)">
+                        <div class="form-group">
+                            <label class="form-label">Select Cow *</label>
+                            <select id="aiCowSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Heat Date</label>
+                                <input type="date" id="aiHeatDate" class="form-control" value="2026-09-10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">AI Date</label>
+                                <input type="date" id="aiDate" class="form-control" value="2026-09-10">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Service Number</label>
+                                <input type="number" id="aiServiceNum" class="form-control" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">AI Technician *</label>
+                                <input type="text" id="aiTechnician" class="form-control" value="Dr. Robert Miller" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bull / Semen Straw ID</label>
+                            <input type="text" id="aiBullId" class="form-control" placeholder="e.g. SEM-BULL-904">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reproductive Problems / Notes</label>
+                            <input type="text" id="aiNotes" class="form-control" placeholder="None">
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">Expected calving date will be automatically set to 283 days from AI.</p>
+                        <button type="submit" class="btn-submit">Record AI Breeding</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Modal: Confirm Pregnancy -->
+        <div id="modalConfirmPreg" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Confirm Pregnancy</span>
+                    <button class="sheet-close" onclick="closeModal('modalConfirmPreg')">&times;</button>
+                </div>
+                <div class="sheet-body text-center">
+                    <input type="hidden" id="confirmAiId">
+                    <div class="text-3xl mb-2">🩺</div>
+                    <h3 class="text-sm font-bold text-slate-800" id="confirmPregNotice">Confirm Pregnancy Test Result</h3>
+                    <p class="text-xs text-slate-500 mt-1 mb-4">Select the veterinarian diagnosis after rectal palpation or ultrasound:</p>
+                    <div class="flex gap-2">
+                        <button class="btn-submit bg-emerald-600 hover:bg-emerald-700" onclick="submitConfirmPreg('Positive')">
+                            <i class="fa-solid fa-check mr-1"></i> Positive (Pregnant)
+                        </button>
+                        <button class="btn-submit bg-red-600 hover:bg-red-700" onclick="submitConfirmPreg('Negative')">
+                            <i class="fa-solid fa-xmark mr-1"></i> Negative (Open)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Modal: Log Calving -->
+        <div id="modalLogCalving" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Record Calving Event</span>
+                    <button class="sheet-close" onclick="closeModal('modalLogCalving')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formLogCalving" onsubmit="submitCalvingRecord(event)">
+                        <div class="form-group">
+                            <label class="form-label">Mother Cow *</label>
+                            <select id="calvCowSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Calving Date</label>
+                                <input type="date" id="calvDate" class="form-control" value="2026-09-10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Calving Type</label>
+                                <select id="calvType" class="form-control">
+                                    <option value="Normal">Normal</option>
+                                    <option value="Assisted">Assisted</option>
+                                    <option value="Difficult calving">Difficult calving (Dystocia)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Newborn Calf Tag *</label>
+                                <input type="text" id="calvCalfTag" class="form-control" placeholder="e.g. CALF-205" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Calf Sex</label>
+                                <select id="calvCalfSex" class="form-control">
+                                    <option value="Heifer">Heifer (Female)</option>
+                                    <option value="Bull">Bull (Male)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Birth Weight (kg)</label>
+                                <input type="number" step="0.5" id="calvBirthWeight" class="form-control" placeholder="38.0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Post-Calving Problems</label>
+                                <input type="text" id="calvProblems" class="form-control" value="None">
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-2">Mother cow will be updated to "Fresh", parity incremented, and calf added to herd!</p>
+                        <button type="submit" class="btn-submit">Record Calving & Register Calf</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Modal: Log Health & Vet Care -->
+        <div id="modalLogHealth" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Health & Treatment Record</span>
+                    <button class="sheet-close" onclick="closeModal('modalLogHealth')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formLogHealth" onsubmit="submitHealthRecord(event)">
+                        <div class="form-group">
+                            <label class="form-label">Select Cow *</label>
+                            <select id="healthCowSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date</label>
+                                <input type="date" id="healthDate" class="form-control" value="2026-09-10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Disease / Problem *</label>
+                                <input type="text" id="healthDisease" class="form-control" placeholder="e.g. Mastitis, Lameness" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Symptoms</label>
+                            <input type="text" id="healthSymptoms" class="form-control" placeholder="e.g. Swollen quarter, limping, fever">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Treatment *</label>
+                            <input type="text" id="healthTreatment" class="form-control" placeholder="e.g. Antibiotic infusion, hoof trim" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Medicine</label>
+                                <input type="text" id="healthMedicine" class="form-control" placeholder="e.g. Penicillin">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Dosage</label>
+                                <input type="text" id="healthDosage" class="form-control" placeholder="e.g. 20ml IM">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Veterinary Visit</label>
+                                <input type="text" id="healthVet" class="form-control" placeholder="Dr. Robert Miller">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Recovery Status</label>
+                                <select id="healthRecoveryStatus" class="form-control">
+                                    <option value="Active">Active</option>
+                                    <option value="In Treatment">In Treatment</option>
+                                    <option value="Recovered">Recovered</option>
+                                    <option value="Chronic">Chronic</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Save Health Record</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Modal: Log Vaccination -->
+        <div id="modalLogVaccine" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Record Vaccination</span>
+                    <button class="sheet-close" onclick="closeModal('modalLogVaccine')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formLogVaccine" onsubmit="submitVaccineRecord(event)">
+                        <div class="form-group">
+                            <label class="form-label">Select Cow *</label>
+                            <select id="vaxCowSelect" class="form-control" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vaccine Name *</label>
+                            <input type="text" id="vaxName" class="form-control" placeholder="e.g. Foot and Mouth Disease (FMD)" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date Given</label>
+                                <input type="date" id="vaxDateGiven" class="form-control" value="2026-09-10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Next Due Date *</label>
+                                <input type="date" id="vaxNextDate" class="form-control" value="2027-03-10" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Treatment Type</label>
+                            <input type="text" id="vaxType" class="form-control" value="Routine Bi-Annual">
+                        </div>
+                        <button type="submit" class="btn-submit">Save Vaccination</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. Modal: THI Heat Stress Calculator -->
+        <div id="modalThiCalculator" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Heat Stress (THI) Tool</span>
+                    <button class="sheet-close" onclick="closeModal('modalThiCalculator')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-center mb-3">
+                        <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wide">Live THI Index</div>
+                        <div class="text-3xl font-extrabold text-amber-950 my-1" id="thiValueDisplay">81.2</div>
+                        <span id="thiStatusBadge" class="status-badge badge-orange">Moderate Stress</span>
+                        <p class="text-xs text-amber-900 mt-2" id="thiAdviceText">Turn on barn fans and misting systems immediately.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Barn Temperature (°C)</span>
+                            <span id="lblTemp" class="text-slate-600">30.5 °C</span>
+                        </div>
+                        <input type="range" id="thiTempInput" min="15" max="45" step="0.5" value="30.5" class="w-full accent-emerald-600" oninput="document.getElementById('lblTemp').innerText = this.value + ' °C'">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Relative Humidity (%)</span>
+                            <span id="lblHum" class="text-slate-600">68 %</span>
+                        </div>
+                        <input type="range" id="thiHumidityInput" min="20" max="100" step="1" value="68" class="w-full accent-blue-600" oninput="document.getElementById('lblHum').innerText = this.value + ' %'">
+                    </div>
+
+                    <button class="btn-submit mt-2" onclick="saveThiReading()">Log THI Reading into System</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. Modal: Cow 360 Detail Drawer -->
+        <div id="modalCowDetail" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <div>
+                        <span class="sheet-title" id="detailTag">COW-105</span>
+                        <div class="text-xs text-slate-500" id="detailName">Rosie (Holstein)</div>
+                    </div>
+                    <button class="sheet-close" onclick="closeModal('modalCowDetail')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <!-- Cow Mini Profile Stats -->
+                    <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+                            <div class="text-[10px] text-slate-500 font-semibold">STATUS</div>
+                            <div class="text-xs font-bold text-slate-800 mt-0.5" id="detailStatus">Pregnant</div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+                            <div class="text-[10px] text-slate-500 font-semibold">AGE</div>
+                            <div class="text-xs font-bold text-slate-800 mt-0.5" id="detailAge">3 yrs 10 mo</div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+                            <div class="text-[10px] text-slate-500 font-semibold">PARITY</div>
+                            <div class="text-xs font-bold text-slate-800 mt-0.5" id="detailParity">Lactation #3</div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-slate-500 mb-3">
+                        Source: <b id="detailSource">Purchased</b> &bull; DOB: <b id="detailDob">2020-11-05</b>
+                    </div>
+
+                    <!-- Quick action buttons on cow profile -->
+                    <div class="flex gap-2 mb-3">
+                        <button class="flex-1 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openModal('modalLogMilk'); document.getElementById('milkCowSelect').value=activeCowDetailId;">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Milk
+                        </button>
+                        <button class="flex-1 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openModal('modalLogHeat'); document.getElementById('heatCowSelect').value=activeCowDetailId;">
+                            <i class="fa-solid fa-fire mr-1"></i> Log Heat
+                        </button>
+                        <button class="flex-1 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openLogAiModal(activeCowDetailId);">
+                            <i class="fa-solid fa-syringe mr-1"></i> AI
+                        </button>
+                    </div>
+
+                    <!-- Milk History Tab -->
+                    <div class="text-xs font-bold text-slate-700 mt-2 mb-1">Recent Milk Yields:</div>
+                    <div id="detailMilkHistory" class="mb-3"></div>
+
+                    <!-- Health History Tab -->
+                    <div class="text-xs font-bold text-slate-700 mb-1">Health & Treatments:</div>
+                    <div id="detailHealthHistory" class="mb-3"></div>
+
+                    <!-- Vaccination History -->
+                    <div class="text-xs font-bold text-slate-700 mb-1">Vaccinations:</div>
+                    <div id="detailVaxHistory"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
