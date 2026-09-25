@@ -150,19 +150,19 @@
                     <span>Quick Actions</span>
                 </div>
                 <div class="grid grid-cols-4 gap-2 mb-3">
-                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openModal('modalLogMilk')">
+                    <button type="button" class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50 active:scale-95 transition-transform" onclick="openModal('modalLogMilk')">
                         <i class="fa-solid fa-glass-water text-emerald-600 text-lg"></i>
                         <span class="text-[10px] font-bold text-slate-700">Log Milk</span>
                     </button>
-                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openModal('modalLogHeat')">
+                    <button type="button" class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50 active:scale-95 transition-transform" onclick="openModal('modalLogHeat')">
                         <i class="fa-solid fa-fire text-amber-500 text-lg"></i>
                         <span class="text-[10px] font-bold text-slate-700">Heat/Estrus</span>
                     </button>
-                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openLogAiModal()">
+                    <button type="button" class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50 active:scale-95 transition-transform" onclick="openLogAiModal()">
                         <i class="fa-solid fa-syringe text-purple-600 text-lg"></i>
                         <span class="text-[10px] font-bold text-slate-700">AI Breeding</span>
                     </button>
-                    <button class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50" onclick="openModal('modalAddCow')">
+                    <button type="button" class="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-slate-50 active:scale-95 transition-transform" onclick="openModal('modalAddCow')">
                         <i class="fa-solid fa-plus-circle text-blue-600 text-lg"></i>
                         <span class="text-[10px] font-bold text-slate-700">+ Add Cow</span>
                     </button>
@@ -363,30 +363,30 @@
 
         <!-- Bottom Tab Navigation Bar -->
         <nav class="bottom-nav">
-            <div class="nav-tab active" data-tab="dashboard">
+            <button type="button" class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
                 <i class="fa-solid fa-chart-pie"></i>
                 <span>Dash</span>
-            </div>
-            <div class="nav-tab" data-tab="herd">
+            </button>
+            <button type="button" class="nav-tab" data-tab="herd" onclick="switchTab('herd')">
                 <i class="fa-solid fa-cow"></i>
                 <span>Herd</span>
-            </div>
-            <div class="nav-tab" data-tab="milk">
+            </button>
+            <button type="button" class="nav-tab" data-tab="milk" onclick="switchTab('milk')">
                 <i class="fa-solid fa-glass-water"></i>
                 <span>Milk</span>
-            </div>
-            <div class="nav-tab" data-tab="breeding">
+            </button>
+            <button type="button" class="nav-tab" data-tab="breeding" onclick="switchTab('breeding')">
                 <i class="fa-solid fa-dna"></i>
                 <span>Breeding</span>
-            </div>
-            <div class="nav-tab" data-tab="health">
+            </button>
+            <button type="button" class="nav-tab" data-tab="health" onclick="switchTab('health')">
                 <i class="fa-solid fa-stethoscope"></i>
                 <span>Health</span>
-            </div>
-            <div class="nav-tab" data-tab="alerts">
+            </button>
+            <button type="button" class="nav-tab" data-tab="alerts" onclick="switchTab('alerts')">
                 <i class="fa-solid fa-bell"></i>
                 <span>Alerts</span>
-            </div>
+            </button>
         </nav>
 
         <!-- ================= MODALS & BOTTOM SHEETS ================= -->

@@ -209,12 +209,19 @@ function switchTab(tabName) {
         view.style.display = view.id === `view-${tabName}` ? 'block' : 'none';
     });
 
-    if (tabName === 'dashboard') loadDashboard();
-    if (tabName === 'herd') loadCows();
-    if (tabName === 'milk') loadMilkLogs();
-    if (tabName === 'breeding') loadBreedingData();
-    if (tabName === 'health') loadHealthAndVax();
-    if (tabName === 'alerts') loadAllAlerts();
+    const screenContent = document.querySelector('.screen-content');
+    if (screenContent) screenContent.scrollTop = 0;
+
+    try {
+        if (tabName === 'dashboard') loadDashboard();
+        if (tabName === 'herd') loadCows();
+        if (tabName === 'milk') loadMilkLogs();
+        if (tabName === 'breeding') loadBreedingData();
+        if (tabName === 'health') loadHealthAndVax();
+        if (tabName === 'alerts') loadAllAlerts();
+    } catch (e) {
+        console.error('Error loading tab ' + tabName, e);
+    }
 }
 
 // Load Alerts Count for Header Bell
@@ -972,23 +979,46 @@ function initModals() {
 }
 
 function openModal(modalId) {
-    document.getElementById(modalId).classList.add('show');
+    const el = document.getElementById(modalId);
+    if (!el) {
+        console.error('Modal not found:', modalId);
+        return;
+    }
+    if (cowsCache && cowsCache.length > 0) {
+        populateCowSelectors(cowsCache);
+    }
+    el.classList.add('show');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeModal(modalId) {
-    document.getElementById(modalId).classList.remove('show');
+    const el = document.getElementById(modalId);
+    if (el) el.classList.remove('show');
+    if (!document.querySelector('.modal-overlay.show')) {
+        document.body.style.overflow = '';
+    }
 }
 
 function initFab() {
     const fabBtn = document.getElementById('fabMainBtn');
     const fabMenu = document.getElementById('fabMenu');
+    if (!fabBtn || !fabMenu) return;
+
     fabBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         fabMenu.classList.toggle('show');
     });
 
-    document.addEventListener('click', () => {
-        fabMenu.classList.remove('show');
+    document.querySelectorAll('.fab-menu-item').forEach(item => {
+        item.addEventListener('click', () => {
+            fabMenu.classList.remove('show');
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!fabMenu.contains(e.target) && e.target !== fabBtn) {
+            fabMenu.classList.remove('show');
+        }
     });
 }
 
