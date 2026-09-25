@@ -392,6 +392,10 @@ async function loadCows(statusFilter = '', searchTerm = '') {
             if (statusFilter && statusFilter !== 'All') {
                 if (statusFilter === 'Female' || statusFilter === 'Male') {
                     cows = cows.filter(c => (c.gender || 'Female') === statusFilter);
+                } else if (statusFilter === 'Born' || statusFilter === 'born on farm') {
+                    cows = cows.filter(c => (c.source || '').toLowerCase().includes('born'));
+                } else if (statusFilter === 'Purchased' || statusFilter === 'purchased') {
+                    cows = cows.filter(c => (c.source || '').toLowerCase().includes('purchas'));
                 } else {
                     cows = cows.filter(c => c.reproductive_status === statusFilter);
                 }
@@ -421,10 +425,15 @@ function renderCowList(cows) {
 
     container.innerHTML = cows.map(cow => {
         const isMale = (cow.gender === 'Male');
+        const isBorn = (cow.source || '').toLowerCase().includes('born');
         const avatar = isMale ? '🐂' : '🐄';
         const genderBadge = isMale 
             ? `<span class="status-badge bg-blue-100 text-blue-700 border border-blue-200 ml-1.5"><i class="fa-solid fa-mars"></i> Bull</span>` 
             : `<span class="status-badge bg-pink-100 text-pink-700 border border-pink-200 ml-1.5"><i class="fa-solid fa-venus"></i> Female</span>`;
+
+        const sourceBadge = isBorn 
+            ? `<span class="status-badge bg-emerald-50 text-emerald-700 border border-emerald-200 ml-1"><i class="fa-solid fa-seedling mr-0.5"></i> Born</span>`
+            : `<span class="status-badge bg-amber-50 text-amber-700 border border-amber-200 ml-1"><i class="fa-solid fa-cart-shopping mr-0.5"></i> Purchased</span>`;
 
         let badgeColor = 'badge-gray';
         if (cow.reproductive_status === 'In heat') badgeColor = 'badge-yellow';
@@ -444,11 +453,12 @@ function renderCowList(cows) {
                         <div class="flex items-center flex-wrap gap-1">
                             <span class="cow-tag">${cow.tag_number}</span>
                             ${genderBadge}
+                            ${sourceBadge}
                             <span class="status-badge ${badgeColor}">${cow.reproductive_status}</span>
                             ${dropBadge}
                         </div>
                         <div class="cow-name">${cow.name} &bull; <span class="text-slate-600">${cow.breed}</span></div>
-                        <div class="cow-meta">Age: ${cow.age_display} ${isMale ? `&bull; <span class="text-blue-700 font-semibold">Sire / Bull</span>` : `&bull; Parity: ${cow.parity}`} ${cow.latest_milk && !isMale ? `&bull; Latest: ${cow.latest_milk}L` : ''}</div>
+                        <div class="cow-meta">Age: ${cow.age_display} ${isMale ? `&bull; <span class="text-blue-700 font-semibold">Sire / Bull</span>` : `&bull; Parity: ${cow.parity}`} &bull; <span class="text-slate-500 font-medium">${isBorn ? '🌱 Born on farm' : '🏷️ Purchased'}</span> ${cow.latest_milk && !isMale ? `&bull; Latest: ${cow.latest_milk}L` : ''}</div>
                     </div>
                 </div>
                 <div class="text-slate-400 text-xs">

@@ -73,6 +73,10 @@ if ($method === 'GET') {
         if ($status === 'Female' || $status === 'Male') {
             $query .= " AND c.gender = ?";
             $params[] = $status;
+        } elseif ($status === 'Born' || $status === 'born on farm') {
+            $query .= " AND c.source LIKE '%born%'";
+        } elseif ($status === 'Purchased' || $status === 'purchased') {
+            $query .= " AND c.source LIKE '%purchas%'";
         } else {
             $query .= " AND c.reproductive_status = ?";
             $params[] = $status;
