@@ -10,31 +10,32 @@ let activeCowDetailId = null;
 // Initial Mock Seed Data for Vercel / Cloud Demo Mode
 const DEFAULT_SEED_DATA = {
     cows: [
-        { id: 1, tag_number: 'COW-101', name: 'Daisy', breed: 'Holstein Friesian', date_of_birth: '2021-03-15', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
-        { id: 2, tag_number: 'COW-102', name: 'Bella', breed: 'Jersey', date_of_birth: '2022-05-10', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_2.jpg' },
-        { id: 3, tag_number: 'COW-103', name: 'Luna', breed: 'Holstein Friesian', date_of_birth: '2020-01-20', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
-        { id: 4, tag_number: 'COW-104', name: 'Molly', breed: 'Brown Swiss', date_of_birth: '2021-08-12', source: 'born on farm', parity: 2, reproductive_status: 'Fresh', photo_url: 'assets/cow_4.jpg' },
-        { id: 5, tag_number: 'COW-105', name: 'Rosie', breed: 'Holstein Friesian', date_of_birth: '2020-11-05', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
-        { id: 6, tag_number: 'COW-106', name: 'Penny', breed: 'Jersey', date_of_birth: '2022-02-14', source: 'born on farm', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_6.jpg' },
-        { id: 7, tag_number: 'COW-107', name: 'Maggie', breed: 'Ayrshire', date_of_birth: '2021-06-22', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_7.jpg' },
-        { id: 8, tag_number: 'COW-108', name: 'Ruby', breed: 'Holstein Friesian', date_of_birth: '2022-09-01', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_8.jpg' },
-        { id: 9, tag_number: 'COW-109', name: 'Chloe', breed: 'Guernsey', date_of_birth: '2019-12-10', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_9.jpg' },
-        { id: 10, tag_number: 'COW-110', name: 'Stella', breed: 'Holstein Friesian', date_of_birth: '2021-04-18', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_10.jpg' },
-        { id: 11, tag_number: 'COW-111', name: 'Lucy', breed: 'Jersey', date_of_birth: '2020-07-29', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
-        { id: 12, tag_number: 'COW-112', name: 'Emma', breed: 'Brown Swiss', date_of_birth: '2022-10-05', source: 'born on farm', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_2.jpg' },
-        { id: 13, tag_number: 'COW-113', name: 'Sadie', breed: 'Holstein Friesian', date_of_birth: '2021-01-14', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
-        { id: 14, tag_number: 'COW-114', name: 'Lily', breed: 'Jersey', date_of_birth: '2023-01-02', source: 'born on farm', parity: 0, reproductive_status: 'In heat', photo_url: 'assets/cow_4.jpg' },
-        { id: 15, tag_number: 'COW-115', name: 'Sophie', breed: 'Holstein Friesian', date_of_birth: '2020-03-30', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
-        { id: 16, tag_number: 'COW-116', name: 'Grace', breed: 'Ayrshire', date_of_birth: '2021-11-19', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_6.jpg' },
-        { id: 17, tag_number: 'COW-117', name: 'Zoe', breed: 'Holstein Friesian', date_of_birth: '2022-04-25', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_7.jpg' },
-        { id: 18, tag_number: 'COW-118', name: 'Nala', breed: 'Brown Swiss', date_of_birth: '2021-09-14', source: 'purchased', parity: 2, reproductive_status: 'Fresh', photo_url: 'assets/cow_8.jpg' },
-        { id: 19, tag_number: 'COW-119', name: 'Coco', breed: 'Jersey', date_of_birth: '2020-08-11', source: 'born on farm', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_9.jpg' },
-        { id: 20, tag_number: 'COW-120', name: 'Hazel', breed: 'Holstein Friesian', date_of_birth: '2019-05-02', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_10.jpg' },
-        { id: 21, tag_number: 'COW-121', name: 'Willow', breed: 'Guernsey', date_of_birth: '2022-07-08', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
-        { id: 22, tag_number: 'COW-122', name: 'Piper', breed: 'Holstein Friesian', date_of_birth: '2021-12-03', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_2.jpg' },
-        { id: 23, tag_number: 'COW-123', name: 'Roxy', breed: 'Jersey', date_of_birth: '2023-03-12', source: 'born on farm', parity: 0, reproductive_status: 'Open', photo_url: 'assets/cow_3.jpg' },
-        { id: 24, tag_number: 'COW-124', name: 'Ginger', breed: 'Ayrshire', date_of_birth: '2022-11-20', source: 'purchased', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_4.jpg' },
-        { id: 25, tag_number: 'COW-125', name: 'Honey', breed: 'Holstein Friesian', date_of_birth: '2023-02-18', source: 'born on farm', parity: 0, reproductive_status: 'Open', photo_url: 'assets/cow_5.jpg' }
+        { id: 1, tag_number: 'COW-101', name: 'Daisy', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-03-15', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
+        { id: 2, tag_number: 'COW-102', name: 'Bella', breed: 'Jersey', gender: 'Female', date_of_birth: '2022-05-10', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_2.jpg' },
+        { id: 3, tag_number: 'COW-103', name: 'Luna', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2020-01-20', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
+        { id: 4, tag_number: 'COW-104', name: 'Molly', breed: 'Brown Swiss', gender: 'Female', date_of_birth: '2021-08-12', source: 'born on farm', parity: 2, reproductive_status: 'Fresh', photo_url: 'assets/cow_4.jpg' },
+        { id: 5, tag_number: 'COW-105', name: 'Rosie', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2020-11-05', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
+        { id: 6, tag_number: 'COW-106', name: 'Penny', breed: 'Jersey', gender: 'Female', date_of_birth: '2022-02-14', source: 'born on farm', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_6.jpg' },
+        { id: 7, tag_number: 'COW-107', name: 'Maggie', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2021-06-22', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_7.jpg' },
+        { id: 8, tag_number: 'COW-108', name: 'Ruby', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2022-09-01', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_8.jpg' },
+        { id: 9, tag_number: 'COW-109', name: 'Chloe', breed: 'Guernsey', gender: 'Female', date_of_birth: '2019-12-10', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_9.jpg' },
+        { id: 10, tag_number: 'COW-110', name: 'Stella', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-04-18', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_10.jpg' },
+        { id: 11, tag_number: 'COW-111', name: 'Lucy', breed: 'Jersey', gender: 'Female', date_of_birth: '2020-07-29', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
+        { id: 12, tag_number: 'COW-112', name: 'Emma', breed: 'Brown Swiss', gender: 'Female', date_of_birth: '2022-10-05', source: 'born on farm', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_2.jpg' },
+        { id: 13, tag_number: 'COW-113', name: 'Sadie', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-01-14', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
+        { id: 14, tag_number: 'COW-114', name: 'Lily', breed: 'Jersey', gender: 'Female', date_of_birth: '2023-01-02', source: 'born on farm', parity: 0, reproductive_status: 'In heat', photo_url: 'assets/cow_4.jpg' },
+        { id: 15, tag_number: 'COW-115', name: 'Sophie', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2020-03-30', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
+        { id: 16, tag_number: 'COW-116', name: 'Grace', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2021-11-19', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_6.jpg' },
+        { id: 17, tag_number: 'COW-117', name: 'Zoe', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2022-04-25', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_7.jpg' },
+        { id: 18, tag_number: 'COW-118', name: 'Nala', breed: 'Brown Swiss', gender: 'Female', date_of_birth: '2021-09-14', source: 'purchased', parity: 2, reproductive_status: 'Fresh', photo_url: 'assets/cow_8.jpg' },
+        { id: 19, tag_number: 'COW-119', name: 'Coco', breed: 'Jersey', gender: 'Female', date_of_birth: '2020-08-11', source: 'born on farm', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_9.jpg' },
+        { id: 20, tag_number: 'COW-120', name: 'Hazel', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2019-05-02', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_10.jpg' },
+        { id: 21, tag_number: 'COW-121', name: 'Willow', breed: 'Guernsey', gender: 'Female', date_of_birth: '2022-07-08', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
+        { id: 22, tag_number: 'COW-122', name: 'Piper', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-12-03', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_2.jpg' },
+        { id: 23, tag_number: 'COW-123', name: 'Roxy', breed: 'Jersey', gender: 'Female', date_of_birth: '2023-03-12', source: 'born on farm', parity: 0, reproductive_status: 'Open', photo_url: 'assets/cow_3.jpg' },
+        { id: 24, tag_number: 'COW-124', name: 'Ginger', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2022-11-20', source: 'purchased', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_4.jpg' },
+        { id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Holstein Friesian', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' },
+        { id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Jersey', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' }
     ],
     heats: [
         { id: 1, cow_id: 2, detection_date: '2026-09-10', detection_time: '06:30:00', status: 'Possible Heat', inter_estrus_interval: 21, notes: 'Mounting behavior observed, slight clear mucus discharge.' },
@@ -81,7 +82,21 @@ function getLocalStore() {
         localStorage.setItem('farm_management_db', JSON.stringify(DEFAULT_SEED_DATA));
         return JSON.parse(JSON.stringify(DEFAULT_SEED_DATA));
     }
-    return JSON.parse(store);
+    let parsed = JSON.parse(store);
+    // Auto-migrate existing store to include gender if missing
+    if (parsed.cows && parsed.cows.length > 0 && !parsed.cows[0].gender) {
+        parsed.cows.forEach(c => {
+            if (!c.gender) {
+                c.gender = (c.tag_number && (c.tag_number.startsWith('BULL') || c.name === 'Titan' || c.name === 'Thor')) ? 'Male' : 'Female';
+            }
+        });
+        if (!parsed.cows.some(c => c.gender === 'Male')) {
+            parsed.cows.push({ id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Holstein Friesian', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' });
+            parsed.cows.push({ id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Jersey', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' });
+        }
+        saveLocalStore(parsed);
+    }
+    return parsed;
 }
 
 function saveLocalStore(store) {
@@ -363,12 +378,16 @@ async function loadCows(statusFilter = '', searchTerm = '') {
             cows = store.cows.map(c => ({
                 ...c,
                 age_display: calculateAge(c.date_of_birth),
-                latest_milk: c.id === 5 ? 10.2 : (c.parity > 0 ? 16.5 : null),
+                latest_milk: c.id === 5 ? 10.2 : (c.parity > 0 && c.gender !== 'Male' ? 16.5 : null),
                 latest_drop_pct: c.id === 5 ? 18.4 : null
             }));
 
             if (statusFilter && statusFilter !== 'All') {
-                cows = cows.filter(c => c.reproductive_status === statusFilter);
+                if (statusFilter === 'Female' || statusFilter === 'Male') {
+                    cows = cows.filter(c => (c.gender || 'Female') === statusFilter);
+                } else {
+                    cows = cows.filter(c => c.reproductive_status === statusFilter);
+                }
             }
             if (searchTerm) {
                 const s = searchTerm.toLowerCase();
@@ -394,27 +413,35 @@ function renderCowList(cows) {
     }
 
     container.innerHTML = cows.map(cow => {
+        const isMale = (cow.gender === 'Male');
+        const avatar = isMale ? '🐂' : '🐄';
+        const genderBadge = isMale 
+            ? `<span class="status-badge bg-blue-100 text-blue-700 border border-blue-200 ml-1.5"><i class="fa-solid fa-mars"></i> Bull</span>` 
+            : `<span class="status-badge bg-pink-100 text-pink-700 border border-pink-200 ml-1.5"><i class="fa-solid fa-venus"></i> Female</span>`;
+
         let badgeColor = 'badge-gray';
         if (cow.reproductive_status === 'In heat') badgeColor = 'badge-yellow';
         if (cow.reproductive_status === 'Pregnant') badgeColor = 'badge-green';
         if (cow.reproductive_status === 'Fresh') badgeColor = 'badge-blue';
         if (cow.reproductive_status === 'Dry') badgeColor = 'badge-orange';
+        if (cow.reproductive_status === 'Breeding Sire' || cow.reproductive_status === 'Young Bull') badgeColor = 'badge-blue';
 
-        const dropBadge = (cow.latest_drop_pct && parseFloat(cow.latest_drop_pct) >= 15) ?
+        const dropBadge = (cow.latest_drop_pct && parseFloat(cow.latest_drop_pct) >= 15 && !isMale) ?
             `<span class="status-badge badge-red ml-1"><i class="fa-solid fa-arrow-trend-down"></i> -${cow.latest_drop_pct}%</span>` : '';
 
         return `
             <div class="cow-item" onclick="openCowDetail(${cow.id})">
                 <div class="flex items-center">
-                    <div class="cow-avatar">🐄</div>
+                    <div class="cow-avatar">${avatar}</div>
                     <div class="cow-info">
-                        <div class="flex items-center">
+                        <div class="flex items-center flex-wrap gap-1">
                             <span class="cow-tag">${cow.tag_number}</span>
-                            <span class="status-badge ${badgeColor} ml-2">${cow.reproductive_status}</span>
+                            ${genderBadge}
+                            <span class="status-badge ${badgeColor}">${cow.reproductive_status}</span>
                             ${dropBadge}
                         </div>
                         <div class="cow-name">${cow.name} &bull; <span class="text-slate-600">${cow.breed}</span></div>
-                        <div class="cow-meta">Age: ${cow.age_display} &bull; Parity: ${cow.parity} ${cow.latest_milk ? `&bull; Latest: ${cow.latest_milk}L` : ''}</div>
+                        <div class="cow-meta">Age: ${cow.age_display} ${isMale ? `&bull; <span class="text-blue-700 font-semibold">Sire / Bull</span>` : `&bull; Parity: ${cow.parity}`} ${cow.latest_milk && !isMale ? `&bull; Latest: ${cow.latest_milk}L` : ''}</div>
                     </div>
                 </div>
                 <div class="text-slate-400 text-xs">
@@ -454,14 +481,24 @@ async function openCowDetail(cowId) {
             cow.vaccination_history = store.vaccinations.filter(v => v.cow_id == cowId);
         }
 
+        const isMale = (cow.gender === 'Male');
         document.getElementById('detailTag').innerText = cow.tag_number;
         document.getElementById('detailName').innerText = `${cow.name} (${cow.breed})`;
         document.getElementById('detailStatus').innerText = cow.reproductive_status;
         document.getElementById('detailAge').innerText = cow.age_display;
-        document.getElementById('detailParity').innerText = `Lactation #${cow.parity}`;
+        document.getElementById('detailParity').innerText = isMale ? 'N/A' : `Lactation #${cow.parity}`;
         document.getElementById('detailSource').innerText = cow.source;
         document.getElementById('detailDob').innerText = cow.date_of_birth;
 
+        const detailGenderEl = document.getElementById('detailGender');
+        if (detailGenderEl) {
+            detailGenderEl.innerHTML = isMale 
+                ? '<span class="text-blue-700 font-bold"><i class="fa-solid fa-mars"></i> Male</span>' 
+                : '<span class="text-pink-700 font-bold"><i class="fa-solid fa-venus"></i> Female</span>';
+        }
+        const parityBox = document.getElementById('detailParityBox');
+        if (parityBox) {
+            parityBox.style.display = isMale ? 'none' : 'block';
         const milkContainer = document.getElementById('detailMilkHistory');
         if (cow.milk_history && cow.milk_history.length > 0) {
             milkContainer.innerHTML = cow.milk_history.map(m => `
@@ -966,6 +1003,33 @@ function populateCowSelectors(cows) {
     });
 }
 
+function onGenderSelectionChange(gender) {
+    const parityGroup = document.getElementById('parityGroup');
+    const statusSelect = document.getElementById('newCowStatus');
+    if (gender === 'Male') {
+        if (parityGroup) parityGroup.style.display = 'none';
+        if (statusSelect) {
+            statusSelect.innerHTML = `
+                <option value="Breeding Sire">Breeding Sire</option>
+                <option value="Young Bull">Young Bull</option>
+                <option value="Steer">Steer / Castrated</option>
+                <option value="Calf">Bull Calf</option>
+            `;
+        }
+    } else {
+        if (parityGroup) parityGroup.style.display = 'block';
+        if (statusSelect) {
+            statusSelect.innerHTML = `
+                <option value="Open">Open</option>
+                <option value="In heat">In heat</option>
+                <option value="Pregnant">Pregnant</option>
+                <option value="Fresh">Fresh</option>
+                <option value="Dry">Dry</option>
+            `;
+        }
+    }
+}
+
 // ----------------- SUBMIT FORMS (DUAL SERVER & VERCEL OFFLINE) -----------------
 
 // 1. Submit New Cow Profile
@@ -974,9 +1038,10 @@ async function submitNewCow(e) {
     const tag = document.getElementById('newCowTag').value.trim();
     const name = document.getElementById('newCowName').value.trim();
     const breed = document.getElementById('newCowBreed').value;
+    const gender = document.getElementById('newCowGender') ? document.getElementById('newCowGender').value : 'Female';
     const dob = document.getElementById('newCowDob').value;
     const source = document.getElementById('newCowSource').value;
-    const parity = parseInt(document.getElementById('newCowParity').value) || 0;
+    const parity = (gender === 'Male' ? 0 : (parseInt(document.getElementById('newCowParity').value) || 0));
     const status = document.getElementById('newCowStatus').value;
 
     try {
@@ -984,7 +1049,7 @@ async function submitNewCow(e) {
             const res = await fetch(`${API_BASE}/cows.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tag_number: tag, name, breed, date_of_birth: dob, source, parity, reproductive_status: status })
+                body: JSON.stringify({ tag_number: tag, name, breed, gender, date_of_birth: dob, source, parity, reproductive_status: status })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to register cow');
@@ -995,17 +1060,18 @@ async function submitNewCow(e) {
                 tag_number: tag,
                 name,
                 breed,
+                gender,
                 date_of_birth: dob,
                 source,
                 parity,
                 reproductive_status: status,
-                photo_url: 'assets/cow_default.jpg'
+                photo_url: gender === 'Male' ? 'assets/bull_1.jpg' : 'assets/cow_default.jpg'
             };
             store.cows.unshift(newCow);
             saveLocalStore(store);
         }
 
-        showToast(`Cow ${tag} registered successfully!`);
+        showToast(`${gender === 'Male' ? 'Bull' : 'Cow'} ${tag} registered successfully!`);
         closeModal('modalAddCow');
         document.getElementById('formAddCow').reset();
         loadCows();

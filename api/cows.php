@@ -52,8 +52,9 @@ if ($method === 'GET') {
         jsonResponse($cow);
     }
 
-    // List cows with search and status filtering
+    // List cows with search, gender, and status filtering
     $status = $_GET['status'] ?? '';
+    $gender = $_GET['gender'] ?? '';
     $search = $_GET['search'] ?? '';
 
     $query = "SELECT c.*, 
@@ -63,9 +64,19 @@ if ($method === 'GET') {
         FROM cows c WHERE 1=1";
     $params = [];
 
+    if (!empty($gender) && $gender !== 'All') {
+        $query .= " AND c.gender = ?";
+        $params[] = $gender;
+    }
+
     if (!empty($status) && $status !== 'All') {
-        $query .= " AND c.reproductive_status = ?";
-        $params[] = $status;
+        if ($status === 'Female' || $status === 'Male') {
+            $query .= " AND c.gender = ?";
+            $params[] = $status;
+        } else {
+            $query .= " AND c.reproductive_status = ?";
+            $params[] = $status;
+        }
     }
 
     if (!empty($search)) {
@@ -81,6 +92,7 @@ if ($method === 'GET') {
     $cows = $stmt->fetchAll();
 
     foreach ($cows as &$c) {
+        $c['gender'] = $c['gender'] ?? 'Female';
         $c['age_display'] = calculateAgeString($c['date_of_birth']);
     }
 
@@ -93,10 +105,11 @@ if ($method === 'POST') {
     $tagNumber = trim($data['tag_number'] ?? '');
     $name = trim($data['name'] ?? '');
     $breed = trim($data['breed'] ?? 'Holstein Friesian');
+    $gender = trim($data['gender'] ?? 'Female');
     $dob = trim($data['date_of_birth'] ?? date('Y-m-d'));
     $source = trim($data['source'] ?? 'born on farm');
     $parity = (int)($data['parity'] ?? 0);
-    $status = trim($data['reproductive_status'] ?? 'Open');
+    $status = trim($data['reproductive_status'] ?? ($gender === 'Male' ? 'Breeding Sire' : 'Open'));
     $photoUrl = trim($data['photo_url'] ?? 'assets/cow_default.jpg');
 
     if (empty($tagNumber) || empty($name)) {
@@ -111,10 +124,10 @@ if ($method === 'POST') {
     }
 
     $insert = $db->prepare("
-        INSERT INTO cows (tag_number, name, breed, date_of_birth, source, parity, reproductive_status, photo_url)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO cows (tag_number, name, breed, gender, date_of_birth, source, parity, reproductive_status, photo_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    $insert->execute([$tagNumber, $name, $breed, $dob, $source, $parity, $status, $photoUrl]);
+    $insert->execute([$tagNumber, $name, $breed, $gender, $dob, $source, $parity, $status, $photoUrl]);
     $newId = (int)$db->lastInsertId();
 
     jsonResponse([
@@ -136,6 +149,7 @@ if ($method === 'PUT') {
         UPDATE cows SET 
             name = ?, 
             breed = ?, 
+            gender = ?,
             date_of_birth = ?, 
             source = ?, 
             parity = ?, 
@@ -146,6 +160,7 @@ if ($method === 'PUT') {
     $update->execute([
         $data['name'],
         $data['breed'],
+        $data['gender'] ?? 'Female',
         $data['date_of_birth'],
         $data['source'],
         (int)$data['parity'],

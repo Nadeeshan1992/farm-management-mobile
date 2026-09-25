@@ -59,6 +59,15 @@ function getDb(): PDO {
             }
         }
 
+        // Ensure gender column exists
+        try {
+            $pdo->query("SELECT `gender` FROM `cows` LIMIT 1");
+        } catch (Exception $e) {
+            try {
+                $pdo->exec("ALTER TABLE `cows` ADD COLUMN `gender` ENUM('Female', 'Male') NOT NULL DEFAULT 'Female' AFTER `breed`");
+            } catch (Exception $ex) {}
+        }
+
         return $pdo;
     } catch (PDOException $e) {
         jsonResponse([

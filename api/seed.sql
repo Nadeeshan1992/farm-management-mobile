@@ -1,34 +1,35 @@
 -- Initial Seed Data Matching All Requirements
 USE `farm_management`;
 
--- Insert 25 Cows
-INSERT INTO `cows` (`id`, `tag_number`, `name`, `breed`, `date_of_birth`, `source`, `parity`, `reproductive_status`, `photo_url`) VALUES
-(1, 'COW-101', 'Daisy', 'Holstein Friesian', '2021-03-15', 'born on farm', 2, 'Pregnant', 'assets/cow_1.jpg'),
-(2, 'COW-102', 'Bella', 'Jersey', '2022-05-10', 'born on farm', 1, 'In heat', 'assets/cow_2.jpg'),
-(3, 'COW-103', 'Luna', 'Holstein Friesian', '2020-01-20', 'purchased', 3, 'Pregnant', 'assets/cow_3.jpg'),
-(4, 'COW-104', 'Molly', 'Brown Swiss', '2021-08-12', 'born on farm', 2, 'Fresh', 'assets/cow_4.jpg'),
-(5, 'COW-105', 'Rosie', 'Holstein Friesian', '2020-11-05', 'purchased', 3, 'Pregnant', 'assets/cow_5.jpg'),
-(6, 'COW-106', 'Penny', 'Jersey', '2022-02-14', 'born on farm', 1, 'Fresh', 'assets/cow_6.jpg'),
-(7, 'COW-107', 'Maggie', 'Ayrshire', '2021-06-22', 'born on farm', 2, 'Pregnant', 'assets/cow_7.jpg'),
-(8, 'COW-108', 'Ruby', 'Holstein Friesian', '2022-09-01', 'born on farm', 1, 'In heat', 'assets/cow_8.jpg'),
-(9, 'COW-109', 'Chloe', 'Guernsey', '2019-12-10', 'purchased', 4, 'Dry', 'assets/cow_9.jpg'),
-(10, 'COW-110', 'Stella', 'Holstein Friesian', '2021-04-18', 'born on farm', 2, 'Pregnant', 'assets/cow_10.jpg'),
-(11, 'COW-111', 'Lucy', 'Jersey', '2020-07-29', 'purchased', 3, 'Pregnant', 'assets/cow_1.jpg'),
-(12, 'COW-112', 'Emma', 'Brown Swiss', '2022-10-05', 'born on farm', 1, 'Fresh', 'assets/cow_2.jpg'),
-(13, 'COW-113', 'Sadie', 'Holstein Friesian', '2021-01-14', 'born on farm', 2, 'Pregnant', 'assets/cow_3.jpg'),
-(14, 'COW-114', 'Lily', 'Jersey', '2023-01-02', 'born on farm', 0, 'In heat', 'assets/cow_4.jpg'),
-(15, 'COW-115', 'Sophie', 'Holstein Friesian', '2020-03-30', 'purchased', 3, 'Pregnant', 'assets/cow_5.jpg'),
-(16, 'COW-116', 'Grace', 'Ayrshire', '2021-11-19', 'born on farm', 2, 'Pregnant', 'assets/cow_6.jpg'),
-(17, 'COW-117', 'Zoe', 'Holstein Friesian', '2022-04-25', 'born on farm', 1, 'Pregnant', 'assets/cow_7.jpg'),
-(18, 'COW-118', 'Nala', 'Brown Swiss', '2021-09-14', 'purchased', 2, 'Fresh', 'assets/cow_8.jpg'),
-(19, 'COW-119', 'Coco', 'Jersey', '2020-08-11', 'born on farm', 3, 'Pregnant', 'assets/cow_9.jpg'),
-(20, 'COW-120', 'Hazel', 'Holstein Friesian', '2019-05-02', 'purchased', 4, 'Dry', 'assets/cow_10.jpg'),
-(21, 'COW-121', 'Willow', 'Guernsey', '2022-07-08', 'born on farm', 1, 'Pregnant', 'assets/cow_1.jpg'),
-(22, 'COW-122', 'Piper', 'Holstein Friesian', '2021-12-03', 'born on farm', 2, 'Pregnant', 'assets/cow_2.jpg'),
-(23, 'COW-123', 'Roxy', 'Jersey', '2023-03-12', 'born on farm', 0, 'Open', 'assets/cow_3.jpg'),
-(24, 'COW-124', 'Ginger', 'Ayrshire', '2022-11-20', 'purchased', 1, 'Fresh', 'assets/cow_4.jpg'),
-(25, 'COW-125', 'Honey', 'Holstein Friesian', '2023-02-18', 'born on farm', 0, 'Open', 'assets/cow_5.jpg')
-ON DUPLICATE KEY UPDATE name=VALUES(name);
+-- Insert Cows & Bulls
+INSERT INTO `cows` (`id`, `tag_number`, `name`, `breed`, `gender`, `date_of_birth`, `source`, `parity`, `reproductive_status`, `photo_url`) VALUES
+(1, 'COW-101', 'Daisy', 'Holstein Friesian', 'Female', '2021-03-15', 'born on farm', 2, 'Pregnant', 'assets/cow_1.jpg'),
+(2, 'COW-102', 'Bella', 'Jersey', 'Female', '2022-05-10', 'born on farm', 1, 'In heat', 'assets/cow_2.jpg'),
+(3, 'COW-103', 'Luna', 'Holstein Friesian', 'Female', '2020-01-20', 'purchased', 3, 'Pregnant', 'assets/cow_3.jpg'),
+(4, 'COW-104', 'Molly', 'Brown Swiss', 'Female', '2021-08-12', 'born on farm', 2, 'Fresh', 'assets/cow_4.jpg'),
+(5, 'COW-105', 'Rosie', 'Holstein Friesian', 'Female', '2020-11-05', 'purchased', 3, 'Pregnant', 'assets/cow_5.jpg'),
+(6, 'COW-106', 'Penny', 'Jersey', 'Female', '2022-02-14', 'born on farm', 1, 'Fresh', 'assets/cow_6.jpg'),
+(7, 'COW-107', 'Maggie', 'Ayrshire', 'Female', '2021-06-22', 'born on farm', 2, 'Pregnant', 'assets/cow_7.jpg'),
+(8, 'COW-108', 'Ruby', 'Holstein Friesian', 'Female', '2022-09-01', 'born on farm', 1, 'In heat', 'assets/cow_8.jpg'),
+(9, 'COW-109', 'Chloe', 'Guernsey', 'Female', '2019-12-10', 'purchased', 4, 'Dry', 'assets/cow_9.jpg'),
+(10, 'COW-110', 'Stella', 'Holstein Friesian', 'Female', '2021-04-18', 'born on farm', 2, 'Pregnant', 'assets/cow_10.jpg'),
+(11, 'COW-111', 'Lucy', 'Jersey', 'Female', '2020-07-29', 'purchased', 3, 'Pregnant', 'assets/cow_1.jpg'),
+(12, 'COW-112', 'Emma', 'Brown Swiss', 'Female', '2022-10-05', 'born on farm', 1, 'Fresh', 'assets/cow_2.jpg'),
+(13, 'COW-113', 'Sadie', 'Holstein Friesian', 'Female', '2021-01-14', 'born on farm', 2, 'Pregnant', 'assets/cow_3.jpg'),
+(14, 'COW-114', 'Lily', 'Jersey', 'Female', '2023-01-02', 'born on farm', 0, 'In heat', 'assets/cow_4.jpg'),
+(15, 'COW-115', 'Sophie', 'Holstein Friesian', 'Female', '2020-03-30', 'purchased', 3, 'Pregnant', 'assets/cow_5.jpg'),
+(16, 'COW-116', 'Grace', 'Ayrshire', 'Female', '2021-11-19', 'born on farm', 2, 'Pregnant', 'assets/cow_6.jpg'),
+(17, 'COW-117', 'Zoe', 'Holstein Friesian', 'Female', '2022-04-25', 'born on farm', 1, 'Pregnant', 'assets/cow_7.jpg'),
+(18, 'COW-118', 'Nala', 'Brown Swiss', 'Female', '2021-09-14', 'purchased', 2, 'Fresh', 'assets/cow_8.jpg'),
+(19, 'COW-119', 'Coco', 'Jersey', 'Female', '2020-08-11', 'born on farm', 3, 'Pregnant', 'assets/cow_9.jpg'),
+(20, 'COW-120', 'Hazel', 'Holstein Friesian', 'Female', '2019-05-02', 'purchased', 4, 'Dry', 'assets/cow_10.jpg'),
+(21, 'COW-121', 'Willow', 'Guernsey', 'Female', '2022-07-08', 'born on farm', 1, 'Pregnant', 'assets/cow_1.jpg'),
+(22, 'COW-122', 'Piper', 'Holstein Friesian', 'Female', '2021-12-03', 'born on farm', 2, 'Pregnant', 'assets/cow_2.jpg'),
+(23, 'COW-123', 'Roxy', 'Jersey', 'Female', '2023-03-12', 'born on farm', 0, 'Open', 'assets/cow_3.jpg'),
+(24, 'COW-124', 'Ginger', 'Ayrshire', 'Female', '2022-11-20', 'purchased', 1, 'Fresh', 'assets/cow_4.jpg'),
+(25, 'BULL-101', 'Titan', 'Holstein Friesian', 'Male', '2020-05-18', 'purchased', 0, 'Breeding Sire', 'assets/cow_5.jpg'),
+(26, 'BULL-102', 'Thor', 'Jersey', 'Male', '2022-08-12', 'born on farm', 0, 'Young Bull', 'assets/cow_3.jpg')
+ON DUPLICATE KEY UPDATE name=VALUES(name), gender=VALUES(gender), reproductive_status=VALUES(reproductive_status);
 
 -- Heat Records (Possible Heat: Yellow badge, AI Reminder: Red badge)
 INSERT INTO `heat_records` (`cow_id`, `detection_date`, `detection_time`, `status`, `previous_heat_date`, `inter_estrus_interval`, `notes`) VALUES

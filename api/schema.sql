@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS `cows` (
     `tag_number` VARCHAR(50) NOT NULL UNIQUE,
     `name` VARCHAR(100) NOT NULL,
     `breed` VARCHAR(100) NOT NULL,
+    `gender` ENUM('Female', 'Male') NOT NULL DEFAULT 'Female',
     `date_of_birth` DATE NOT NULL,
     `source` ENUM('born on farm', 'purchased') DEFAULT 'born on farm',
     `parity` INT DEFAULT 0,
-    `reproductive_status` ENUM('Pregnant', 'In heat', 'Fresh', 'Dry', 'Open') DEFAULT 'Open',
+    `reproductive_status` ENUM('Pregnant', 'In heat', 'Fresh', 'Dry', 'Open', 'Breeding Sire', 'Young Bull', 'Steer') DEFAULT 'Open',
     `photo_url` VARCHAR(255) NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
