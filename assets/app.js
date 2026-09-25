@@ -506,6 +506,7 @@ async function openCowDetail(cowId) {
         const parityBox = document.getElementById('detailParityBox');
         if (parityBox) {
             parityBox.style.display = isMale ? 'none' : 'block';
+        }
         const milkContainer = document.getElementById('detailMilkHistory');
         if (cow.milk_history && cow.milk_history.length > 0) {
             milkContainer.innerHTML = cow.milk_history.map(m => `
