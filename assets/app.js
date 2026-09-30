@@ -453,7 +453,7 @@ function renderCowList(cows) {
         if (cow.reproductive_status === 'Breeding Sire' || cow.reproductive_status === 'Young Bull') badgeColor = 'badge-blue';
         if (cow.reproductive_status === 'Heifer') badgeColor = 'badge-purple';
 
-        const dropBadge = (cow.latest_drop_pct && parseFloat(cow.latest_drop_pct) >= 15 && !isMale) ?
+        const dropBadge = (cow.latest_drop_pct && parseFloat(cow.latest_drop_pct) >= 10 && !isMale) ?
             `<span class="status-badge badge-red ml-1"><i class="fa-solid fa-arrow-trend-down"></i> -${cow.latest_drop_pct}%</span>` : '';
 
         return `
@@ -534,7 +534,7 @@ async function openCowDetail(cowId) {
                 <div class="flex justify-between py-1.5 border-b border-slate-100 text-xs">
                     <span>${m.record_date}</span>
                     <span class="font-bold">${m.total_yield} L <span class="text-slate-400 font-normal">(${m.morning_yield}M / ${m.evening_yield}E)</span></span>
-                    ${m.drop_percentage >= 15 ? `<span class="status-badge badge-red">-${m.drop_percentage}%</span>` : `<span class="text-slate-400">Normal</span>`}
+                    ${m.drop_percentage >= 10 ? `<span class="status-badge badge-red">-${m.drop_percentage}%</span>` : `<span class="text-slate-400">Normal</span>`}
                 </div>
             `).join('');
         } else {
@@ -601,7 +601,7 @@ async function loadMilkLogs() {
         if (!container) return;
 
         container.innerHTML = records.map(r => {
-            const isDrop = r.drop_percentage && parseFloat(r.drop_percentage) >= 15;
+            const isDrop = r.drop_percentage && parseFloat(r.drop_percentage) >= 10;
             return `
                 <div class="cow-item ${isDrop ? 'border-red-300 bg-red-50/40' : ''}">
                     <div class="cow-info">
@@ -1246,7 +1246,7 @@ async function submitMilkRecord(e) {
             const yYield = prev ? prev.total_yield : 15.0;
             if (yYield > total) {
                 dropPct = Math.round(((yYield - total) / yYield) * 1000) / 10;
-                if (dropPct >= 15) alertTriggered = true;
+                if (dropPct >= 10) alertTriggered = true;
             }
             store.milk.unshift({
                 id: Date.now(),

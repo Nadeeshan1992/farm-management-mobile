@@ -161,13 +161,13 @@ foreach ($treatments as $t) {
     ];
 }
 
-// 7. Unusual Milk Decrease (>15% Drop)
+// 7. Unusual Milk Decrease (>=10% Drop)
 $milkDrops = $db->query("
     SELECT m.id, m.cow_id, m.record_date, m.morning_yield, m.evening_yield, m.total_yield, m.yesterday_yield, m.drop_percentage,
            c.tag_number, c.name
     FROM milk_records m 
     JOIN cows c ON m.cow_id = c.id
-    WHERE m.drop_percentage >= 15.0
+    WHERE m.drop_percentage >= 10.0
     ORDER BY m.record_date DESC
 ")->fetchAll();
 

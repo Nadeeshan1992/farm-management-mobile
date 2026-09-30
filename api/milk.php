@@ -109,7 +109,7 @@ if ($method === 'POST') {
     if ($yesterdayYield && $yesterdayYield > 0) {
         if ($total < $yesterdayYield) {
             $dropPct = round((($yesterdayYield - $total) / $yesterdayYield) * 100, 2);
-            if ($dropPct >= 15.0) {
+            if ($dropPct >= 10.0) {
                 $unusualDropAlert = true;
             }
         }

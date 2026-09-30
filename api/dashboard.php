@@ -114,12 +114,12 @@ try {
         ];
     }
 
-    // Milk Drop Alert (>15%)
+    // Milk Drop Alert (>=10%)
     $drops = $db->query("
         SELECT m.drop_percentage, m.yesterday_yield, m.total_yield, c.tag_number, c.name 
         FROM milk_records m 
         JOIN cows c ON m.cow_id = c.id 
-        WHERE m.drop_percentage >= 15 
+        WHERE m.drop_percentage >= 10 
         AND m.record_date >= DATE_SUB(CURDATE(), INTERVAL 3 DAY)
         ORDER BY m.drop_percentage DESC LIMIT 2
     ")->fetchAll();
