@@ -52,10 +52,38 @@ const DEFAULT_SEED_DATA = {
         { id: 2, cow_id: 6, calving_date: '2026-08-23', calving_type: 'Assisted', calf_tag_number: 'CALF-202', calf_sex: 'Bull', birth_weight: 42.0, post_calving_problems: 'Mild laceration, recovered' }
     ],
     milk: [
-        { id: 1, cow_id: 5, record_date: '2026-09-10', morning_yield: 5.6, evening_yield: 4.6, total_yield: 10.2, yesterday_yield: 12.5, drop_percentage: 18.40 },
-        { id: 2, cow_id: 5, record_date: '2026-09-09', morning_yield: 6.8, evening_yield: 5.7, total_yield: 12.5, yesterday_yield: 13.0, drop_percentage: 3.85 },
-        { id: 3, cow_id: 1, record_date: '2026-09-10', morning_yield: 9.5, evening_yield: 8.5, total_yield: 18.0, yesterday_yield: 18.2, drop_percentage: 1.10 },
-        { id: 4, cow_id: 4, record_date: '2026-09-10', morning_yield: 11.0, evening_yield: 9.8, total_yield: 20.8, yesterday_yield: 21.0, drop_percentage: 0.95 }
+        // Cow 1 (Daisy) - Daily, Weekly, Monthly
+        { id: 101, cow_id: 1, record_date: '2026-09-30', morning_yield: 10.0, evening_yield: 8.6, total_yield: 18.6, yesterday_yield: 19.0, drop_percentage: 2.11 },
+        { id: 102, cow_id: 1, record_date: '2026-09-29', morning_yield: 10.2, evening_yield: 8.7, total_yield: 18.9, yesterday_yield: 18.7, drop_percentage: 0.0 },
+        { id: 103, cow_id: 1, record_date: '2026-09-28', morning_yield: 10.3, evening_yield: 8.7, total_yield: 19.0, yesterday_yield: 18.9, drop_percentage: 0.0 },
+        { id: 104, cow_id: 1, record_date: '2026-09-25', morning_yield: 9.8, evening_yield: 8.5, total_yield: 18.3, yesterday_yield: 18.5, drop_percentage: 1.08 },
+        { id: 105, cow_id: 1, record_date: '2026-09-20', morning_yield: 10.1, evening_yield: 8.8, total_yield: 18.9, yesterday_yield: 19.1, drop_percentage: 1.05 },
+        { id: 106, cow_id: 1, record_date: '2026-09-14', morning_yield: 9.9, evening_yield: 8.6, total_yield: 18.5, yesterday_yield: 18.4, drop_percentage: 0.0 },
+        { id: 107, cow_id: 1, record_date: '2026-09-07', morning_yield: 10.4, evening_yield: 8.9, total_yield: 19.3, yesterday_yield: 19.0, drop_percentage: 0.0 },
+        { id: 108, cow_id: 1, record_date: '2026-08-28', morning_yield: 10.0, evening_yield: 8.5, total_yield: 18.5, yesterday_yield: 18.6, drop_percentage: 0.54 },
+        { id: 109, cow_id: 1, record_date: '2026-08-21', morning_yield: 9.7, evening_yield: 8.4, total_yield: 18.1, yesterday_yield: 18.3, drop_percentage: 1.09 },
+        { id: 110, cow_id: 1, record_date: '2026-08-14', morning_yield: 10.1, evening_yield: 8.7, total_yield: 18.8, yesterday_yield: 18.7, drop_percentage: 0.0 },
+        // Cow 5 (Rosie) - Daily, Weekly, Monthly (including mastitis drop)
+        { id: 1, cow_id: 5, record_date: '2026-09-30', morning_yield: 5.8, evening_yield: 4.8, total_yield: 10.6, yesterday_yield: 10.2, drop_percentage: 0.0 },
+        { id: 2, cow_id: 5, record_date: '2026-09-29', morning_yield: 5.6, evening_yield: 4.6, total_yield: 10.2, yesterday_yield: 12.5, drop_percentage: 18.40 },
+        { id: 3, cow_id: 5, record_date: '2026-09-28', morning_yield: 6.8, evening_yield: 5.7, total_yield: 12.5, yesterday_yield: 13.0, drop_percentage: 3.85 },
+        { id: 4, cow_id: 5, record_date: '2026-09-21', morning_yield: 6.9, evening_yield: 5.8, total_yield: 12.7, yesterday_yield: 12.8, drop_percentage: 0.78 },
+        { id: 5, cow_id: 5, record_date: '2026-09-14', morning_yield: 7.1, evening_yield: 6.0, total_yield: 13.1, yesterday_yield: 13.0, drop_percentage: 0.0 },
+        { id: 6, cow_id: 5, record_date: '2026-08-28', morning_yield: 7.0, evening_yield: 5.9, total_yield: 12.9, yesterday_yield: 13.2, drop_percentage: 2.27 },
+        { id: 7, cow_id: 5, record_date: '2026-08-20', morning_yield: 7.2, evening_yield: 6.1, total_yield: 13.3, yesterday_yield: 13.1, drop_percentage: 0.0 },
+        // Cow 4 (Molly)
+        { id: 201, cow_id: 4, record_date: '2026-09-30', morning_yield: 11.2, evening_yield: 9.9, total_yield: 21.1, yesterday_yield: 20.8, drop_percentage: 0.0 },
+        { id: 202, cow_id: 4, record_date: '2026-09-25', morning_yield: 11.0, evening_yield: 9.8, total_yield: 20.8, yesterday_yield: 21.0, drop_percentage: 0.95 },
+        { id: 203, cow_id: 4, record_date: '2026-09-18', morning_yield: 11.4, evening_yield: 10.1, total_yield: 21.5, yesterday_yield: 21.2, drop_percentage: 0.0 },
+        { id: 204, cow_id: 4, record_date: '2026-08-25', morning_yield: 11.1, evening_yield: 9.8, total_yield: 20.9, yesterday_yield: 21.0, drop_percentage: 0.48 },
+        // Cow 6 (Penny)
+        { id: 301, cow_id: 6, record_date: '2026-09-30', morning_yield: 8.5, evening_yield: 7.6, total_yield: 16.1, yesterday_yield: 15.7, drop_percentage: 0.0 },
+        { id: 302, cow_id: 6, record_date: '2026-09-25', morning_yield: 8.2, evening_yield: 7.5, total_yield: 15.7, yesterday_yield: 16.0, drop_percentage: 1.87 },
+        { id: 303, cow_id: 6, record_date: '2026-08-22', morning_yield: 8.4, evening_yield: 7.4, total_yield: 15.8, yesterday_yield: 15.6, drop_percentage: 0.0 },
+        // Cow 12 (Emma)
+        { id: 401, cow_id: 12, record_date: '2026-09-30', morning_yield: 10.8, evening_yield: 9.6, total_yield: 20.4, yesterday_yield: 20.0, drop_percentage: 0.0 },
+        { id: 402, cow_id: 12, record_date: '2026-09-25', morning_yield: 10.5, evening_yield: 9.5, total_yield: 20.0, yesterday_yield: 20.2, drop_percentage: 0.99 },
+        { id: 403, cow_id: 12, record_date: '2026-08-29', morning_yield: 10.7, evening_yield: 9.4, total_yield: 20.1, yesterday_yield: 20.3, drop_percentage: 0.99 }
     ],
     health: [
         { id: 1, cow_id: 5, record_date: '2026-09-10', disease: 'Subclinical Mastitis', symptoms: 'Swelling in right rear quarter, clot in milk', treatment: 'Intramammary antibiotic infusion', medicine: 'Cefa-Lak & Flunixin', dosage: '1 tube / 10ml IV', start_date: '2026-09-10', veterinary_visit: 'Dr. Robert Miller (Today)', recovery_status: 'In Treatment', notes: 'Explains recent 18.4% drop in milk yield.' },
@@ -528,18 +556,12 @@ async function openCowDetail(cowId) {
         if (parityBox) {
             parityBox.style.display = isMale ? 'none' : 'block';
         }
-        const milkContainer = document.getElementById('detailMilkHistory');
-        if (cow.milk_history && cow.milk_history.length > 0) {
-            milkContainer.innerHTML = cow.milk_history.map(m => `
-                <div class="flex justify-between py-1.5 border-b border-slate-100 text-xs">
-                    <span>${m.record_date}</span>
-                    <span class="font-bold">${m.total_yield} L <span class="text-slate-400 font-normal">(${m.morning_yield}M / ${m.evening_yield}E)</span></span>
-                    ${m.drop_percentage >= 10 ? `<span class="status-badge badge-red">-${m.drop_percentage}%</span>` : `<span class="text-slate-400">Normal</span>`}
-                </div>
-            `).join('');
-        } else {
-            milkContainer.innerHTML = `<p class="text-xs text-slate-400 py-2">No recent milk logs.</p>`;
-        }
+        activeCowDetailId = cowId;
+        cowDetailActivePeriod = 'daily';
+        document.querySelectorAll('#cowDetailMilkPeriodTabs .filter-chip').forEach(c => {
+            c.classList.toggle('active', c.getAttribute('data-period') === 'daily');
+        });
+        renderCowDetailMilkHistory(cowId, 'daily');
 
         const healthContainer = document.getElementById('detailHealthHistory');
         if (cow.health_history && cow.health_history.length > 0) {
@@ -575,55 +597,352 @@ async function openCowDetail(cowId) {
     }
 }
 
-// 3. Milk Production View
-async function loadMilkLogs() {
+// Individual Cow 360 Drawer - Milk Period Toggle
+let cowDetailActivePeriod = 'daily';
+
+async function switchCowDetailMilkPeriod(period, btn) {
+    cowDetailActivePeriod = period;
+    document.querySelectorAll('#cowDetailMilkPeriodTabs .filter-chip').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    if (activeCowDetailId) {
+        await renderCowDetailMilkHistory(activeCowDetailId, period);
+    }
+}
+
+async function renderCowDetailMilkHistory(cowId, period = 'daily') {
+    const container = document.getElementById('detailMilkHistory');
+    if (!container) return;
+    container.innerHTML = `<div class="py-2 text-center text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Loading ${period} records...</div>`;
+
     try {
-        let stats, records;
+        let records = [];
         if (isServerMode) {
-            const res = await fetch(`${API_BASE}/milk.php`);
+            const res = await fetch(`${API_BASE}/milk.php?cow_id=${cowId}&period=${period}&limit=30`);
+            const data = await res.json();
+            records = data.records || [];
+        } else {
+            const store = getLocalStore();
+            const raw = store.milk.filter(m => m.cow_id == cowId);
+            if (period === 'weekly') {
+                records = aggregateMilkWeekly(raw);
+            } else if (period === 'monthly') {
+                records = aggregateMilkMonthly(raw);
+            } else {
+                records = raw.sort((a,b) => (b.record_date > a.record_date ? 1 : -1));
+            }
+        }
+
+        if (records.length === 0) {
+            container.innerHTML = `<p class="text-xs text-slate-400 py-2 text-center">No ${period} milk records found for this cow.</p>`;
+            return;
+        }
+
+        if (period === 'weekly') {
+            container.innerHTML = records.map(w => `
+                <div class="flex items-center justify-between py-2 border-b border-slate-100 text-xs">
+                    <div>
+                        <div class="font-bold text-slate-800">${w.period_label}</div>
+                        <div class="text-[10px] text-slate-500">M: ${w.morning_total || 0}L &bull; E: ${w.evening_total || 0}L (${w.days_recorded} days)</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-emerald-700">${w.total_yield} L</div>
+                        <div class="text-[10px] text-slate-500">Avg: ${w.avg_daily_yield} L/day</div>
+                    </div>
+                </div>
+            `).join('');
+        } else if (period === 'monthly') {
+            container.innerHTML = records.map(m => `
+                <div class="flex items-center justify-between py-2 border-b border-slate-100 text-xs">
+                    <div>
+                        <div class="font-bold text-slate-800">${m.period_label}</div>
+                        <div class="text-[10px] text-slate-500">${m.days_recorded} milking days recorded</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-emerald-700">${m.total_yield} L</div>
+                        <div class="text-[10px] text-amber-700 font-semibold">Peak: ${m.max_day_yield || 0} L &bull; Avg: ${m.avg_daily_yield} L/d</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            // Daily
+            container.innerHTML = records.map(m => `
+                <div class="flex justify-between py-1.5 border-b border-slate-100 text-xs">
+                    <span>${m.record_date}</span>
+                    <span class="font-bold">${m.total_yield} L <span class="text-slate-400 font-normal">(${m.morning_yield}M / ${m.evening_yield}E)</span></span>
+                    ${m.drop_percentage >= 10 ? `<span class="status-badge badge-red">-${m.drop_percentage}%</span>` : `<span class="text-slate-400 text-[11px]">Normal</span>`}
+                </div>
+            `).join('');
+        }
+    } catch (err) {
+        container.innerHTML = `<p class="text-xs text-red-500 py-2">Failed to load milk records.</p>`;
+    }
+}
+
+// 3. Milk Production View (Daily, Weekly, Monthly for Individual Cows or All Herd)
+let currentMilkPeriod = 'daily';
+let selectedMilkCowId = 0;
+
+function populateMilkCowFilter() {
+    const sel = document.getElementById('milkCowFilterSelect');
+    if (!sel) return;
+    const current = sel.value || '0';
+    let options = `<option value="0">🐄 All Herd (Farm View)</option>`;
+
+    let cowsList = cowsCache;
+    if (!cowsList || cowsList.length === 0) {
+        const store = getLocalStore();
+        cowsList = store.cows || [];
+    }
+
+    const milkingCows = cowsList.filter(c => (c.gender || 'Female') === 'Female');
+    milkingCows.forEach(c => {
+        options += `<option value="${c.id}">${c.tag_number} - ${c.name} (${c.breed})</option>`;
+    });
+    sel.innerHTML = options;
+    sel.value = current;
+}
+
+function onMilkCowFilterChange(cowId) {
+    selectedMilkCowId = parseInt(cowId) || 0;
+    loadMilkLogs();
+}
+
+function switchMilkPeriod(period, btn) {
+    currentMilkPeriod = period;
+    document.querySelectorAll('#milkPeriodTabs .filter-chip').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const titleEl = document.getElementById('milkViewTitle');
+    if (titleEl) {
+        if (period === 'daily') titleEl.innerText = selectedMilkCowId > 0 ? 'Individual Daily Production' : 'Daily Production Logs';
+        else if (period === 'weekly') titleEl.innerText = selectedMilkCowId > 0 ? 'Weekly Milk Totals & Averages' : 'Herd Weekly Production Summary';
+        else if (period === 'monthly') titleEl.innerText = selectedMilkCowId > 0 ? 'Monthly Milk Totals & Peak Yield' : 'Herd Monthly Production Summary';
+    }
+    loadMilkLogs();
+}
+
+function aggregateMilkWeekly(records) {
+    const map = {};
+    records.forEach(r => {
+        const d = new Date(r.record_date);
+        const oneJan = new Date(d.getFullYear(), 0, 1);
+        const weekNum = Math.ceil((((d - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
+        const key = `${r.cow_id || 0}_${d.getFullYear()}_W${weekNum}`;
+        if (!map[key]) {
+            map[key] = {
+                cow_id: r.cow_id,
+                tag_number: r.tag_number,
+                name: r.name,
+                breed: r.breed,
+                period_label: `Week ${weekNum} (${d.getFullYear()})`,
+                total_yield: 0,
+                morning_total: 0,
+                evening_total: 0,
+                max_day_yield: 0,
+                days_recorded: 0
+            };
+        }
+        map[key].total_yield += parseFloat(r.total_yield || 0);
+        map[key].morning_total += parseFloat(r.morning_yield || 0);
+        map[key].evening_total += parseFloat(r.evening_yield || 0);
+        map[key].max_day_yield = Math.max(map[key].max_day_yield, parseFloat(r.total_yield || 0));
+        map[key].days_recorded += 1;
+    });
+    return Object.values(map).map(item => ({
+        ...item,
+        total_yield: Math.round(item.total_yield * 100) / 100,
+        avg_daily_yield: Math.round((item.total_yield / item.days_recorded) * 100) / 100,
+        morning_total: Math.round(item.morning_total * 100) / 100,
+        evening_total: Math.round(item.evening_total * 100) / 100
+    }));
+}
+
+function aggregateMilkMonthly(records) {
+    const map = {};
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    records.forEach(r => {
+        const d = new Date(r.record_date);
+        const key = `${r.cow_id || 0}_${d.getFullYear()}_${d.getMonth()}`;
+        if (!map[key]) {
+            map[key] = {
+                cow_id: r.cow_id,
+                tag_number: r.tag_number,
+                name: r.name,
+                breed: r.breed,
+                period_label: `${months[d.getMonth()]} ${d.getFullYear()}`,
+                total_yield: 0,
+                morning_total: 0,
+                evening_total: 0,
+                max_day_yield: 0,
+                days_recorded: 0
+            };
+        }
+        map[key].total_yield += parseFloat(r.total_yield || 0);
+        map[key].morning_total += parseFloat(r.morning_yield || 0);
+        map[key].evening_total += parseFloat(r.evening_yield || 0);
+        map[key].max_day_yield = Math.max(map[key].max_day_yield, parseFloat(r.total_yield || 0));
+        map[key].days_recorded += 1;
+    });
+    return Object.values(map).map(item => ({
+        ...item,
+        total_yield: Math.round(item.total_yield * 100) / 100,
+        avg_daily_yield: Math.round((item.total_yield / item.days_recorded) * 100) / 100,
+        morning_total: Math.round(item.morning_total * 100) / 100,
+        evening_total: Math.round(item.evening_total * 100) / 100
+    }));
+}
+
+async function loadMilkLogs() {
+    populateMilkCowFilter();
+    const period = currentMilkPeriod || 'daily';
+    const cowId = selectedMilkCowId || 0;
+
+    const indivBox = document.getElementById('individualCowStatsBox');
+    const farmKpis = document.getElementById('farmMilkKpiStrip');
+    const cowBadge = document.getElementById('selectedCowBadge');
+    const container = document.getElementById('milkLogsContainer');
+
+    try {
+        let stats, records, cowInfo, cowStats;
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/milk.php?cow_id=${cowId}&period=${period}&limit=60`);
             const data = await res.json();
             stats = data.stats;
             records = data.records;
+            cowInfo = data.cow_info;
+            cowStats = data.cow_stats;
         } else {
             const store = getLocalStore();
-            stats = { daily_average: 14.5, weekly_average: 143.5, monthly_average: 142.0 };
-            records = store.milk.map(m => {
+            stats = { daily_average: 16.6, weekly_average: 185.1, monthly_average: 173.0 };
+            let raw = store.milk.map(m => {
                 const cow = store.cows.find(c => c.id == m.cow_id) || {};
-                return { ...m, tag_number: cow.tag_number || 'COW-105', name: cow.name || 'Cow' };
+                return { ...m, tag_number: cow.tag_number || 'COW', name: cow.name || 'Cow', breed: cow.breed || '' };
             });
+            if (cowId > 0) {
+                raw = raw.filter(m => m.cow_id == cowId);
+                const cow = store.cows.find(c => c.id == cowId);
+                cowInfo = cow;
+                const total = raw.reduce((sum, r) => sum + (parseFloat(r.total_yield) || 0), 0);
+                const avg = raw.length > 0 ? (total / raw.length) : 0;
+                const peak = raw.reduce((max, r) => Math.max(max, (parseFloat(r.total_yield) || 0)), 0);
+                cowStats = {
+                    total_yield: total.toFixed(2),
+                    avg_yield: avg.toFixed(2),
+                    peak_yield: peak.toFixed(2),
+                    days_count: raw.length
+                };
+            }
+            if (period === 'weekly') {
+                records = aggregateMilkWeekly(raw);
+            } else if (period === 'monthly') {
+                records = aggregateMilkMonthly(raw);
+            } else {
+                records = raw.sort((a,b) => (b.record_date > a.record_date ? 1 : -1));
+            }
         }
 
-        document.getElementById('milkDailyAvg').innerText = `${stats.daily_average} L`;
-        document.getElementById('milkWeeklyAvg').innerText = `${stats.weekly_average} L`;
-        document.getElementById('milkMonthlyAvg').innerText = `${stats.monthly_average} L`;
+        if (stats) {
+            const dAvg = document.getElementById('milkDailyAvg');
+            const wAvg = document.getElementById('milkWeeklyAvg');
+            const mAvg = document.getElementById('milkMonthlyAvg');
+            if (dAvg) dAvg.innerText = `${stats.daily_average} L`;
+            if (wAvg) wAvg.innerText = `${stats.weekly_average} L`;
+            if (mAvg) mAvg.innerText = `${stats.monthly_average} L`;
+        }
 
-        const container = document.getElementById('milkLogsContainer');
+        // Handle Individual Cow Stats display
+        if (cowId > 0 && cowInfo) {
+            if (cowBadge) cowBadge.innerText = `${cowInfo.tag_number} (${cowInfo.name})`;
+            if (indivBox) {
+                indivBox.style.display = 'block';
+                document.getElementById('indivCowTitle').innerText = `${cowInfo.tag_number} - ${cowInfo.name}`;
+                document.getElementById('indivCowBreed').innerText = cowInfo.breed || 'Cow';
+                document.getElementById('indivCowStatus').innerText = cowInfo.reproductive_status || 'Milking';
+                if (cowStats) {
+                    document.getElementById('indivTotalYield').innerText = `${cowStats.total_yield} L`;
+                    document.getElementById('indivAvgYield').innerText = `${cowStats.avg_yield} L`;
+                    document.getElementById('indivPeakYield').innerText = `${cowStats.peak_yield} L`;
+                }
+            }
+            if (farmKpis) farmKpis.style.display = 'none';
+        } else {
+            if (cowBadge) cowBadge.innerText = 'All Herd';
+            if (indivBox) indivBox.style.display = 'none';
+            if (farmKpis) farmKpis.style.display = 'grid';
+        }
+
         if (!container) return;
 
-        container.innerHTML = records.map(r => {
-            const isDrop = r.drop_percentage && parseFloat(r.drop_percentage) >= 10;
-            return `
-                <div class="cow-item ${isDrop ? 'border-red-300 bg-red-50/40' : ''}">
+        if (!records || records.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No ${period} milk records found.</div>`;
+            return;
+        }
+
+        if (period === 'weekly') {
+            container.innerHTML = records.map(r => `
+                <div class="cow-item">
                     <div class="cow-info">
-                        <div class="flex items-center">
-                            <span class="cow-tag">${r.tag_number}</span>
-                            <span class="text-xs text-slate-500 ml-2">${r.name}</span>
-                            <span class="text-xs text-slate-400 ml-auto">${r.record_date}</span>
+                        <div class="flex items-center justify-between">
+                            <span class="status-badge badge-blue"><i class="fa-solid fa-calendar-week mr-1"></i> ${r.period_label}</span>
+                            ${cowId === 0 ? `<span class="cow-tag ml-auto">${r.tag_number || ''} ${r.name || ''}</span>` : `<span class="text-xs text-slate-400 ml-auto">${r.days_recorded} days logged</span>`}
                         </div>
-                        <div class="flex items-center justify-between mt-1">
-                            <span class="text-xs text-slate-600">Morning: <b>${r.morning_yield}L</b> &bull; Evening: <b>${r.evening_yield}L</b></span>
-                            <span class="text-sm font-bold text-slate-800">${r.total_yield} Liters</span>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-slate-600">Morning: <b>${r.morning_total || 0}L</b> &bull; Evening: <b>${r.evening_total || 0}L</b></span>
+                            <span class="text-sm font-bold text-emerald-800">${r.total_yield} Liters</span>
                         </div>
-                        ${isDrop ? `
-                            <div class="text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                Unusual drop: -${r.drop_percentage}% vs yesterday (${r.yesterday_yield}L)
-                            </div>
-                        ` : ''}
+                        <div class="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+                            <span>Daily Avg: <b class="text-slate-700">${r.avg_daily_yield} L/day</b></span>
+                            ${r.max_day_yield ? `<span class="text-amber-700"><i class="fa-solid fa-star text-[9px]"></i> Peak: ${r.max_day_yield}L</span>` : ''}
+                        </div>
                     </div>
                 </div>
-            `;
-        }).join('');
+            `).join('');
+        } else if (period === 'monthly') {
+            container.innerHTML = records.map(r => `
+                <div class="cow-item">
+                    <div class="cow-info">
+                        <div class="flex items-center justify-between">
+                            <span class="status-badge badge-green"><i class="fa-solid fa-chart-line mr-1"></i> ${r.period_label}</span>
+                            ${cowId === 0 ? `<span class="cow-tag ml-auto">${r.tag_number || ''} ${r.name || ''}</span>` : `<span class="text-xs text-slate-400 ml-auto">${r.days_recorded} days logged</span>`}
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-slate-600">Daily Average: <b class="text-emerald-700">${r.avg_daily_yield} L/day</b></span>
+                            <span class="text-sm font-bold text-slate-800">${r.total_yield} Liters</span>
+                        </div>
+                        <div class="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+                            <span>Morning: <b>${r.morning_total || 0}L</b> &bull; Evening: <b>${r.evening_total || 0}L</b></span>
+                            ${r.max_day_yield ? `<span class="text-amber-700 font-semibold"><i class="fa-solid fa-star text-[9px]"></i> Peak: ${r.max_day_yield}L</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            // Daily
+            container.innerHTML = records.map(r => {
+                const isDrop = r.drop_percentage && parseFloat(r.drop_percentage) >= 10;
+                return `
+                    <div class="cow-item ${isDrop ? 'border-red-300 bg-red-50/40' : ''}">
+                        <div class="cow-info">
+                            <div class="flex items-center">
+                                <span class="cow-tag">${r.tag_number || (cowInfo ? cowInfo.tag_number : 'COW')}</span>
+                                <span class="text-xs text-slate-600 font-medium ml-2">${r.name || (cowInfo ? cowInfo.name : '')}</span>
+                                <span class="text-xs text-slate-400 ml-auto">${r.record_date}</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-1.5">
+                                <span class="text-xs text-slate-600">Morning: <b>${r.morning_yield}L</b> &bull; Evening: <b>${r.evening_yield}L</b></span>
+                                <span class="text-sm font-bold text-slate-800">${r.total_yield} Liters</span>
+                            </div>
+                            ${isDrop ? `
+                                <div class="text-xs text-red-600 font-semibold mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Drop: -${r.drop_percentage}% vs previous (${r.yesterday_yield}L)
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     } catch (e) {
         console.error('Error loading milk logs:', e);
     }

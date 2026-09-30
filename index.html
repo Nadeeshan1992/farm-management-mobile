@@ -233,13 +233,54 @@
                     <div class="section-title mb-0">
                         <span>Milk Production Records</span>
                     </div>
-                    <button class="px-3 py-1.5 bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm" onclick="openModal('modalLogMilk')">
-                        <i class="fa-solid fa-plus mr-1"></i> Record Milk
+                    <button class="px-3 py-1.5 bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1" onclick="openModal('modalLogMilk')">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Record Milk
                     </button>
                 </div>
 
-                <!-- Milk Averages KPI Strip -->
-                <div class="grid grid-cols-3 gap-2 mb-3">
+                <!-- Individual Cow Selector & Filter Card -->
+                <div class="app-card p-3 mb-3 border border-slate-200">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-cow text-emerald-600"></i> Individual Cow History
+                        </label>
+                        <span id="selectedCowBadge" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                            All Herd
+                        </span>
+                    </div>
+                    <select id="milkCowFilterSelect" class="form-control" onchange="onMilkCowFilterChange(this.value)">
+                        <option value="0">🐄 All Herd (Farm View)</option>
+                        <!-- Populated dynamically with milking cows -->
+                    </select>
+
+                    <!-- Individual Cow Summary Stats Box (shown when an individual cow is selected) -->
+                    <div id="individualCowStatsBox" class="mt-2.5 p-2.5 bg-emerald-50/70 border border-emerald-200/80 rounded-xl" style="display: none;">
+                        <div class="flex items-center justify-between text-xs mb-1.5">
+                            <div>
+                                <span class="font-bold text-slate-800" id="indivCowTitle">COW-101 (Daisy)</span>
+                                <span class="text-[11px] text-slate-500 ml-1.5" id="indivCowBreed">Frieglan</span>
+                            </div>
+                            <span class="status-badge badge-green text-[10px]" id="indivCowStatus">Pregnant</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5 text-center">
+                            <div class="bg-white p-1.5 rounded-lg border border-emerald-100 shadow-xs">
+                                <div class="text-[9px] text-slate-500 font-semibold uppercase">Total Milk</div>
+                                <div class="text-xs font-bold text-emerald-700" id="indivTotalYield">0.0 L</div>
+                            </div>
+                            <div class="bg-white p-1.5 rounded-lg border border-emerald-100 shadow-xs">
+                                <div class="text-[9px] text-slate-500 font-semibold uppercase">Daily Avg</div>
+                                <div class="text-xs font-bold text-emerald-700" id="indivAvgYield">0.0 L</div>
+                            </div>
+                            <div class="bg-white p-1.5 rounded-lg border border-emerald-100 shadow-xs">
+                                <div class="text-[9px] text-slate-500 font-semibold uppercase">Peak Day</div>
+                                <div class="text-xs font-bold text-emerald-700" id="indivPeakYield">0.0 L</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farm Overview Averages KPI Strip (Shown in Farm / All Herd mode) -->
+                <div id="farmMilkKpiStrip" class="grid grid-cols-3 gap-2 mb-3">
                     <div class="app-card p-2.5 text-center">
                         <div class="text-[10px] text-slate-500 font-semibold uppercase">Daily Avg / Cow</div>
                         <div class="text-sm font-bold text-slate-800 mt-1" id="milkDailyAvg">--</div>
@@ -254,7 +295,22 @@
                     </div>
                 </div>
 
-                <div class="text-xs font-bold text-slate-600 mb-2">Recent Milk Yield Logs & Drop Alerts:</div>
+                <!-- Timeframe Selection Bar: Daily, Weekly, Monthly -->
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-700" id="milkViewTitle">Daily Production Logs</span>
+                    <div class="filter-scroll gap-1" id="milkPeriodTabs" style="padding-bottom: 0;">
+                        <button type="button" class="filter-chip active text-xs py-1 px-3" data-period="daily" onclick="switchMilkPeriod('daily', this)">
+                            <i class="fa-regular fa-calendar-days text-[11px] mr-1"></i> Daily
+                        </button>
+                        <button type="button" class="filter-chip text-xs py-1 px-3" data-period="weekly" onclick="switchMilkPeriod('weekly', this)">
+                            <i class="fa-solid fa-chart-simple text-[11px] mr-1"></i> Weekly
+                        </button>
+                        <button type="button" class="filter-chip text-xs py-1 px-3" data-period="monthly" onclick="switchMilkPeriod('monthly', this)">
+                            <i class="fa-solid fa-chart-line text-[11px] mr-1"></i> Monthly
+                        </button>
+                    </div>
+                </div>
+
                 <div id="milkLogsContainer">
                     <!-- Populated dynamically -->
                 </div>
@@ -899,8 +955,15 @@
                         </button>
                     </div>
 
-                    <!-- Milk History Tab -->
-                    <div class="text-xs font-bold text-slate-700 mt-2 mb-1">Recent Milk Yields:</div>
+                    <!-- Milk History with Daily, Weekly, Monthly -->
+                    <div class="flex items-center justify-between mt-3 mb-1.5">
+                        <span class="text-xs font-bold text-slate-800"><i class="fa-solid fa-droplet text-blue-500 mr-1"></i> Milk History</span>
+                        <div class="flex gap-1" id="cowDetailMilkPeriodTabs">
+                            <button type="button" class="filter-chip active text-[10px] py-0.5 px-2" data-period="daily" onclick="switchCowDetailMilkPeriod('daily', this)">Daily</button>
+                            <button type="button" class="filter-chip text-[10px] py-0.5 px-2" data-period="weekly" onclick="switchCowDetailMilkPeriod('weekly', this)">Weekly</button>
+                            <button type="button" class="filter-chip text-[10px] py-0.5 px-2" data-period="monthly" onclick="switchCowDetailMilkPeriod('monthly', this)">Monthly</button>
+                        </div>
+                    </div>
                     <div id="detailMilkHistory" class="mb-3"></div>
 
                     <!-- Health History Tab -->
