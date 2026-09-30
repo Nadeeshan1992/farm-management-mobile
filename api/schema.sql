@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `cows` (
     `date_of_birth` DATE NOT NULL,
     `source` ENUM('born on farm', 'purchased') DEFAULT 'born on farm',
     `parity` INT DEFAULT 0,
-    `reproductive_status` ENUM('Pregnant', 'In heat', 'Fresh', 'Dry', 'Open', 'Breeding Sire', 'Young Bull', 'Steer') DEFAULT 'Open',
+    `reproductive_status` ENUM('Pregnant', 'In heat', 'Fresh', 'Dry', 'Open', 'Breeding Sire', 'Young Bull', 'Steer', 'Heifer') DEFAULT 'Open',
     `photo_url` VARCHAR(255) NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

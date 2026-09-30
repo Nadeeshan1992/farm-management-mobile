@@ -451,6 +451,7 @@ function renderCowList(cows) {
         if (cow.reproductive_status === 'Fresh') badgeColor = 'badge-blue';
         if (cow.reproductive_status === 'Dry') badgeColor = 'badge-orange';
         if (cow.reproductive_status === 'Breeding Sire' || cow.reproductive_status === 'Young Bull') badgeColor = 'badge-blue';
+        if (cow.reproductive_status === 'Heifer') badgeColor = 'badge-purple';
 
         const dropBadge = (cow.latest_drop_pct && parseFloat(cow.latest_drop_pct) >= 15 && !isMale) ?
             `<span class="status-badge badge-red ml-1"><i class="fa-solid fa-arrow-trend-down"></i> -${cow.latest_drop_pct}%</span>` : '';
@@ -1159,6 +1160,7 @@ function onGenderSelectionChange(gender) {
                 <option value="Pregnant">Pregnant</option>
                 <option value="Fresh">Fresh</option>
                 <option value="Dry">Dry</option>
+                <option value="Heifer">Heifer</option>
             `;
         }
     }
