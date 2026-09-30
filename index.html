@@ -422,17 +422,25 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Breed</label>
-                                <select id="newCowBreed" class="form-control">
-                                    <option value="Holstein Friesian">Holstein Friesian</option>
-                                    <option value="Jersey">Jersey</option>
-                                    <option value="Brown Swiss">Brown Swiss</option>
-                                    <option value="Ayrshire">Ayrshire</option>
-                                    <option value="Guernsey">Guernsey</option>
-                                    <option value="Gir">Gir</option>
-                                    <option value="Sahiwal">Sahiwal</option>
-                                    <option value="Crossbred">Crossbred</option>
-                                </select>
+                                <div class="flex items-center justify-between" style="margin-bottom: 5px;">
+                                    <label class="form-label" style="margin-bottom: 0;">Breed *</label>
+                                    <button type="button" onclick="openAddBreedModal()" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded cursor-pointer transition flex items-center gap-1">
+                                        <i class="fa-solid fa-plus text-[10px]"></i> Add
+                                    </button>
+                                </div>
+                                <div style="display: flex; gap: 6px; align-items: center;">
+                                    <select id="newCowBreed" class="form-control" onchange="onBreedSelectChange(this)" style="flex: 1;">
+                                        <option value="Frieglan">Frieglan</option>
+                                        <option value="Ayrshire">Ayrshire</option>
+                                        <option value="Sahiwal">Sahiwal</option>
+                                        <option value="Brown Swiss">Brown Swiss</option>
+                                        <option value="Gir">Gir</option>
+                                        <option value="__add_new__" style="color: #059669; font-weight: bold;">+ Add New Breed...</option>
+                                    </select>
+                                    <button type="button" onclick="openAddBreedModal()" title="Add New Breed" style="width: 38px; height: 38px; border-radius: 10px; border: 1px solid #10b981; background: #ecfdf5; color: #059669; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="form-row">
@@ -465,6 +473,30 @@
                             </div>
                         </div>
                         <button type="submit" class="btn-submit">Save Animal Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Add New Breed -->
+        <div id="modalAddBreed" class="modal-overlay" style="z-index: 10005;">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title"><i class="fa-solid fa-dna text-emerald-600 mr-1.5"></i> Add New Breed</span>
+                    <button type="button" class="sheet-close" onclick="closeModal('modalAddBreed')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formAddBreed" onsubmit="submitNewBreed(event)">
+                        <div class="form-group">
+                            <label class="form-label">Breed Name *</label>
+                            <input type="text" id="customBreedInput" class="form-control" placeholder="e.g. Jersey, Red Sindhi, etc." required autocomplete="off">
+                            <p class="text-[11px] text-slate-500 mt-1.5">This breed will be added immediately to your breed selector and saved for your farm.</p>
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <button type="button" class="btn-cancel flex-1" onclick="closeModal('modalAddBreed')" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; font-weight: 600; font-size: 0.85rem; color: #475569; cursor: pointer;">Cancel</button>
+                            <button type="submit" class="btn-submit flex-1" style="margin-top: 0; padding: 10px;">Save Breed</button>
+                        </div>
                     </form>
                 </div>
             </div>

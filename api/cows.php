@@ -108,7 +108,7 @@ if ($method === 'POST') {
     
     $tagNumber = trim($data['tag_number'] ?? '');
     $name = trim($data['name'] ?? '');
-    $breed = trim($data['breed'] ?? 'Holstein Friesian');
+    $breed = trim($data['breed'] ?? 'Frieglan');
     $gender = trim($data['gender'] ?? 'Female');
     $dob = trim($data['date_of_birth'] ?? date('Y-m-d'));
     $source = trim($data['source'] ?? 'born on farm');

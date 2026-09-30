@@ -10,32 +10,32 @@ let activeCowDetailId = null;
 // Initial Mock Seed Data for Vercel / Cloud Demo Mode
 const DEFAULT_SEED_DATA = {
     cows: [
-        { id: 1, tag_number: 'COW-101', name: 'Daisy', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-03-15', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
-        { id: 2, tag_number: 'COW-102', name: 'Bella', breed: 'Jersey', gender: 'Female', date_of_birth: '2022-05-10', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_2.jpg' },
-        { id: 3, tag_number: 'COW-103', name: 'Luna', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2020-01-20', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
+        { id: 1, tag_number: 'COW-101', name: 'Daisy', breed: 'Frieglan', gender: 'Female', date_of_birth: '2021-03-15', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
+        { id: 2, tag_number: 'COW-102', name: 'Bella', breed: 'Gir', gender: 'Female', date_of_birth: '2022-05-10', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_2.jpg' },
+        { id: 3, tag_number: 'COW-103', name: 'Luna', breed: 'Frieglan', gender: 'Female', date_of_birth: '2020-01-20', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
         { id: 4, tag_number: 'COW-104', name: 'Molly', breed: 'Brown Swiss', gender: 'Female', date_of_birth: '2021-08-12', source: 'born on farm', parity: 2, reproductive_status: 'Fresh', photo_url: 'assets/cow_4.jpg' },
-        { id: 5, tag_number: 'COW-105', name: 'Rosie', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2020-11-05', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
-        { id: 6, tag_number: 'COW-106', name: 'Penny', breed: 'Jersey', gender: 'Female', date_of_birth: '2022-02-14', source: 'born on farm', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_6.jpg' },
+        { id: 5, tag_number: 'COW-105', name: 'Rosie', breed: 'Frieglan', gender: 'Female', date_of_birth: '2020-11-05', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
+        { id: 6, tag_number: 'COW-106', name: 'Penny', breed: 'Sahiwal', gender: 'Female', date_of_birth: '2022-02-14', source: 'born on farm', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_6.jpg' },
         { id: 7, tag_number: 'COW-107', name: 'Maggie', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2021-06-22', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_7.jpg' },
-        { id: 8, tag_number: 'COW-108', name: 'Ruby', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2022-09-01', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_8.jpg' },
-        { id: 9, tag_number: 'COW-109', name: 'Chloe', breed: 'Guernsey', gender: 'Female', date_of_birth: '2019-12-10', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_9.jpg' },
-        { id: 10, tag_number: 'COW-110', name: 'Stella', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-04-18', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_10.jpg' },
-        { id: 11, tag_number: 'COW-111', name: 'Lucy', breed: 'Jersey', gender: 'Female', date_of_birth: '2020-07-29', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
+        { id: 8, tag_number: 'COW-108', name: 'Ruby', breed: 'Frieglan', gender: 'Female', date_of_birth: '2022-09-01', source: 'born on farm', parity: 1, reproductive_status: 'In heat', photo_url: 'assets/cow_8.jpg' },
+        { id: 9, tag_number: 'COW-109', name: 'Chloe', breed: 'Gir', gender: 'Female', date_of_birth: '2019-12-10', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_9.jpg' },
+        { id: 10, tag_number: 'COW-110', name: 'Stella', breed: 'Frieglan', gender: 'Female', date_of_birth: '2021-04-18', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_10.jpg' },
+        { id: 11, tag_number: 'COW-111', name: 'Lucy', breed: 'Sahiwal', gender: 'Female', date_of_birth: '2020-07-29', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
         { id: 12, tag_number: 'COW-112', name: 'Emma', breed: 'Brown Swiss', gender: 'Female', date_of_birth: '2022-10-05', source: 'born on farm', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_2.jpg' },
-        { id: 13, tag_number: 'COW-113', name: 'Sadie', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-01-14', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
-        { id: 14, tag_number: 'COW-114', name: 'Lily', breed: 'Jersey', gender: 'Female', date_of_birth: '2023-01-02', source: 'born on farm', parity: 0, reproductive_status: 'In heat', photo_url: 'assets/cow_4.jpg' },
-        { id: 15, tag_number: 'COW-115', name: 'Sophie', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2020-03-30', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
+        { id: 13, tag_number: 'COW-113', name: 'Sadie', breed: 'Frieglan', gender: 'Female', date_of_birth: '2021-01-14', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_3.jpg' },
+        { id: 14, tag_number: 'COW-114', name: 'Lily', breed: 'Gir', gender: 'Female', date_of_birth: '2023-01-02', source: 'born on farm', parity: 0, reproductive_status: 'In heat', photo_url: 'assets/cow_4.jpg' },
+        { id: 15, tag_number: 'COW-115', name: 'Sophie', breed: 'Frieglan', gender: 'Female', date_of_birth: '2020-03-30', source: 'purchased', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_5.jpg' },
         { id: 16, tag_number: 'COW-116', name: 'Grace', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2021-11-19', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_6.jpg' },
-        { id: 17, tag_number: 'COW-117', name: 'Zoe', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2022-04-25', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_7.jpg' },
+        { id: 17, tag_number: 'COW-117', name: 'Zoe', breed: 'Frieglan', gender: 'Female', date_of_birth: '2022-04-25', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_7.jpg' },
         { id: 18, tag_number: 'COW-118', name: 'Nala', breed: 'Brown Swiss', gender: 'Female', date_of_birth: '2021-09-14', source: 'purchased', parity: 2, reproductive_status: 'Fresh', photo_url: 'assets/cow_8.jpg' },
-        { id: 19, tag_number: 'COW-119', name: 'Coco', breed: 'Jersey', gender: 'Female', date_of_birth: '2020-08-11', source: 'born on farm', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_9.jpg' },
-        { id: 20, tag_number: 'COW-120', name: 'Hazel', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2019-05-02', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_10.jpg' },
-        { id: 21, tag_number: 'COW-121', name: 'Willow', breed: 'Guernsey', gender: 'Female', date_of_birth: '2022-07-08', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
-        { id: 22, tag_number: 'COW-122', name: 'Piper', breed: 'Holstein Friesian', gender: 'Female', date_of_birth: '2021-12-03', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_2.jpg' },
-        { id: 23, tag_number: 'COW-123', name: 'Roxy', breed: 'Jersey', gender: 'Female', date_of_birth: '2023-03-12', source: 'born on farm', parity: 0, reproductive_status: 'Open', photo_url: 'assets/cow_3.jpg' },
+        { id: 19, tag_number: 'COW-119', name: 'Coco', breed: 'Sahiwal', gender: 'Female', date_of_birth: '2020-08-11', source: 'born on farm', parity: 3, reproductive_status: 'Pregnant', photo_url: 'assets/cow_9.jpg' },
+        { id: 20, tag_number: 'COW-120', name: 'Hazel', breed: 'Frieglan', gender: 'Female', date_of_birth: '2019-05-02', source: 'purchased', parity: 4, reproductive_status: 'Dry', photo_url: 'assets/cow_10.jpg' },
+        { id: 21, tag_number: 'COW-121', name: 'Willow', breed: 'Gir', gender: 'Female', date_of_birth: '2022-07-08', source: 'born on farm', parity: 1, reproductive_status: 'Pregnant', photo_url: 'assets/cow_1.jpg' },
+        { id: 22, tag_number: 'COW-122', name: 'Piper', breed: 'Frieglan', gender: 'Female', date_of_birth: '2021-12-03', source: 'born on farm', parity: 2, reproductive_status: 'Pregnant', photo_url: 'assets/cow_2.jpg' },
+        { id: 23, tag_number: 'COW-123', name: 'Roxy', breed: 'Sahiwal', gender: 'Female', date_of_birth: '2023-03-12', source: 'born on farm', parity: 0, reproductive_status: 'Open', photo_url: 'assets/cow_3.jpg' },
         { id: 24, tag_number: 'COW-124', name: 'Ginger', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2022-11-20', source: 'purchased', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_4.jpg' },
-        { id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Holstein Friesian', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' },
-        { id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Jersey', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' }
+        { id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Frieglan', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' },
+        { id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Gir', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' }
     ],
     heats: [
         { id: 1, cow_id: 2, detection_date: '2026-09-10', detection_time: '06:30:00', status: 'Possible Heat', inter_estrus_interval: 21, notes: 'Mounting behavior observed, slight clear mucus discharge.' },
@@ -83,18 +83,27 @@ function getLocalStore() {
         return JSON.parse(JSON.stringify(DEFAULT_SEED_DATA));
     }
     let parsed = JSON.parse(store);
-    // Auto-migrate existing store to include gender if missing
-    if (parsed.cows && parsed.cows.length > 0 && !parsed.cows[0].gender) {
+    // Auto-migrate existing store to include gender and updated breeds if needed
+    if (parsed.cows && parsed.cows.length > 0) {
+        let changed = false;
         parsed.cows.forEach(c => {
             if (!c.gender) {
                 c.gender = (c.tag_number && (c.tag_number.startsWith('BULL') || c.name === 'Titan' || c.name === 'Thor')) ? 'Male' : 'Female';
+                changed = true;
+            }
+            if (c.breed === 'Holstein Friesian') {
+                c.breed = 'Frieglan';
+                changed = true;
             }
         });
         if (!parsed.cows.some(c => c.gender === 'Male')) {
-            parsed.cows.push({ id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Holstein Friesian', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' });
-            parsed.cows.push({ id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Jersey', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' });
+            parsed.cows.push({ id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Frieglan', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' });
+            parsed.cows.push({ id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Gir', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' });
+            changed = true;
         }
-        saveLocalStore(parsed);
+        if (changed) {
+            saveLocalStore(parsed);
+        }
     }
     return parsed;
 }
@@ -120,6 +129,7 @@ function calculateAge(dobStr) {
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
+    initBreedSelect();
     initTabs();
     initModals();
     initFab();
@@ -989,6 +999,80 @@ function initModals() {
     });
 }
 
+// ================= BREED MANAGEMENT =================
+const DEFAULT_BREEDS = ['Frieglan', 'Ayrshire', 'Sahiwal', 'Brown Swiss', 'Gir'];
+
+function getSavedCustomBreeds() {
+    try {
+        return JSON.parse(localStorage.getItem('farm_custom_breeds') || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+function initBreedSelect(selectedBreed = null) {
+    const select = document.getElementById('newCowBreed');
+    if (!select) return;
+
+    const customBreeds = getSavedCustomBreeds();
+    const allBreeds = [...DEFAULT_BREEDS];
+    customBreeds.forEach(b => {
+        if (!allBreeds.includes(b)) allBreeds.push(b);
+    });
+
+    const activeVal = selectedBreed || select.value || allBreeds[0];
+
+    let html = '';
+    allBreeds.forEach(b => {
+        html += `<option value="${b}">${b}</option>`;
+    });
+    html += `<option value="__add_new__" style="color: #059669; font-weight: bold;">+ Add New Breed...</option>`;
+    
+    select.innerHTML = html;
+
+    if (allBreeds.includes(activeVal)) {
+        select.value = activeVal;
+    } else {
+        select.value = allBreeds[0];
+    }
+    select.dataset.prevValue = select.value;
+}
+
+function openAddBreedModal() {
+    const input = document.getElementById('customBreedInput');
+    if (input) input.value = '';
+    openModal('modalAddBreed');
+    setTimeout(() => {
+        if (input) input.focus();
+    }, 200);
+}
+
+function onBreedSelectChange(select) {
+    if (select.value === '__add_new__') {
+        openAddBreedModal();
+    } else {
+        select.dataset.prevValue = select.value;
+    }
+}
+
+function submitNewBreed(e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('customBreedInput');
+    if (!input) return;
+    const breedName = input.value.trim();
+    if (!breedName) return;
+
+    let customBreeds = getSavedCustomBreeds();
+    if (!customBreeds.includes(breedName) && !DEFAULT_BREEDS.includes(breedName)) {
+        customBreeds.push(breedName);
+        localStorage.setItem('farm_custom_breeds', JSON.stringify(customBreeds));
+    }
+
+    initBreedSelect(breedName);
+    closeModal('modalAddBreed');
+    showToast(`Breed "${breedName}" added!`);
+}
+
 function openModal(modalId) {
     const el = document.getElementById(modalId);
     if (!el) {
@@ -998,6 +1082,9 @@ function openModal(modalId) {
     if (cowsCache && cowsCache.length > 0) {
         populateCowSelectors(cowsCache);
     }
+    if (modalId === 'modalAddCow') {
+        initBreedSelect();
+    }
     el.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
@@ -1005,6 +1092,12 @@ function openModal(modalId) {
 function closeModal(modalId) {
     const el = document.getElementById(modalId);
     if (el) el.classList.remove('show');
+    if (modalId === 'modalAddBreed') {
+        const select = document.getElementById('newCowBreed');
+        if (select && select.value === '__add_new__') {
+            select.value = select.dataset.prevValue || DEFAULT_BREEDS[0];
+        }
+    }
     if (!document.querySelector('.modal-overlay.show')) {
         document.body.style.overflow = '';
     }
