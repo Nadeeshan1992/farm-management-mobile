@@ -1597,13 +1597,29 @@ async function submitMilkRecord(e) {
 }
 
 // 3. Submit Heat Observation
+function onHeatSymptomsChange(val) {
+    const custom = document.getElementById('heatNotesCustom');
+    if (custom) {
+        if (val === 'Other') {
+            custom.style.display = 'block';
+            custom.focus();
+        } else {
+            custom.style.display = 'none';
+        }
+    }
+}
+
 async function submitHeatRecord(e) {
     e.preventDefault();
     const cowId = document.getElementById('heatCowSelect').value;
     const date = document.getElementById('heatDate').value;
     const time = document.getElementById('heatTime').value;
     const status = document.getElementById('heatStatus').value;
-    const notes = document.getElementById('heatNotes').value;
+    let notes = document.getElementById('heatNotes').value;
+    if (notes === 'Other') {
+        const custom = document.getElementById('heatNotesCustom') ? document.getElementById('heatNotesCustom').value.trim() : '';
+        notes = custom || 'Other symptom observed';
+    }
 
     try {
         if (isServerMode) {
@@ -1633,6 +1649,11 @@ async function submitHeatRecord(e) {
         showToast(`Heat recorded with status: ${status}`);
         closeModal('modalLogHeat');
         document.getElementById('formLogHeat').reset();
+        const custom = document.getElementById('heatNotesCustom');
+        if (custom) {
+            custom.value = '';
+            custom.style.display = 'none';
+        }
         loadDashboard();
         loadBreedingData('heats');
         loadAlertsCount();

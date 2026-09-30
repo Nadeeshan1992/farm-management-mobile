@@ -628,7 +628,20 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Symptoms & Notes</label>
-                            <textarea id="heatNotes" class="form-control" rows="2" placeholder="e.g. Mounting, mucus discharge, restlessness..."></textarea>
+                            <select id="heatNotes" class="form-control" onchange="onHeatSymptomsChange(this.value)">
+                                <option value="Standing to be mounted (Standing Heat)">Standing to be mounted (Standing Heat)</option>
+                                <option value="Mounting other cows">Mounting other cows</option>
+                                <option value="Clear mucus discharge from vulva">Clear mucus discharge from vulva</option>
+                                <option value="Restlessness, vocalization & bawling">Restlessness, vocalization & bawling</option>
+                                <option value="Swollen & reddened vulva">Swollen & reddened vulva</option>
+                                <option value="Chin resting / trailing behavior">Chin resting / trailing behavior</option>
+                                <option value="Sniffing genitalia & flehmen reaction">Sniffing genitalia & flehmen reaction</option>
+                                <option value="Drop in milk yield & reduced appetite">Drop in milk yield & reduced appetite</option>
+                                <option value="Frequent urination & nervous posture">Frequent urination & nervous posture</option>
+                                <option value="Standing near barn gate / alert posture">Standing near barn gate / alert posture</option>
+                                <option value="Other">Other (Type custom note)...</option>
+                            </select>
+                            <input type="text" id="heatNotesCustom" class="form-control mt-1.5" placeholder="Specify custom symptom or note..." style="display: none;">
                         </div>
                         <button type="submit" class="btn-submit">Save Heat Event</button>
                     </form>
