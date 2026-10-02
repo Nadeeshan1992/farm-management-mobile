@@ -28,7 +28,10 @@ INSERT INTO `cows` (`id`, `tag_number`, `name`, `breed`, `gender`, `date_of_birt
 (23, 'COW-123', 'Roxy', 'Sahiwal', 'Female', '2023-03-12', 'born on farm', 0, 'Open', 'assets/cow_3.jpg'),
 (24, 'COW-124', 'Ginger', 'Ayrshire', 'Female', '2022-11-20', 'purchased', 1, 'Fresh', 'assets/cow_4.jpg'),
 (25, 'BULL-101', 'Titan', 'Frieglan', 'Male', '2020-05-18', 'purchased', 0, 'Breeding Sire', 'assets/cow_5.jpg'),
-(26, 'BULL-102', 'Thor', 'Gir', 'Male', '2022-08-12', 'born on farm', 0, 'Young Bull', 'assets/cow_3.jpg')
+(26, 'BULL-102', 'Thor', 'Gir', 'Male', '2022-08-12', 'born on farm', 0, 'Young Bull', 'assets/cow_3.jpg'),
+(27, 'CALF-100', 'Hope (Calf)', 'Frieglan', 'Female', '2026-01-01', 'born on farm', 0, 'Heifer', 'assets/cow_1.jpg'),
+(28, 'CALF-201', 'Daisy Jr (Calf)', 'Ayrshire', 'Female', '2026-06-01', 'born on farm', 0, 'Heifer', 'assets/cow_2.jpg'),
+(29, 'CALF-202', 'Thor Jr (Bull Calf)', 'Gir', 'Male', '2026-06-15', 'born on farm', 0, 'Young Bull', 'assets/cow_3.jpg')
 ON DUPLICATE KEY UPDATE name=VALUES(name), breed=VALUES(breed), gender=VALUES(gender), reproductive_status=VALUES(reproductive_status);
 
 -- Heat Records (Possible Heat: Yellow badge, AI Reminder: Red badge)
@@ -75,7 +78,10 @@ INSERT INTO `vaccination_records` (`cow_id`, `vaccine_name`, `date_given`, `next
 (5, 'Foot and Mouth Disease (FMD)', DATE_SUB(CURDATE(), INTERVAL 180 DAY), CURDATE(), 'Routine Bi-Annual', CURDATE(), 'Due'),
 (11, 'Anthrax Spore Vaccine', DATE_SUB(CURDATE(), INTERVAL 360 DAY), DATE_ADD(CURDATE(), INTERVAL 2 DAY), 'Annual Booster', DATE_ADD(CURDATE(), INTERVAL 2 DAY), 'Due'),
 (1, 'Brucellosis (RB51)', DATE_SUB(CURDATE(), INTERVAL 90 DAY), DATE_ADD(CURDATE(), INTERVAL 275 DAY), 'Heifer Vaccination', NULL, 'Given'),
-(4, 'Clostridial 8-Way (Blackleg)', DATE_SUB(CURDATE(), INTERVAL 120 DAY), DATE_ADD(CURDATE(), INTERVAL 245 DAY), 'Annual Booster', NULL, 'Given');
+(4, 'Clostridial 8-Way (Blackleg)', DATE_SUB(CURDATE(), INTERVAL 120 DAY), DATE_ADD(CURDATE(), INTERVAL 245 DAY), 'Annual Booster', NULL, 'Given'),
+(27, 'HS Vaccine (Primary)', '2026-05-01', '2026-08-01', 'HS Protocol Primary', NULL, 'Given'),
+(27, 'HS Vaccine (Secondary Booster)', '2026-08-01', '2027-08-01', 'HS Secondary Booster', NULL, 'Given'),
+(27, 'BQ Vaccine (Primary)', '2026-05-01', '2027-06-01', 'BQ Protocol Primary', NULL, 'Given');
 
 -- Growth & Weight Records
 INSERT INTO `growth_records` (`cow_id`, `record_date`, `weight`, `age_months`, `weight_gain`, `growth_rate`) VALUES

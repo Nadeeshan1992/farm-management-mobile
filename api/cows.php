@@ -49,6 +49,9 @@ if ($method === 'GET') {
         $calvStmt->execute([$id]);
         $cow['calving_history'] = $calvStmt->fetchAll();
 
+        // Attach calculated HS & BQ vaccination schedule
+        $cow['vaccine_schedule'] = calculateCowVaccineSchedule($cow, $cow['vaccination_history']);
+
         jsonResponse($cow);
     }
 

@@ -109,30 +109,94 @@ foreach ($calvings as $calv) {
     ];
 }
 
-// 5. Vaccination Reminder
+// 5. Vaccination Reminder (Routine + Automated HS & BQ Protocols)
 $vaxes = $db->query("
     SELECT v.id, v.cow_id, v.vaccine_name, v.next_vaccination_date, v.status,
            c.tag_number, c.name
     FROM vaccination_records v 
     JOIN cows c ON v.cow_id = c.id
-    WHERE v.status IN ('Due', 'Overdue') 
-    OR v.next_vaccination_date <= DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+    WHERE (v.status IN ('Due', 'Overdue') OR (v.status != 'Given' AND v.next_vaccination_date <= DATE_ADD(CURDATE(), INTERVAL 14 DAY)))
+      AND v.vaccine_name NOT LIKE '%HS%' 
+      AND v.vaccine_name NOT LIKE '%BQ%'
+      AND v.vaccine_name NOT LIKE '%Haemorrhagic%'
+      AND v.vaccine_name NOT LIKE '%Blackquarter%'
     ORDER BY v.next_vaccination_date ASC
 ")->fetchAll();
 
 foreach ($vaxes as $v) {
     $alerts[] = [
         'category' => 'vaccination',
-        'badge' => 'Vaccination Due',
-        'badge_class' => 'badge-teal',
+        'badge' => ($v['status'] === 'Overdue') ? 'Vaccine Overdue' : 'Vaccination Due',
+        'badge_class' => ($v['status'] === 'Overdue') ? 'badge-red' : 'badge-teal',
         'cow_id' => $v['cow_id'],
         'tag_number' => $v['tag_number'],
-        'title' => "Vaccination due for Cow ID {$v['tag_number']}.",
+        'title' => "Vaccination due for Cow ID {$v['tag_number']} ({$v['name']})",
         'message' => "Schedule {$v['vaccine_name']} injection before {$v['next_vaccination_date']}.",
         'action_label' => 'Record Dose',
         'action_type' => 'vaccine',
+        'vaccine_name' => $v['vaccine_name'],
         'date' => $v['next_vaccination_date']
     ];
+}
+
+// Automated HS & BQ Protocol Alerts for all cows based on DOB
+$allCows = $db->query("SELECT id, tag_number, name, breed, date_of_birth, gender FROM cows WHERE date_of_birth IS NOT NULL ORDER BY tag_number ASC")->fetchAll();
+$allVaxRecords = $db->query("SELECT * FROM vaccination_records ORDER BY date_given DESC")->fetchAll();
+$vaxGrouped = [];
+foreach ($allVaxRecords as $vx) {
+    $vaxGrouped[$vx['cow_id']][] = $vx;
+}
+
+foreach ($allCows as $c) {
+    $sched = calculateCowVaccineSchedule($c, $vaxGrouped[$c['id']] ?? []);
+    
+    // HS Vaccine Protocol Alerts (Alert for next pending milestone)
+    foreach ($sched['hs'] as $m) {
+        if (!$m['is_given'] && ($m['status'] === 'Due Soon' || $m['status'] === 'Overdue')) {
+            $isOverdue = ($m['status'] === 'Overdue');
+            $alerts[] = [
+                'category' => 'vaccination',
+                'badge' => $isOverdue ? 'HS Overdue' : 'HS Vaccine Due',
+                'badge_class' => $isOverdue ? 'badge-red' : 'badge-teal',
+                'cow_id' => $c['id'],
+                'tag_number' => $c['tag_number'],
+                'title' => "HS {$m['stage']} Vaccine Due: Cow {$c['tag_number']} ({$c['name']})",
+                'message' => "Cow DOB: {$c['date_of_birth']}. Haemorrhagic Septicaemia (HS) {$m['stage']} dose due on {$m['due_date']}." . ($isOverdue ? " (Overdue!)" : " (Due soon)"),
+                'action_label' => 'Record HS Dose',
+                'action_type' => 'vaccine',
+                'vaccine_name' => $m['vaccine_name'],
+                'due_date' => $m['due_date'],
+                'next_due_date' => $m['next_due_date'],
+                'treatment_type' => $m['treatment_type'],
+                'date' => $m['due_date']
+            ];
+            break;
+        }
+    }
+
+    // BQ Vaccine Protocol Alerts (Alert for next pending milestone)
+    foreach ($sched['bq'] as $m) {
+        if (!$m['is_given'] && ($m['status'] === 'Due Soon' || $m['status'] === 'Overdue')) {
+            $isOverdue = ($m['status'] === 'Overdue');
+            $alerts[] = [
+                'category' => 'vaccination',
+                'badge' => $isOverdue ? 'BQ Overdue' : 'BQ Vaccine Due',
+                'badge_class' => $isOverdue ? 'badge-red' : 'badge-teal',
+                'cow_id' => $c['id'],
+                'tag_number' => $c['tag_number'],
+                'title' => "BQ {$m['stage']} Vaccine Due: Cow {$c['tag_number']} ({$c['name']})",
+                'message' => "Cow DOB: {$c['date_of_birth']}. Blackquarter (BQ) {$m['stage']} dose due on {$m['due_date']}." . ($isOverdue ? " (Overdue!)" : " (Due soon)"),
+                'action_label' => 'Record BQ Dose',
+                'action_type' => 'vaccine',
+                'vaccine_name' => $m['vaccine_name'],
+                'due_date' => $m['due_date'],
+                'next_due_date' => $m['next_due_date'],
+                'treatment_type' => $m['treatment_type'],
+                'date' => $m['due_date']
+            ];
+            break;
+        }
+    }
 }
 
 // 6. Treatment Follow-Up

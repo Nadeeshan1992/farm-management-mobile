@@ -793,17 +793,49 @@
                     <form id="formLogHealth" onsubmit="submitHealthRecord(event)">
                         <div class="form-group">
                             <label class="form-label">Select Cow *</label>
-                            <select id="healthCowSelect" class="form-control" required></select>
+                            <select id="healthCowSelect" class="form-control" required onchange="onHealthCowChange(this.value)"></select>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Date</label>
-                                <input type="date" id="healthDate" class="form-control" value="2026-09-10">
+                        <div id="healthCowVaxBanner" class="mb-3" style="display: none;"></div>
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" id="healthDate" class="form-control" value="2026-10-02">
+                        </div>
+                        <div class="form-group">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="form-label mb-0">Disease / Problem *</label>
+                                <span class="text-[11px] text-slate-400 font-normal">Select one or more</span>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Disease / Problem *</label>
-                                <input type="text" id="healthDisease" class="form-control" placeholder="e.g. Mastitis, Lameness" required>
+                            <div class="grid grid-cols-2 gap-2 mt-1">
+                                <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 transition-colors shadow-xs">
+                                    <input type="checkbox" name="healthDiseaseCheckbox" value="FMD" class="accent-emerald-600 w-4 h-4 rounded">
+                                    <span>FMD</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 transition-colors shadow-xs">
+                                    <input type="checkbox" name="healthDiseaseCheckbox" value="LSD" class="accent-emerald-600 w-4 h-4 rounded">
+                                    <span>LSD</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 transition-colors shadow-xs">
+                                    <input type="checkbox" name="healthDiseaseCheckbox" value="Mastities" class="accent-emerald-600 w-4 h-4 rounded">
+                                    <span>Mastities</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 transition-colors shadow-xs">
+                                    <input type="checkbox" name="healthDiseaseCheckbox" value="Lameness" class="accent-emerald-600 w-4 h-4 rounded">
+                                    <span>Lameness</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 transition-colors shadow-xs">
+                                    <input type="checkbox" name="healthDiseaseCheckbox" value="Worm Infestation" class="accent-emerald-600 w-4 h-4 rounded">
+                                    <span>Worm Infestation</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 transition-colors shadow-xs">
+                                    <input type="checkbox" name="healthDiseaseCheckbox" value="Ticks" class="accent-emerald-600 w-4 h-4 rounded">
+                                    <span>Ticks</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 transition-colors shadow-xs col-span-2">
+                                    <input type="checkbox" id="chkDiseaseOther" onchange="toggleOtherDiseaseInput(this.checked)" class="accent-emerald-600 w-4 h-4 rounded">
+                                    <span>Other Disease / Condition</span>
+                                </label>
                             </div>
+                            <input type="text" id="healthDiseaseOther" class="form-control mt-2" placeholder="Specify other disease or problem..." style="display: none;">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Symptoms</label>
@@ -965,6 +997,9 @@
                         </button>
                         <button class="flex-1 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openLogAiModal(activeCowDetailId);">
                             <i class="fa-solid fa-syringe mr-1"></i> AI
+                        </button>
+                        <button class="flex-1 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openLogVaccineModal(activeCowDetailId);">
+                            <i class="fa-solid fa-shield-virus mr-1"></i> Vaccine
                         </button>
                     </div>
 

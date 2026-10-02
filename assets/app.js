@@ -35,7 +35,10 @@ const DEFAULT_SEED_DATA = {
         { id: 23, tag_number: 'COW-123', name: 'Roxy', breed: 'Sahiwal', gender: 'Female', date_of_birth: '2023-03-12', source: 'born on farm', parity: 0, reproductive_status: 'Open', photo_url: 'assets/cow_3.jpg' },
         { id: 24, tag_number: 'COW-124', name: 'Ginger', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2022-11-20', source: 'purchased', parity: 1, reproductive_status: 'Fresh', photo_url: 'assets/cow_4.jpg' },
         { id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Frieglan', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' },
-        { id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Gir', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' }
+        { id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Gir', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' },
+        { id: 27, tag_number: 'CALF-100', name: 'Hope (Calf)', breed: 'Frieglan', gender: 'Female', date_of_birth: '2026-01-01', source: 'born on farm', parity: 0, reproductive_status: 'Heifer', photo_url: 'assets/cow_1.jpg' },
+        { id: 28, tag_number: 'CALF-201', name: 'Daisy Jr (Calf)', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2026-06-01', source: 'born on farm', parity: 0, reproductive_status: 'Heifer', photo_url: 'assets/cow_2.jpg' },
+        { id: 29, tag_number: 'CALF-202', name: 'Thor Jr (Bull Calf)', breed: 'Gir', gender: 'Male', date_of_birth: '2026-06-15', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' }
     ],
     heats: [
         { id: 1, cow_id: 2, detection_date: '2026-09-10', detection_time: '06:30:00', status: 'Possible Heat', inter_estrus_interval: 21, notes: 'Mounting behavior observed, slight clear mucus discharge.' },
@@ -92,7 +95,10 @@ const DEFAULT_SEED_DATA = {
     ],
     vaccinations: [
         { id: 1, cow_id: 5, vaccine_name: 'Foot and Mouth Disease (FMD)', date_given: '2026-03-14', next_vaccination_date: '2026-09-10', treatment_type: 'Routine Bi-Annual', status: 'Due' },
-        { id: 2, cow_id: 11, vaccine_name: 'Anthrax Spore Vaccine', date_given: '2025-09-15', next_vaccination_date: '2026-09-12', treatment_type: 'Annual Booster', status: 'Due' }
+        { id: 2, cow_id: 11, vaccine_name: 'Anthrax Spore Vaccine', date_given: '2025-09-15', next_vaccination_date: '2026-09-12', treatment_type: 'Annual Booster', status: 'Due' },
+        { id: 10, cow_id: 27, vaccine_name: 'HS Vaccine (Primary)', date_given: '2026-05-01', next_vaccination_date: '2026-08-01', treatment_type: 'HS Protocol Primary', status: 'Given' },
+        { id: 11, cow_id: 27, vaccine_name: 'HS Vaccine (Secondary Booster)', date_given: '2026-08-01', next_vaccination_date: '2027-08-01', treatment_type: 'HS Secondary Booster', status: 'Given' },
+        { id: 12, cow_id: 27, vaccine_name: 'BQ Vaccine (Primary)', date_given: '2026-05-01', next_vaccination_date: '2027-06-01', treatment_type: 'BQ Protocol Primary', status: 'Given' }
     ],
     growth: [
         { id: 1, cow_id: 23, record_date: '2026-09-10', weight: 290.0, age_months: 18, weight_gain: 28.0, growth_rate: 0.93 },
@@ -111,7 +117,7 @@ function getLocalStore() {
         return JSON.parse(JSON.stringify(DEFAULT_SEED_DATA));
     }
     let parsed = JSON.parse(store);
-    // Auto-migrate existing store to include gender and updated breeds if needed
+    // Auto-migrate existing store to include gender, updated breeds, and calves if needed
     if (parsed.cows && parsed.cows.length > 0) {
         let changed = false;
         parsed.cows.forEach(c => {
@@ -127,6 +133,16 @@ function getLocalStore() {
         if (!parsed.cows.some(c => c.gender === 'Male')) {
             parsed.cows.push({ id: 25, tag_number: 'BULL-101', name: 'Titan', breed: 'Frieglan', gender: 'Male', date_of_birth: '2020-05-18', source: 'purchased', parity: 0, reproductive_status: 'Breeding Sire', photo_url: 'assets/cow_5.jpg' });
             parsed.cows.push({ id: 26, tag_number: 'BULL-102', name: 'Thor', breed: 'Gir', gender: 'Male', date_of_birth: '2022-08-12', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' });
+            changed = true;
+        }
+        if (!parsed.cows.some(c => c.tag_number === 'CALF-100')) {
+            parsed.cows.push({ id: 27, tag_number: 'CALF-100', name: 'Hope (Calf)', breed: 'Frieglan', gender: 'Female', date_of_birth: '2026-01-01', source: 'born on farm', parity: 0, reproductive_status: 'Heifer', photo_url: 'assets/cow_1.jpg' });
+            parsed.cows.push({ id: 28, tag_number: 'CALF-201', name: 'Daisy Jr (Calf)', breed: 'Ayrshire', gender: 'Female', date_of_birth: '2026-06-01', source: 'born on farm', parity: 0, reproductive_status: 'Heifer', photo_url: 'assets/cow_2.jpg' });
+            parsed.cows.push({ id: 29, tag_number: 'CALF-202', name: 'Thor Jr (Bull Calf)', breed: 'Gir', gender: 'Male', date_of_birth: '2026-06-15', source: 'born on farm', parity: 0, reproductive_status: 'Young Bull', photo_url: 'assets/cow_3.jpg' });
+            if (!parsed.vaccinations) parsed.vaccinations = [];
+            parsed.vaccinations.push({ id: 10, cow_id: 27, vaccine_name: 'HS Vaccine (Primary)', date_given: '2026-05-01', next_vaccination_date: '2026-08-01', treatment_type: 'HS Protocol Primary', status: 'Given' });
+            parsed.vaccinations.push({ id: 11, cow_id: 27, vaccine_name: 'HS Vaccine (Secondary Booster)', date_given: '2026-08-01', next_vaccination_date: '2027-08-01', treatment_type: 'HS Secondary Booster', status: 'Given' });
+            parsed.vaccinations.push({ id: 12, cow_id: 27, vaccine_name: 'BQ Vaccine (Primary)', date_given: '2026-05-01', next_vaccination_date: '2027-06-01', treatment_type: 'BQ Protocol Primary', status: 'Given' });
             changed = true;
         }
         if (changed) {
@@ -153,6 +169,259 @@ function calculateAge(dobStr) {
     }
     if (years > 0) return `${years} yr${years > 1 ? 's' : ''} ${months > 0 ? months + ' mo' : ''}`;
     return `${months} months`;
+}
+
+// Helper: Add months to YYYY-MM-DD string
+function addMonthsToDate(dateStr, months) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1 + months, d);
+    const yr = date.getFullYear();
+    const mo = String(date.getMonth() + 1).padStart(2, '0');
+    const da = String(date.getDate()).padStart(2, '0');
+    return `${yr}-${mo}-${da}`;
+}
+
+// Calculate automated HS & BQ vaccination schedule for a cow
+function calculateVaccineSchedule(cow, existingVaccinations = []) {
+    const dob = cow ? cow.date_of_birth : null;
+    if (!dob) return { hs: [], bq: [] };
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const today = new Date(todayStr);
+
+    let hsGivenPrimary = null;
+    let hsGivenSecondary = null;
+    let bqGivenPrimary = null;
+    let bqGivenSecondary = null;
+
+    (existingVaccinations || []).forEach(v => {
+        const name = (v.vaccine_name || '').toLowerCase();
+        const type = (v.treatment_type || '').toLowerCase();
+        if (name.includes('hs') || name.includes('haemorrhagic') || type.includes('hs')) {
+            if (name.includes('primary') || type.includes('primary')) hsGivenPrimary = v;
+            else if (name.includes('secondary') || type.includes('secondary')) hsGivenSecondary = v;
+        }
+        if (name.includes('bq') || name.includes('blackquarter') || type.includes('bq')) {
+            if (name.includes('primary') || type.includes('primary')) bqGivenPrimary = v;
+            else if (name.includes('secondary') || type.includes('secondary')) bqGivenSecondary = v;
+        }
+    });
+
+    // 1. HS Vaccine Schedule
+    // Primary: 4 months from DOB
+    const hsPrimaryDate = addMonthsToDate(dob, 4);
+    // Secondary: 3 months from Primary (actual given or scheduled)
+    const hsBasePrimary = (hsGivenPrimary && hsGivenPrimary.date_given) ? hsGivenPrimary.date_given : hsPrimaryDate;
+    const hsSecondaryDate = addMonthsToDate(hsBasePrimary, 3);
+    const hsBaseSecondary = (hsGivenSecondary && hsGivenSecondary.date_given) ? hsGivenSecondary.date_given : hsSecondaryDate;
+
+    const hs = [
+        {
+            stage: 'Primary',
+            vaccine_code: 'HS',
+            vaccine_name: 'HS Vaccine (Primary)',
+            due_date: hsPrimaryDate,
+            next_due_date: hsSecondaryDate,
+            treatment_type: 'HS Protocol Primary',
+            description: 'Primary dose at 4 months of age (protects against Haemorrhagic Septicaemia)'
+        },
+        {
+            stage: 'Secondary',
+            vaccine_code: 'HS',
+            vaccine_name: 'HS Vaccine (Secondary Booster)',
+            due_date: hsSecondaryDate,
+            next_due_date: addMonthsToDate(hsBaseSecondary, 12),
+            treatment_type: 'HS Secondary Booster',
+            description: 'Secondary booster dose 3 months after primary'
+        }
+    ];
+
+    // Annual Boosters every 1 year from secondary
+    const secDateObj = new Date(hsBaseSecondary);
+    const diffYears = Math.max(1, Math.floor((today - secDateObj) / (365.25 * 86400000)) + 1);
+    for (let i = 1; i <= diffYears + 1; i++) {
+        const annDate = addMonthsToDate(hsBaseSecondary, 12 * i);
+        const nextAnnDate = addMonthsToDate(hsBaseSecondary, 12 * (i + 1));
+        const yr = annDate.split('-')[0];
+        hs.push({
+            stage: `Annual ${i}`,
+            vaccine_code: 'HS',
+            vaccine_name: `HS Vaccine (Annual Booster ${yr})`,
+            due_date: annDate,
+            next_due_date: nextAnnDate,
+            treatment_type: `HS Annual Booster ${yr}`,
+            description: `Annual booster dose every 1 year from secondary booster`
+        });
+    }
+
+    // 2. BQ Vaccine Schedule
+    // Primary: 4 months from DOB
+    const bqPrimaryDate = addMonthsToDate(dob, 4);
+    // Secondary: 13 months from Primary (actual given or scheduled)
+    const bqBasePrimary = (bqGivenPrimary && bqGivenPrimary.date_given) ? bqGivenPrimary.date_given : bqPrimaryDate;
+    const bqSecondaryDate = addMonthsToDate(bqBasePrimary, 13);
+    const bqBaseSecondary = (bqGivenSecondary && bqGivenSecondary.date_given) ? bqGivenSecondary.date_given : bqSecondaryDate;
+
+    const bq = [
+        {
+            stage: 'Primary',
+            vaccine_code: 'BQ',
+            vaccine_name: 'BQ Vaccine (Primary)',
+            due_date: bqPrimaryDate,
+            next_due_date: bqSecondaryDate,
+            treatment_type: 'BQ Protocol Primary',
+            description: 'Primary dose at 4 months of age (protects against Blackquarter)'
+        },
+        {
+            stage: 'Secondary',
+            vaccine_code: 'BQ',
+            vaccine_name: 'BQ Vaccine (Secondary Booster)',
+            due_date: bqSecondaryDate,
+            next_due_date: addMonthsToDate(bqBaseSecondary, 22),
+            treatment_type: 'BQ Secondary Booster',
+            description: 'Secondary booster dose 13 months after primary'
+        }
+    ];
+
+    // Periodic Boosters every 22 months from secondary
+    const diffMonths = Math.max(22, Math.floor((today - secDateObj) / (30.4 * 86400000)));
+    const numBoosters = Math.max(2, Math.ceil(diffMonths / 22) + 1);
+    for (let i = 1; i <= numBoosters; i++) {
+        const periodicDate = addMonthsToDate(bqBaseSecondary, 22 * i);
+        const nextPeriodicDate = addMonthsToDate(bqBaseSecondary, 22 * (i + 1));
+        const yr = periodicDate.split('-')[0];
+        bq.push({
+            stage: `Periodic ${i}`,
+            vaccine_code: 'BQ',
+            vaccine_name: `BQ Vaccine (22-Month Booster ${yr})`,
+            due_date: periodicDate,
+            next_due_date: nextPeriodicDate,
+            treatment_type: `BQ 22-Month Booster ${yr}`,
+            description: `Periodic booster dose every 22 months from secondary booster`
+        });
+    }
+
+    const evaluate = (list) => {
+        list.forEach(item => {
+            let isGiven = false;
+            let dateGiven = null;
+            (existingVaccinations || []).forEach(v => {
+                const vName = (v.vaccine_name || '').toLowerCase();
+                const vType = (v.treatment_type || '').toLowerCase();
+                if (vName.includes(item.vaccine_code.toLowerCase()) || vType.includes(item.vaccine_code.toLowerCase())) {
+                    if (vName.includes(item.stage.toLowerCase()) ||
+                        vType.includes(item.stage.toLowerCase()) ||
+                        Math.abs(new Date(v.date_given) - new Date(item.due_date)) < 45 * 86400000) {
+                        isGiven = true;
+                        dateGiven = v.date_given;
+                    }
+                }
+            });
+
+            const dueDt = new Date(item.due_date);
+            const daysDiff = Math.round((dueDt - today) / 86400000);
+
+            item.is_given = isGiven;
+            item.date_given = dateGiven;
+            item.days_until_due = daysDiff;
+
+            if (isGiven) {
+                item.status = 'Given';
+                item.badge_class = 'badge-green';
+            } else if (daysDiff < 0) {
+                item.status = 'Overdue';
+                item.badge_class = 'badge-red';
+            } else if (daysDiff <= 14) {
+                item.status = 'Due Soon';
+                item.badge_class = 'badge-teal';
+            } else {
+                item.status = 'Upcoming';
+                item.badge_class = 'badge-slate';
+            }
+        });
+    };
+
+    evaluate(hs);
+    evaluate(bq);
+
+    return { hs, bq };
+}
+
+function toggleOtherDiseaseInput(checked) {
+    const el = document.getElementById('healthDiseaseOther');
+    if (el) {
+        el.style.display = checked ? 'block' : 'none';
+        if (checked) el.focus();
+        else el.value = '';
+    }
+}
+
+async function onHealthCowChange(cowId) {
+    const banner = document.getElementById('healthCowVaxBanner');
+    if (!banner) return;
+    if (!cowId) {
+        banner.style.display = 'none';
+        banner.innerHTML = '';
+        return;
+    }
+
+    let cow = cowsCache.find(c => c.id == cowId);
+    let vaxes = [];
+    if (isServerMode) {
+        try {
+            const res = await fetch(`${API_BASE}/cows.php?id=${cowId}`);
+            if (res.ok) {
+                const data = await res.json();
+                cow = data;
+                vaxes = data.vaccination_history || [];
+            }
+        } catch (e) {}
+    } else {
+        const store = getLocalStore();
+        if (!cow) cow = (store.cows || []).find(c => c.id == cowId);
+        vaxes = (store.vaccinations || []).filter(v => v.cow_id == cowId);
+    }
+
+    if (!cow || !cow.date_of_birth) {
+        banner.style.display = 'none';
+        return;
+    }
+
+    const sched = calculateVaccineSchedule(cow, vaxes);
+    const nextHs = sched.hs.find(m => !m.is_given) || sched.hs[sched.hs.length - 1];
+    const nextBq = sched.bq.find(m => !m.is_given) || sched.bq[sched.bq.length - 1];
+
+    banner.style.display = 'block';
+    banner.innerHTML = `
+        <div class="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200/90 rounded-xl p-2.5 text-xs shadow-xs">
+            <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-teal-100 font-bold text-teal-950">
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-shield-virus text-teal-600"></i>
+                    Vaccine Protocol Status (HS & BQ)
+                </span>
+                <button type="button" class="text-[11px] text-teal-700 hover:text-teal-900 underline font-semibold" onclick="closeModal('modalLogHealth'); openLogVaccineModal(${cow.id})">
+                    + Log Vaccine &rarr;
+                </button>
+            </div>
+            <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-600 font-medium">HS Vaccine:</span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="text-slate-700 font-semibold">${nextHs.stage} (Due: ${nextHs.due_date})</span>
+                        <span class="status-badge ${nextHs.badge_class}">${nextHs.status}</span>
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-600 font-medium">BQ Vaccine:</span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="text-slate-700 font-semibold">${nextBq.stage} (Due: ${nextBq.due_date})</span>
+                        <span class="status-badge ${nextBq.badge_class}">${nextBq.status}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // Initialize App
@@ -579,17 +848,89 @@ async function openCowDetail(cowId) {
         }
 
         const vaxContainer = document.getElementById('detailVaxHistory');
-        if (cow.vaccination_history && cow.vaccination_history.length > 0) {
-            vaxContainer.innerHTML = cow.vaccination_history.map(v => `
-                <div class="flex justify-between py-1.5 border-b border-slate-100 text-xs">
-                    <span>${v.vaccine_name}</span>
-                    <span class="text-slate-500">Next: ${v.next_vaccination_date}</span>
-                    <span class="status-badge ${v.status === 'Due' ? 'badge-teal' : 'badge-green'}">${v.status}</span>
+        const sched = cow.vaccine_schedule || calculateVaccineSchedule(cow, cow.vaccination_history || []);
+
+        let html = '';
+
+        // 1. HS Vaccine Protocol Timeline
+        html += `
+            <div class="mb-3 bg-teal-50/50 border border-teal-200/80 rounded-xl p-2.5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-teal-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-virus text-teal-600"></i> Haemorrhagic Septicaemia (HS) Protocol
+                    </span>
+                    <span class="text-[10px] bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-semibold">4mo &bull; +3mo &bull; Annual</span>
                 </div>
-            `).join('');
-        } else {
-            vaxContainer.innerHTML = `<p class="text-xs text-slate-400 py-2">No vaccinations recorded.</p>`;
+                <div class="space-y-1.5">
+                    ${sched.hs.map(m => `
+                        <div class="flex items-center justify-between p-1.5 bg-white rounded-lg border border-teal-100 text-xs">
+                            <div>
+                                <div class="font-bold text-slate-800">${m.vaccine_name}</div>
+                                <div class="text-[10px] text-slate-500">${m.description} &bull; Due: <b>${m.due_date}</b></div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="status-badge ${m.badge_class}">${m.status}</span>
+                                ${!m.is_given ? `
+                                    <button class="px-2 py-1 bg-slate-800 text-white rounded text-[10px] font-bold hover:bg-slate-700" onclick="closeModal('modalCowDetail'); openLogVaccineModal(${cow.id}, '${m.vaccine_name}', '${m.due_date}', '${m.next_due_date}', '${m.treatment_type}')">
+                                        Record &rarr;
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        // 2. BQ Vaccine Protocol Timeline
+        html += `
+            <div class="mb-3 bg-blue-50/50 border border-blue-200/80 rounded-xl p-2.5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-syringe text-blue-600"></i> Blackquarter (BQ) Protocol
+                    </span>
+                    <span class="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-semibold">4mo &bull; +13mo &bull; 22mo</span>
+                </div>
+                <div class="space-y-1.5">
+                    ${sched.bq.map(m => `
+                        <div class="flex items-center justify-between p-1.5 bg-white rounded-lg border border-blue-100 text-xs">
+                            <div>
+                                <div class="font-bold text-slate-800">${m.vaccine_name}</div>
+                                <div class="text-[10px] text-slate-500">${m.description} &bull; Due: <b>${m.due_date}</b></div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="status-badge ${m.badge_class}">${m.status}</span>
+                                ${!m.is_given ? `
+                                    <button class="px-2 py-1 bg-slate-800 text-white rounded text-[10px] font-bold hover:bg-slate-700" onclick="closeModal('modalCowDetail'); openLogVaccineModal(${cow.id}, '${m.vaccine_name}', '${m.due_date}', '${m.next_due_date}', '${m.treatment_type}')">
+                                        Record &rarr;
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        // 3. Other Logged Vaccines
+        if (cow.vaccination_history && cow.vaccination_history.length > 0) {
+            html += `
+                <div class="text-[11px] font-bold text-slate-600 mb-1">Other Recorded Vaccinations:</div>
+                <div class="space-y-1">
+                    ${cow.vaccination_history.map(v => `
+                        <div class="flex justify-between py-1.5 px-2 bg-slate-50 border border-slate-100 rounded-lg text-xs">
+                            <div>
+                                <span class="font-bold text-slate-700">${v.vaccine_name}</span>
+                                <span class="text-[10px] text-slate-400 block">Given: ${v.date_given} &bull; Next Due: ${v.next_vaccination_date}</span>
+                            </div>
+                            <span class="status-badge ${v.status === 'Due' ? 'badge-teal' : 'badge-green'}">${v.status}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
+
+        vaxContainer.innerHTML = html;
 
         openModal('modalCowDetail');
     } catch (e) {
@@ -1136,34 +1477,114 @@ async function loadHealthAndVax(subTab = 'health') {
         `).join('');
     } else if (subTab === 'vaccines') {
         let vaccinations = [];
+        let allCows = [];
         if (isServerMode) {
             const res = await fetch(`${API_BASE}/vaccines.php`);
             const data = await res.json();
-            vaccinations = data.vaccinations;
+            vaccinations = data.vaccinations || [];
+            allCows = cowsCache || [];
         } else {
             const store = getLocalStore();
-            vaccinations = store.vaccinations.map(v => {
-                const cow = store.cows.find(c => c.id == v.cow_id) || {};
+            allCows = store.cows || [];
+            vaccinations = (store.vaccinations || []).map(v => {
+                const cow = allCows.find(c => c.id == v.cow_id) || {};
                 return { ...v, tag_number: cow.tag_number, name: cow.name };
             });
         }
-        container.innerHTML = vaccinations.map(v => {
-            const isDue = v.status === 'Due' || v.status === 'Overdue';
-            return `
-                <div class="cow-item ${isDue ? 'border-amber-300 bg-amber-50/30' : ''}">
-                    <div class="cow-info">
-                        <div class="flex items-center justify-between">
-                            <span class="cow-tag">${v.tag_number} (${v.name})</span>
-                            <span class="status-badge ${isDue ? 'badge-teal' : 'badge-green'}">${v.status}</span>
+
+        // Calculate upcoming / overdue protocol milestones across herd
+        const herdMilestones = [];
+        allCows.forEach(c => {
+            if (!c.date_of_birth) return;
+            const cVaxes = vaccinations.filter(v => v.cow_id == c.id);
+            const s = calculateVaccineSchedule(c, cVaxes);
+            s.hs.forEach(m => {
+                if (!m.is_given) herdMilestones.push({ ...m, cow: c });
+            });
+            s.bq.forEach(m => {
+                if (!m.is_given) herdMilestones.push({ ...m, cow: c });
+            });
+        });
+
+        herdMilestones.sort((a, b) => a.days_until_due - b.days_until_due);
+        const urgentMilestones = herdMilestones.filter(m => m.status === 'Overdue' || m.status === 'Due Soon');
+
+        let vaxHtml = `
+            <!-- Protocol Summary Card -->
+            <div class="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200/90 rounded-2xl p-3.5 mb-3 shadow-xs">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-teal-950 flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-virus text-teal-600"></i> Herd Vaccination Protocols (HS & BQ)
+                    </span>
+                    <button class="px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold shadow-xs hover:bg-teal-700" onclick="openLogVaccineModal()">
+                        <i class="fa-solid fa-plus mr-1"></i> Log Vaccine
+                    </button>
+                </div>
+                <div class="text-[11px] text-teal-900 bg-white/80 rounded-xl p-2.5 border border-teal-100/70 leading-relaxed space-y-1">
+                    <div><b>1. HS Vaccine:</b> Primary after 4 mo &bull; Secondary Booster after +3 mo &bull; Annual Booster every 1 yr.</div>
+                    <div><b>2. BQ Vaccine:</b> Primary after 4 mo &bull; Secondary Booster after +13 mo &bull; Booster every 22 months.</div>
+                </div>
+            </div>
+        `;
+
+        if (urgentMilestones.length > 0) {
+            vaxHtml += `
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-800">
+                        <i class="fa-solid fa-bell text-red-500 mr-1"></i> Due & Overdue Protocol Doses (${urgentMilestones.length})
+                    </span>
+                </div>
+                <div class="space-y-2 mb-4">
+                    ${urgentMilestones.map(m => `
+                        <div class="cow-item border-l-4 ${m.status === 'Overdue' ? 'border-l-red-500 bg-red-50/20' : 'border-l-teal-500 bg-teal-50/20'}">
+                            <div class="cow-info">
+                                <div class="flex items-center justify-between">
+                                    <span class="cow-tag">${m.cow.tag_number} (${m.cow.name})</span>
+                                    <span class="status-badge ${m.badge_class}">${m.status}</span>
+                                </div>
+                                <div class="text-xs font-bold text-slate-800 mt-1">${m.vaccine_name}</div>
+                                <div class="text-xs text-slate-500 mt-0.5">
+                                    DOB: ${m.cow.date_of_birth} &bull; Due Date: <b>${m.due_date}</b>
+                                </div>
+                                <div class="mt-2 flex justify-end">
+                                    <button class="px-2.5 py-1 bg-slate-800 text-white rounded text-xs font-medium hover:bg-slate-700" onclick="openLogVaccineModal(${m.cow.id}, '${m.vaccine_name}', '${m.due_date}', '${m.next_due_date}', '${m.treatment_type}')">
+                                        Record Dose &rarr;
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-xs font-bold text-slate-800 mt-1">${v.vaccine_name}</div>
-                        <div class="text-xs text-slate-500 mt-0.5">
-                            Given: ${v.date_given} &bull; Next Due: <b>${v.next_vaccination_date}</b>
-                        </div>
-                    </div>
+                    `).join('')}
                 </div>
             `;
-        }).join('');
+        }
+
+        vaxHtml += `
+            <div class="text-xs font-bold text-slate-700 mb-2 mt-3">Vaccination History Records:</div>
+        `;
+
+        if (vaccinations.length === 0) {
+            vaxHtml += `<div class="text-center py-6 text-slate-400 text-xs">No recorded vaccinations yet.</div>`;
+        } else {
+            vaxHtml += vaccinations.map(v => {
+                const isDue = v.status === 'Due' || v.status === 'Overdue';
+                return `
+                    <div class="cow-item ${isDue ? 'border-amber-300 bg-amber-50/30' : ''}">
+                        <div class="cow-info">
+                            <div class="flex items-center justify-between">
+                                <span class="cow-tag">${v.tag_number} (${v.name})</span>
+                                <span class="status-badge ${isDue ? 'badge-teal' : 'badge-green'}">${v.status}</span>
+                            </div>
+                            <div class="text-xs font-bold text-slate-800 mt-1">${v.vaccine_name}</div>
+                            <div class="text-xs text-slate-500 mt-0.5">
+                                Given: ${v.date_given} &bull; Next Due: <b>${v.next_vaccination_date}</b>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        container.innerHTML = vaxHtml;
     } else if (subTab === 'growth') {
         let growthRecords = [];
         if (isServerMode) {
@@ -1208,6 +1629,7 @@ async function loadAllAlerts(category = 'all') {
             const data = await res.json();
             alerts = data.alerts;
         } else {
+            const store = getLocalStore();
             alerts = [
                 { category: 'possible_heat', badge: 'Possible Heat', badge_class: 'badge-yellow', cow_id: 14, title: 'Possible Heat: Cow COW-114 (Lily)', message: 'Observed today at 07:15. Restless, vocalization.', action_label: 'Log AI Breeding', action_type: 'breeding', date: '2026-09-10' },
                 { category: 'possible_heat', badge: 'Possible Heat', badge_class: 'badge-yellow', cow_id: 2, title: 'Possible Heat: Cow COW-102 (Bella)', message: 'Observed today at 06:30. Mounting behavior observed.', action_label: 'Log AI Breeding', action_type: 'breeding', date: '2026-09-10' },
@@ -1218,6 +1640,53 @@ async function loadAllAlerts(category = 'all') {
                 { category: 'milk_decrease', badge: 'Unusual Milk Drop', badge_class: 'badge-red', cow_id: 5, title: 'Unusual milk decrease: Cow COW-105 (Rosie)', message: 'Yesterday: 12.50 L -> Today: 10.20 L (Decreased by 18.40%). Possible mastitis.', action_label: 'Check Health', action_type: 'health_check', date: '2026-09-10' },
                 { category: 'treatment_follow_up', badge: 'Treatment Follow-up', badge_class: 'badge-orange', cow_id: 5, record_id: 1, title: 'Treatment Follow-up: Cow COW-105 (Subclinical Mastitis)', message: 'Ongoing care since 2026-09-10. Status: In Treatment.', action_label: 'Update Status', action_type: 'health', date: '2026-09-10' }
             ];
+
+            // Compute dynamic HS and BQ alerts for offline store
+            (store.cows || []).forEach(c => {
+                if (!c.date_of_birth) return;
+                const cVaxes = (store.vaccinations || []).filter(v => v.cow_id == c.id);
+                const s = calculateVaccineSchedule(c, cVaxes);
+                const pNextHs = s.hs.find(m => !m.is_given && (m.status === 'Due Soon' || m.status === 'Overdue'));
+                if (pNextHs) {
+                    const isO = pNextHs.status === 'Overdue';
+                    alerts.push({
+                        category: 'vaccination',
+                        badge: isO ? 'HS Overdue' : 'HS Vaccine Due',
+                        badge_class: isO ? 'badge-red' : 'badge-teal',
+                        cow_id: c.id,
+                        tag_number: c.tag_number,
+                        title: `HS ${pNextHs.stage} Vaccine Due: Cow ${c.tag_number} (${c.name})`,
+                        message: `Cow DOB: ${c.date_of_birth}. Haemorrhagic Septicaemia (HS) ${pNextHs.stage} dose due on ${pNextHs.due_date}.${isO ? ' (Overdue!)' : ' (Due soon)'}`,
+                        action_label: 'Record HS Dose',
+                        action_type: 'vaccine',
+                        vaccine_name: pNextHs.vaccine_name,
+                        due_date: pNextHs.due_date,
+                        next_due_date: pNextHs.next_due_date,
+                        treatment_type: pNextHs.treatment_type,
+                        date: pNextHs.due_date
+                    });
+                }
+                const pNextBq = s.bq.find(m => !m.is_given && (m.status === 'Due Soon' || m.status === 'Overdue'));
+                if (pNextBq) {
+                    const isO = pNextBq.status === 'Overdue';
+                    alerts.push({
+                        category: 'vaccination',
+                        badge: isO ? 'BQ Overdue' : 'BQ Vaccine Due',
+                        badge_class: isO ? 'badge-red' : 'badge-teal',
+                        cow_id: c.id,
+                        tag_number: c.tag_number,
+                        title: `BQ ${pNextBq.stage} Vaccine Due: Cow ${c.tag_number} (${c.name})`,
+                        message: `Cow DOB: ${c.date_of_birth}. Blackquarter (BQ) ${pNextBq.stage} dose due on ${pNextBq.due_date}.${isO ? ' (Overdue!)' : ' (Due soon)'}`,
+                        action_label: 'Record BQ Dose',
+                        action_type: 'vaccine',
+                        vaccine_name: pNextBq.vaccine_name,
+                        due_date: pNextBq.due_date,
+                        next_due_date: pNextBq.next_due_date,
+                        treatment_type: pNextBq.treatment_type,
+                        date: pNextBq.due_date
+                    });
+                }
+            });
 
             if (category !== 'all') {
                 alerts = alerts.filter(a => a.category === category);
@@ -1243,7 +1712,7 @@ async function loadAllAlerts(category = 'all') {
                     <div class="text-xs text-slate-600 mt-0.5 leading-relaxed">${a.message}</div>
                     ${a.action_label ? `
                         <div class="mt-2">
-                            <button class="px-2.5 py-1 text-xs bg-slate-800 text-white rounded font-medium hover:bg-slate-700" onclick="handleAlertAction('${a.action_type}', ${a.cow_id || 0}, ${a.ai_id || a.record_id || 0})">
+                            <button class="px-2.5 py-1 text-xs bg-slate-800 text-white rounded font-medium hover:bg-slate-700" onclick="handleAlertAction('${a.action_type}', ${a.cow_id || 0}, ${a.ai_id || a.record_id || 0}, '${(a.vaccine_name || '').replace(/'/g, "\\'")}', '${a.due_date || a.date || ''}', '${a.next_due_date || ''}', '${(a.treatment_type || '').replace(/'/g, "\\'")}')">
                                 ${a.action_label} &rarr;
                             </button>
                         </div>
@@ -1262,11 +1731,11 @@ function filterAlerts(category, btn) {
     loadAllAlerts(category);
 }
 
-function handleAlertAction(type, cowId, recordId) {
+function handleAlertAction(type, cowId, recordId, vaxName = '', dueDate = null, nextDueDate = null, treatmentType = '') {
     if (type === 'breeding') openLogAiModal(cowId);
     if (type === 'confirm_preg') openConfirmPregModal(recordId);
     if (type === 'calving') openLogCalvingModal(cowId);
-    if (type === 'vaccine') openLogVaccineModal(cowId);
+    if (type === 'vaccine') openLogVaccineModal(cowId, vaxName, dueDate, nextDueDate, treatmentType);
     if (type === 'health' || type === 'health_check') openLogHealthModal(cowId);
 }
 
@@ -1834,7 +2303,23 @@ async function submitCalvingRecord(e) {
 
 // 7. Submit Health Record
 function openLogHealthModal(cowId = null) {
-    if (cowId) document.getElementById('healthCowSelect').value = cowId;
+    const sel = document.getElementById('healthCowSelect');
+    if (cowId && sel) {
+        sel.value = cowId;
+        onHealthCowChange(cowId);
+    } else {
+        const banner = document.getElementById('healthCowVaxBanner');
+        if (banner) banner.style.display = 'none';
+    }
+    // Reset disease checkboxes
+    document.querySelectorAll('input[name="healthDiseaseCheckbox"]').forEach(cb => cb.checked = false);
+    const chkOther = document.getElementById('chkDiseaseOther');
+    if (chkOther) chkOther.checked = false;
+    const txtOther = document.getElementById('healthDiseaseOther');
+    if (txtOther) {
+        txtOther.value = '';
+        txtOther.style.display = 'none';
+    }
     openModal('modalLogHealth');
 }
 
@@ -1842,7 +2327,21 @@ async function submitHealthRecord(e) {
     e.preventDefault();
     const cowId = document.getElementById('healthCowSelect').value;
     const date = document.getElementById('healthDate').value;
-    const disease = document.getElementById('healthDisease').value;
+    
+    // Multi-select disease checkboxes
+    const checkedBoxes = Array.from(document.querySelectorAll('input[name="healthDiseaseCheckbox"]:checked')).map(cb => cb.value);
+    const otherChecked = document.getElementById('chkDiseaseOther') && document.getElementById('chkDiseaseOther').checked;
+    const otherVal = document.getElementById('healthDiseaseOther') ? document.getElementById('healthDiseaseOther').value.trim() : '';
+    if (otherChecked && otherVal) {
+        checkedBoxes.push(otherVal);
+    }
+
+    if (checkedBoxes.length === 0) {
+        showToast('Please select at least one Disease / Problem.', true);
+        return;
+    }
+    const disease = checkedBoxes.join(', ');
+
     const symptoms = document.getElementById('healthSymptoms').value;
     const treatment = document.getElementById('healthTreatment').value;
     const medicine = document.getElementById('healthMedicine').value;
@@ -1880,9 +2379,16 @@ async function submitHealthRecord(e) {
             saveLocalStore(store);
         }
 
-        showToast('Health record saved!');
+        showToast('Health record saved successfully!');
         closeModal('modalLogHealth');
         document.getElementById('formLogHealth').reset();
+        document.querySelectorAll('input[name="healthDiseaseCheckbox"]').forEach(cb => cb.checked = false);
+        if (document.getElementById('chkDiseaseOther')) document.getElementById('chkDiseaseOther').checked = false;
+        if (document.getElementById('healthDiseaseOther')) {
+            document.getElementById('healthDiseaseOther').value = '';
+            document.getElementById('healthDiseaseOther').style.display = 'none';
+        }
+        if (document.getElementById('healthCowVaxBanner')) document.getElementById('healthCowVaxBanner').style.display = 'none';
         loadHealthAndVax('health');
         loadDashboard();
         loadAlertsCount();
@@ -1892,8 +2398,13 @@ async function submitHealthRecord(e) {
 }
 
 // 8. Submit Vaccination Record
-function openLogVaccineModal(cowId = null) {
+function openLogVaccineModal(cowId = null, vaccineName = '', dueDate = null, nextDueDate = null, treatmentType = '') {
     if (cowId) document.getElementById('vaxCowSelect').value = cowId;
+    if (vaccineName) document.getElementById('vaxName').value = vaccineName;
+    if (dueDate) document.getElementById('vaxDateGiven').value = dueDate;
+    else document.getElementById('vaxDateGiven').value = new Date().toISOString().split('T')[0];
+    if (nextDueDate) document.getElementById('vaxNextDate').value = nextDueDate;
+    if (treatmentType) document.getElementById('vaxType').value = treatmentType;
     openModal('modalLogVaccine');
 }
 
