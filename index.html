@@ -316,6 +316,258 @@
                 </div>
             </div>
 
+            <!-- ================= TAB: DAIRY FEED & NUTRIENT CALCULATOR ================= -->
+            <div id="view-feed" class="tab-view" style="display:none;">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <div class="section-title mb-0">
+                            <span>Dairy Feed & Nutrition</span>
+                        </div>
+                        <div class="text-[11px] text-slate-500">Real-time Dry Matter & Nutrient Intake Calculator</div>
+                    </div>
+                    <button class="px-2.5 py-1.5 bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-amber-700 flex items-center gap-1" onclick="openModalFeedIngredient()">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Add Feed
+                    </button>
+                </div>
+
+                <!-- Feed Subtabs -->
+                <div class="filter-scroll" id="feedSubTabs">
+                    <button class="filter-chip active" id="btnSubTabFeedCalc" onclick="switchFeedSubTab('calculator', this)">
+                        <i class="fa-solid fa-calculator text-[10px] mr-1"></i> Daily Calculator
+                    </button>
+                    <button class="filter-chip" id="btnSubTabFeedLibrary" onclick="switchFeedSubTab('library', this)">
+                        <i class="fa-solid fa-seedling text-[10px] mr-1"></i> Feed Library (<span id="feedCountBadge">7</span>)
+                    </button>
+                    <button class="filter-chip" id="btnSubTabFeedHistory" onclick="switchFeedSubTab('history', this)">
+                        <i class="fa-solid fa-clock-rotate-left text-[10px] mr-1"></i> Ration History
+                    </button>
+                </div>
+
+                <!-- SUBTAB 1: DAILY CALCULATOR -->
+                <div id="feedContentCalculator">
+                    <!-- Cow & Date Selection Card -->
+                    <div class="app-card mb-3 p-3">
+                        <div class="form-row">
+                            <div class="form-group mb-2">
+                                <label class="form-label text-xs font-bold text-slate-700">Select Cow *</label>
+                                <select id="feedCowSelect" class="form-control" onchange="onFeedCowSelectionChange(this.value)">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="form-label text-xs font-bold text-slate-700">Feeding Date *</label>
+                                <input type="date" id="feedLogDate" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- Quick Action Preset Buttons -->
+                        <div class="flex items-center justify-between mt-1 pt-2 border-t border-slate-100 text-xs">
+                            <span class="text-slate-500 font-medium">Quick Preset:</span>
+                            <div class="flex gap-1.5">
+                                <button type="button" class="px-2 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg font-bold text-[11px] hover:bg-amber-100" onclick="loadExampleFeedRation()">
+                                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Load Example (43 kg)
+                                </button>
+                                <button type="button" class="px-2 py-1 bg-slate-100 text-slate-700 rounded-lg font-semibold text-[11px] hover:bg-slate-200" onclick="clearFeedRationRows()">
+                                    <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Feed Entry Section -->
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">
+                            <i class="fa-solid fa-scale-balanced text-amber-600 mr-1"></i> Feeds Given (kg As-Fed)
+                        </span>
+                        <button type="button" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 shadow-sm" onclick="addFeedRationRow()">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Feed Row
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Feed Rows Container -->
+                    <div id="feedRowsContainer" class="mb-3">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <button type="button" class="w-full py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-dashed border-slate-300 rounded-xl text-xs font-bold mb-3 flex items-center justify-center gap-1.5" onclick="addFeedRationRow()">
+                        <i class="fa-solid fa-plus text-slate-500"></i> Add Another Feed Ingredient
+                    </button>
+
+                    <!-- Real-Time Feed Breakdown Table (Matches Prompt Requirements 100%) -->
+                    <div class="section-title mb-1.5 flex items-center justify-between">
+                        <span>Feed-Level Nutrient Breakdown</span>
+                        <span class="text-[10px] text-slate-500 font-normal">Calculated on DM Basis</span>
+                    </div>
+
+                    <div class="app-card mb-3 p-0 overflow-hidden shadow-sm">
+                        <div class="table-responsive">
+                            <table class="feed-table" id="feedBreakdownTable">
+                                <thead>
+                                    <tr>
+                                        <th>Feed</th>
+                                        <th>As-fed kg</th>
+                                        <th>DM kg</th>
+                                        <th>CP kg</th>
+                                        <th>Fat kg</th>
+                                        <th>Fiber kg</th>
+                                        <th>NDF kg</th>
+                                        <th>Ca g</th>
+                                        <th>P g</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feedBreakdownTableBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                                <tfoot id="feedBreakdownTableFoot">
+                                    <!-- Populated dynamically -->
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Daily Nutrient Intake Summary Cards (KPIs) -->
+                    <div class="section-title mb-1.5">
+                        <span>Daily Total Nutrient Intake / Day</span>
+                    </div>
+
+                    <!-- Hero Total KPIs -->
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <div class="app-card p-2.5 text-center bg-slate-50 border border-slate-200">
+                            <div class="text-[10px] font-bold text-slate-500 uppercase">Total Feed</div>
+                            <div class="text-base font-extrabold text-slate-900 mt-0.5" id="totalKpiAsFed">0.00 kg</div>
+                            <div class="text-[9px] text-slate-400">As-fed intake</div>
+                        </div>
+                        <div class="app-card p-2.5 text-center bg-emerald-50 border border-emerald-200">
+                            <div class="text-[10px] font-bold text-emerald-700 uppercase">Dry Matter (DMI)</div>
+                            <div class="text-base font-extrabold text-emerald-950 mt-0.5" id="totalKpiDm">0.00 kg</div>
+                            <div class="text-[9px] text-emerald-600">DM intake</div>
+                        </div>
+                        <div class="app-card p-2.5 text-center bg-blue-50 border border-blue-200">
+                            <div class="text-[10px] font-bold text-blue-700 uppercase">Crude Protein</div>
+                            <div class="text-base font-extrabold text-blue-950 mt-0.5" id="totalKpiCp">0.00 kg</div>
+                            <div class="text-[9px] text-blue-600">CP intake</div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Nutrient Breakdown Accordion/Grid -->
+                    <div class="app-card p-3 mb-3 bg-white border border-slate-200">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Crude Fat</span>
+                                <span class="font-bold text-slate-800" id="totalKpiFat">0.00 kg</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Crude Fiber</span>
+                                <span class="font-bold text-slate-800" id="totalKpiFiber">0.00 kg</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">NDF (Fiber)</span>
+                                <span class="font-bold text-slate-800" id="totalKpiNdf">0.00 kg</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">ADF (Fiber)</span>
+                                <span class="font-bold text-slate-800" id="totalKpiAdf">0.00 kg</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Starch</span>
+                                <span class="font-bold text-slate-800" id="totalKpiStarch">0.00 kg</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Sugar</span>
+                                <span class="font-bold text-slate-800" id="totalKpiSugar">0.00 kg</span>
+                            </div>
+                            <div class="feed-kpi-subcard bg-amber-50/50 border-amber-100">
+                                <span class="text-[10px] text-amber-800 block">Calcium (Ca)</span>
+                                <span class="font-bold text-amber-950" id="totalKpiCa">0.0 g</span>
+                            </div>
+                            <div class="feed-kpi-subcard bg-amber-50/50 border-amber-100">
+                                <span class="text-[10px] text-amber-800 block">Phosphorus (P)</span>
+                                <span class="font-bold text-amber-950" id="totalKpiP">0.0 g</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Magnesium (Mg)</span>
+                                <span class="font-bold text-slate-800" id="totalKpiMg">0.0 g</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Potassium (K)</span>
+                                <span class="font-bold text-slate-800" id="totalKpiK">0.0 g</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Sodium (Na)</span>
+                                <span class="font-bold text-slate-800" id="totalKpiNa">0.0 g</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Sulfur (S)</span>
+                                <span class="font-bold text-slate-800" id="totalKpiS">0.0 g</span>
+                            </div>
+                            <div class="feed-kpi-subcard bg-purple-50/50 border-purple-100">
+                                <span class="text-[10px] text-purple-800 block">Energy (ME)</span>
+                                <span class="font-bold text-purple-950" id="totalKpiMe">0.0 MJ</span>
+                            </div>
+                            <div class="feed-kpi-subcard bg-purple-50/50 border-purple-100">
+                                <span class="text-[10px] text-purple-800 block">Energy (NEL)</span>
+                                <span class="font-bold text-purple-950" id="totalKpiNel">0.0 MJ</span>
+                            </div>
+                            <div class="feed-kpi-subcard">
+                                <span class="text-[10px] text-slate-500 block">Ash (Minerals)</span>
+                                <span class="font-bold text-slate-800" id="totalKpiAsh">0.00 kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes & Submission -->
+                    <div class="form-group mb-3">
+                        <label class="form-label text-xs font-semibold text-slate-600">Feeding Observations / Ration Notes (Optional)</label>
+                        <input type="text" id="feedLogNotes" class="form-control" placeholder="e.g. Standard lactation TMR + fresh forage supplement.">
+                    </div>
+
+                    <button type="button" class="btn-submit mb-4" onclick="saveCurrentFeedRation()">
+                        <i class="fa-solid fa-floppy-disk mr-1.5"></i> Save Daily Feeding Record
+                    </button>
+                </div>
+
+                <!-- SUBTAB 2: FEED DATABASE LIBRARY -->
+                <div id="feedContentLibrary" style="display:none;">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-700">Nutritional Composition Database</span>
+                        <button class="px-2.5 py-1 bg-amber-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-amber-700" onclick="openModalFeedIngredient()">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Feed
+                        </button>
+                    </div>
+
+                    <!-- Search & Category Filters -->
+                    <div class="search-container mb-2">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="feedSearchInput" class="search-input" placeholder="Search feeds by name or category..." oninput="filterFeedLibrary()">
+                    </div>
+
+                    <div class="filter-scroll" id="feedCategoryFilters">
+                        <button class="filter-chip active" onclick="filterFeedCategory('all', this)">All Feeds</button>
+                        <button class="filter-chip" onclick="filterFeedCategory('Forage / TMR', this)">Forage / TMR</button>
+                        <button class="filter-chip" onclick="filterFeedCategory('Concentrate', this)">Concentrates</button>
+                        <button class="filter-chip" onclick="filterFeedCategory('Silage', this)">Silage</button>
+                        <button class="filter-chip" onclick="filterFeedCategory('By-product', this)">By-products</button>
+                    </div>
+
+                    <div id="feedLibraryCardsContainer">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- SUBTAB 3: RATION HISTORY -->
+                <div id="feedContentHistory" style="display:none;">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-700">Past Daily Feed Records</span>
+                        <div class="text-xs text-slate-500" id="feedHistoryCount"></div>
+                    </div>
+
+                    <div id="feedHistoryContainer">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+
             <!-- ================= TAB 4: BREEDING & CALVING ================= -->
             <div id="view-breeding" class="tab-view" style="display:none;">
                 <div class="section-title">
@@ -386,6 +638,10 @@
         <!-- Floating Action Button Menu -->
         <div class="fab-container">
             <div class="fab-menu" id="fabMenu">
+                <div class="fab-menu-item" onclick="openLogFeedModal()">
+                    <i class="fa-solid fa-wheat-awn text-amber-600"></i>
+                    <span>Calculate Daily Feed</span>
+                </div>
                 <div class="fab-menu-item" onclick="openModal('modalLogMilk')">
                     <i class="fa-solid fa-glass-water text-emerald-600"></i>
                     <span>Log Daily Milk</span>
@@ -433,6 +689,10 @@
             <button type="button" class="nav-tab" data-tab="milk" onclick="switchTab('milk')">
                 <i class="fa-solid fa-glass-water"></i>
                 <span>Milk</span>
+            </button>
+            <button type="button" class="nav-tab" data-tab="feed" onclick="switchTab('feed')">
+                <i class="fa-solid fa-wheat-awn"></i>
+                <span>Feed</span>
             </button>
             <button type="button" class="nav-tab" data-tab="breeding" onclick="switchTab('breeding')">
                 <i class="fa-solid fa-dna"></i>
@@ -988,20 +1248,30 @@
                     </div>
 
                     <!-- Quick action buttons on cow profile -->
-                    <div class="flex gap-2 mb-3">
+                    <div class="flex gap-1.5 mb-3">
                         <button class="flex-1 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openModal('modalLogMilk'); document.getElementById('milkCowSelect').value=activeCowDetailId;">
-                            <i class="fa-solid fa-plus mr-1"></i> Add Milk
+                            <i class="fa-solid fa-plus mr-1"></i> Milk
+                        </button>
+                        <button class="flex-1 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openFeedCalculatorForCow(activeCowDetailId);">
+                            <i class="fa-solid fa-wheat-awn mr-1"></i> Feed
                         </button>
                         <button class="flex-1 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openModal('modalLogHeat'); document.getElementById('heatCowSelect').value=activeCowDetailId;">
-                            <i class="fa-solid fa-fire mr-1"></i> Log Heat
+                            <i class="fa-solid fa-fire mr-1"></i> Heat
                         </button>
                         <button class="flex-1 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openLogAiModal(activeCowDetailId);">
                             <i class="fa-solid fa-syringe mr-1"></i> AI
                         </button>
                         <button class="flex-1 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-bold" onclick="closeModal('modalCowDetail'); openLogVaccineModal(activeCowDetailId);">
-                            <i class="fa-solid fa-shield-virus mr-1"></i> Vaccine
+                            <i class="fa-solid fa-shield-virus mr-1"></i> Vax
                         </button>
                     </div>
+
+                    <!-- Feed Intake Section -->
+                    <div class="flex items-center justify-between mt-3 mb-1.5">
+                        <span class="text-xs font-bold text-slate-800"><i class="fa-solid fa-wheat-awn text-amber-600 mr-1"></i> Feed & Nutrient Intake</span>
+                        <button type="button" class="text-[11px] text-amber-700 font-bold hover:underline" onclick="closeModal('modalCowDetail'); openFeedCalculatorForCow(activeCowDetailId);">+ Calculate Feed</button>
+                    </div>
+                    <div id="detailFeedHistory" class="mb-3"></div>
 
                     <!-- Milk History with Daily, Weekly, Monthly -->
                     <div class="flex items-center justify-between mt-3 mb-1.5">
@@ -1021,6 +1291,141 @@
                     <!-- Vaccination History -->
                     <div class="text-xs font-bold text-slate-700 mb-1">Vaccinations:</div>
                     <div id="detailVaxHistory"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11. Modal: Add / Edit Feed Ingredient in Database -->
+        <div id="modalFeedIngredient" class="modal-overlay" style="z-index: 10004;">
+            <div class="modal-sheet" style="max-height: 92%;">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <div>
+                        <span class="sheet-title" id="modalFeedIngredientTitle"><i class="fa-solid fa-seedling text-amber-600 mr-1.5"></i> Feed Nutritional Composition</span>
+                        <div class="text-xs text-slate-500">All nutrient values are expressed on % Dry Matter basis</div>
+                    </div>
+                    <button type="button" class="sheet-close" onclick="closeModal('modalFeedIngredient')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formFeedIngredient" onsubmit="submitFeedIngredient(event)">
+                        <input type="hidden" id="feedIngredientId" value="">
+
+                        <!-- Basic Information -->
+                        <div class="form-row">
+                            <div class="form-group flex-2">
+                                <label class="form-label">Feed Name *</label>
+                                <input type="text" id="feedIngName" class="form-control" placeholder="e.g. Maize Silage, Concentrate 18%" required>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label class="form-label">Category</label>
+                                <select id="feedIngCategory" class="form-control">
+                                    <option value="Forage / TMR">Forage / TMR</option>
+                                    <option value="Concentrate">Concentrate</option>
+                                    <option value="Silage">Silage</option>
+                                    <option value="By-product">By-product</option>
+                                    <option value="Mineral / Supplement">Mineral / Supplement</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dry Matter (DM %) -->
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 mb-3">
+                            <div class="form-group mb-0">
+                                <label class="form-label font-bold text-amber-900">Dry Matter (DM %) *</label>
+                                <input type="number" step="0.01" min="0.1" max="100" id="feedIngDm" class="form-control bg-white font-bold" placeholder="e.g. 45.0" required>
+                                <p class="text-[11px] text-amber-700 mt-1">Used to convert As-Fed kg to Dry Matter kg: <code>DM Intake = Feed Amount &times; DM% / 100</code></p>
+                            </div>
+                        </div>
+
+                        <!-- Macronutrients (% DM) -->
+                        <div class="text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Nutritional Composition (% DM basis)</div>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <div class="form-group mb-1">
+                                <label class="form-label">Crude Protein (CP % DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngCp" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Crude Fat (% DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngFat" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Crude Fiber (% DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngFiber" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">NDF (% DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngNdf" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">ADF (% DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngAdf" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Starch (% DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngStarch" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Sugar (% DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngSugar" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Ash (% DM)</label>
+                                <input type="number" step="0.01" min="0" max="100" id="feedIngAsh" class="form-control" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <!-- Minerals (% DM) -->
+                        <div class="text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 mt-2">Minerals (% DM basis &rarr; Intake in grams)</div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">
+                            <div class="form-group mb-1">
+                                <label class="form-label">Calcium (Ca % DM)</label>
+                                <input type="number" step="0.001" min="0" max="100" id="feedIngCa" class="form-control" placeholder="0.000">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Phosphorus (P % DM)</label>
+                                <input type="number" step="0.001" min="0" max="100" id="feedIngP" class="form-control" placeholder="0.000">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Magnesium (Mg % DM)</label>
+                                <input type="number" step="0.001" min="0" max="100" id="feedIngMg" class="form-control" placeholder="0.000">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Potassium (K % DM)</label>
+                                <input type="number" step="0.001" min="0" max="100" id="feedIngK" class="form-control" placeholder="0.000">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Sodium (Na % DM)</label>
+                                <input type="number" step="0.001" min="0" max="100" id="feedIngNa" class="form-control" placeholder="0.000">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">Sulfur (S % DM)</label>
+                                <input type="number" step="0.001" min="0" max="100" id="feedIngS" class="form-control" placeholder="0.000">
+                            </div>
+                        </div>
+
+                        <!-- Energy (MJ/kg DM) -->
+                        <div class="text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5 mt-2">Energy (MJ / kg DM basis)</div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="form-group mb-1">
+                                <label class="form-label">ME (MJ/kg DM)</label>
+                                <input type="number" step="0.01" min="0" id="feedIngMe" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group mb-1">
+                                <label class="form-label">NEL (MJ/kg DM)</label>
+                                <input type="number" step="0.01" min="0" id="feedIngNel" class="form-control" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Feed Notes / Description</label>
+                            <input type="text" id="feedIngNotes" class="form-control" placeholder="e.g. Standard farm silage batch, 2026 cutting">
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button type="button" class="btn-cancel flex-1" onclick="closeModal('modalFeedIngredient')" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; font-weight: 600; font-size: 0.85rem; color: #475569; cursor: pointer;">Cancel</button>
+                            <button type="submit" class="btn-submit flex-1" style="margin-top: 0; padding: 10px;">Save Nutrient Data</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -91,3 +91,24 @@ INSERT INTO `growth_records` (`cow_id`, `record_date`, `weight`, `age_months`, `
 -- Heat Stress & THI Log
 INSERT INTO `thi_records` (`recorded_at`, `temperature`, `humidity`, `thi_value`, `stress_level`, `notes`) VALUES
 (NOW(), 30.5, 68.0, 81.2, 'Moderate Stress', 'Sprinklers and cooling fans activated in main barn.');
+
+-- 10. Dairy Feed Database Initial Library
+INSERT INTO `feeds` (`id`, `name`, `category`, `dm_pct`, `cp_pct`, `fat_pct`, `fiber_pct`, `ndf_pct`, `adf_pct`, `starch_pct`, `sugar_pct`, `ash_pct`, `ca_pct`, `p_pct`, `mg_pct`, `k_pct`, `na_pct`, `s_pct`, `me_mj`, `nel_mj`, `notes`) VALUES
+(1, 'TMR', 'Forage / TMR', 45.00, 16.00, 3.50, 18.00, 35.00, 22.00, 24.00, 4.50, 7.20, 0.800, 0.450, 0.250, 1.300, 0.350, 0.200, 11.20, 6.80, 'Total Mixed Ration - balanced standard lactation blend'),
+(2, 'Concentrate', 'Concentrate', 88.00, 18.00, 4.00, 8.00, 18.00, 11.00, 38.00, 5.00, 6.50, 0.900, 0.600, 0.350, 1.100, 0.450, 0.220, 12.80, 7.60, 'Commercial Dairy Pellets 18% Crude Protein'),
+(3, 'Maize Silage', 'Silage', 35.00, 8.00, 3.00, 23.00, 45.00, 26.00, 32.00, 2.00, 4.50, 0.250, 0.220, 0.180, 1.150, 0.020, 0.120, 10.80, 6.40, 'Fermented chopped whole corn plant'),
+(4, 'Grass/Forage', 'Forage / TMR', 25.00, 10.50, 2.50, 30.00, 55.00, 35.00, 2.00, 8.50, 8.00, 0.400, 0.250, 0.200, 2.200, 0.150, 0.220, 9.50, 5.60, 'Fresh cut green pasture forage'),
+(5, 'Alfalfa Hay', 'Forage / TMR', 88.00, 19.50, 2.20, 28.00, 40.00, 30.00, 2.50, 6.00, 9.50, 1.400, 0.280, 0.300, 2.400, 0.100, 0.250, 9.80, 5.90, 'High quality dry legume hay'),
+(6, 'Soybean Meal', 'Concentrate', 90.00, 48.00, 1.50, 6.00, 11.00, 8.00, 5.00, 9.00, 6.50, 0.320, 0.650, 0.280, 2.100, 0.040, 0.450, 13.50, 8.20, 'Dehulled solvent-extracted protein supplement'),
+(7, 'Cottonseed (Whole)', 'By-product', 91.00, 23.00, 19.50, 24.00, 48.00, 38.00, 1.50, 3.00, 4.80, 0.160, 0.600, 0.380, 1.250, 0.050, 0.240, 14.20, 8.80, 'Fuzzy whole cottonseed - energy and fat booster')
+ON DUPLICATE KEY UPDATE name=VALUES(name), category=VALUES(category), dm_pct=VALUES(dm_pct), cp_pct=VALUES(cp_pct), fat_pct=VALUES(fat_pct), fiber_pct=VALUES(fiber_pct), ndf_pct=VALUES(ndf_pct), adf_pct=VALUES(adf_pct), starch_pct=VALUES(starch_pct), sugar_pct=VALUES(sugar_pct), ash_pct=VALUES(ash_pct), ca_pct=VALUES(ca_pct), p_pct=VALUES(p_pct), mg_pct=VALUES(mg_pct), k_pct=VALUES(k_pct), na_pct=VALUES(na_pct), s_pct=VALUES(s_pct), me_mj=VALUES(me_mj), nel_mj=VALUES(nel_mj);
+
+-- 11. Initial Sample Daily Feed Log (Cow 1: Daisy - Matching exact specification example)
+INSERT INTO `daily_feed_logs` (`id`, `cow_id`, `log_date`, `total_as_fed_kg`, `total_dm_kg`, `total_cp_kg`, `total_fat_kg`, `total_fiber_kg`, `total_ndf_kg`, `total_adf_kg`, `total_starch_kg`, `total_sugar_kg`, `total_ash_kg`, `total_ca_g`, `total_p_g`, `total_mg_g`, `total_k_g`, `total_na_g`, `total_s_g`, `total_me_mj`, `total_nel_mj`, `notes`) VALUES
+(1, 1, CURDATE(), 43.00, 19.70, 2.943, 0.685, 3.396, 6.677, 4.417, 4.503, 1.026, 1.345, 141.60, 86.29, 47.92, 280.90, 61.27, 37.89, 224.36, 134.86, 'Balanced standard lactation diet entry');
+
+INSERT INTO `daily_feed_items` (`feed_log_id`, `feed_id`, `feed_name`, `amount_as_fed_kg`, `dm_intake_kg`, `cp_intake_kg`, `fat_intake_kg`, `fiber_intake_kg`, `ndf_intake_kg`, `adf_intake_kg`, `starch_intake_kg`, `sugar_intake_kg`, `ash_intake_kg`, `ca_intake_g`, `p_intake_g`, `mg_intake_g`, `k_intake_g`, `na_intake_g`, `s_intake_g`, `me_intake_mj`, `nel_intake_mj`) VALUES
+(1, 1, 'TMR', 25.00, 11.25, 1.800, 0.394, 2.025, 3.938, 2.475, 2.700, 0.506, 0.810, 90.00, 50.63, 28.13, 146.25, 39.38, 22.50, 126.00, 76.50),
+(1, 2, 'Concentrate', 5.00, 4.40, 0.792, 0.176, 0.352, 0.792, 0.484, 1.672, 0.220, 0.286, 39.60, 26.40, 15.40, 48.40, 19.80, 9.68, 56.32, 33.44),
+(1, 3, 'Maize Silage', 8.00, 2.80, 0.224, 0.084, 0.644, 1.260, 0.728, 0.896, 0.056, 0.126, 7.00, 6.16, 5.04, 32.20, 0.56, 3.36, 30.24, 17.92),
+(1, 4, 'Grass/Forage', 5.00, 1.25, 0.131, 0.031, 0.375, 0.688, 0.438, 0.025, 0.106, 0.100, 5.00, 3.13, 2.50, 27.50, 1.88, 2.75, 11.88, 7.00);

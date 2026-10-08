@@ -106,6 +106,47 @@ const DEFAULT_SEED_DATA = {
     ],
     thi: [
         { id: 1, recorded_at: '2026-09-10 12:00:00', temperature: 30.5, humidity: 68.0, thi_value: 81.2, stress_level: 'Moderate Stress', notes: 'Fans on' }
+    ],
+    feeds: [
+        { id: 1, name: 'TMR', category: 'Forage / TMR', dm_pct: 45.00, cp_pct: 16.00, fat_pct: 3.50, fiber_pct: 18.00, ndf_pct: 35.00, adf_pct: 22.00, starch_pct: 24.00, sugar_pct: 4.50, ash_pct: 7.20, ca_pct: 0.800, p_pct: 0.450, mg_pct: 0.250, k_pct: 1.300, na_pct: 0.350, s_pct: 0.200, me_mj: 11.20, nel_mj: 6.80, notes: 'Total Mixed Ration' },
+        { id: 2, name: 'Concentrate', category: 'Concentrate', dm_pct: 88.00, cp_pct: 18.00, fat_pct: 4.00, fiber_pct: 8.00, ndf_pct: 18.00, adf_pct: 11.00, starch_pct: 38.00, sugar_pct: 5.00, ash_pct: 6.50, ca_pct: 0.900, p_pct: 0.600, mg_pct: 0.350, k_pct: 1.100, na_pct: 0.450, s_pct: 0.220, me_mj: 12.80, nel_mj: 7.60, notes: 'Commercial Dairy Pellets 18%' },
+        { id: 3, name: 'Maize Silage', category: 'Silage', dm_pct: 35.00, cp_pct: 8.00, fat_pct: 3.00, fiber_pct: 23.00, ndf_pct: 45.00, adf_pct: 26.00, starch_pct: 32.00, sugar_pct: 2.00, ash_pct: 4.50, ca_pct: 0.250, p_pct: 0.220, mg_pct: 0.180, k_pct: 1.150, na_pct: 0.020, s_pct: 0.120, me_mj: 10.80, nel_mj: 6.40, notes: 'Chopped corn silage' },
+        { id: 4, name: 'Grass/Forage', category: 'Forage / TMR', dm_pct: 25.00, cp_pct: 10.50, fat_pct: 2.50, fiber_pct: 30.00, ndf_pct: 55.00, adf_pct: 35.00, starch_pct: 2.00, sugar_pct: 8.50, ash_pct: 8.00, ca_pct: 0.400, p_pct: 0.250, mg_pct: 0.200, k_pct: 2.200, na_pct: 0.150, s_pct: 0.220, me_mj: 9.50, nel_mj: 5.60, notes: 'Fresh green pasture forage' },
+        { id: 5, name: 'Alfalfa Hay', category: 'Forage / TMR', dm_pct: 88.00, cp_pct: 19.50, fat_pct: 2.20, fiber_pct: 28.00, ndf_pct: 40.00, adf_pct: 30.00, starch_pct: 2.50, sugar_pct: 6.00, ash_pct: 9.50, ca_pct: 1.400, p_pct: 0.280, mg_pct: 0.300, k_pct: 2.400, na_pct: 0.100, s_pct: 0.250, me_mj: 9.80, nel_mj: 5.90, notes: 'Premium legume hay' },
+        { id: 6, name: 'Soybean Meal', category: 'Concentrate', dm_pct: 90.00, cp_pct: 48.00, fat_pct: 1.50, fiber_pct: 6.00, ndf_pct: 11.00, adf_pct: 8.00, starch_pct: 5.00, sugar_pct: 9.00, ash_pct: 6.50, ca_pct: 0.320, p_pct: 0.650, mg_pct: 0.280, k_pct: 2.100, na_pct: 0.040, s_pct: 0.450, me_mj: 13.50, nel_mj: 8.20, notes: 'Solvent extracted 48% protein meal' },
+        { id: 7, name: 'Cottonseed (Whole)', category: 'By-product', dm_pct: 91.00, cp_pct: 23.00, fat_pct: 19.50, fiber_pct: 24.00, ndf_pct: 48.00, adf_pct: 38.00, starch_pct: 1.50, sugar_pct: 3.00, ash_pct: 4.80, ca_pct: 0.160, p_pct: 0.600, mg_pct: 0.380, k_pct: 1.250, na_pct: 0.050, s_pct: 0.240, me_mj: 14.20, nel_mj: 8.80, notes: 'Fuzzy whole cottonseed' }
+    ],
+    feed_logs: [
+        {
+            id: 1,
+            cow_id: 1,
+            log_date: '2026-10-08',
+            total_as_fed_kg: 43.00,
+            total_dm_kg: 19.70,
+            total_cp_kg: 2.943,
+            total_fat_kg: 0.685,
+            total_fiber_kg: 3.396,
+            total_ndf_kg: 6.677,
+            total_adf_kg: 4.417,
+            total_starch_kg: 4.503,
+            total_sugar_kg: 1.026,
+            total_ash_kg: 1.345,
+            total_ca_g: 141.60,
+            total_p_g: 86.29,
+            total_mg_g: 47.92,
+            total_k_g: 280.90,
+            total_na_g: 61.27,
+            total_s_g: 37.89,
+            total_me_mj: 224.36,
+            total_nel_mj: 134.86,
+            notes: 'Balanced standard lactation diet entry',
+            items: [
+                { feed_id: 1, feed_name: 'TMR', amount_as_fed_kg: 25.00, dm_intake_kg: 11.25, cp_intake_kg: 1.800, fat_intake_kg: 0.394, fiber_intake_kg: 2.025, ndf_intake_kg: 3.938, ca_intake_g: 90.00, p_intake_g: 50.63 },
+                { feed_id: 2, feed_name: 'Concentrate', amount_as_fed_kg: 5.00, dm_intake_kg: 4.40, cp_intake_kg: 0.792, fat_intake_kg: 0.176, fiber_intake_kg: 0.352, ndf_intake_kg: 0.792, ca_intake_g: 39.60, p_intake_g: 26.40 },
+                { feed_id: 3, feed_name: 'Maize Silage', amount_as_fed_kg: 8.00, dm_intake_kg: 2.80, cp_intake_kg: 0.224, fat_intake_kg: 0.084, fiber_intake_kg: 0.644, ndf_intake_kg: 1.260, ca_intake_g: 7.00, p_intake_g: 6.16 },
+                { feed_id: 4, feed_name: 'Grass/Forage', amount_as_fed_kg: 5.00, dm_intake_kg: 1.25, cp_intake_kg: 0.131, fat_intake_kg: 0.031, fiber_intake_kg: 0.375, ndf_intake_kg: 0.688, ca_intake_g: 5.00, p_intake_g: 3.13 }
+            ]
+        }
     ]
 };
 
@@ -143,6 +184,11 @@ function getLocalStore() {
             parsed.vaccinations.push({ id: 10, cow_id: 27, vaccine_name: 'HS Vaccine (Primary)', date_given: '2026-05-01', next_vaccination_date: '2026-08-01', treatment_type: 'HS Protocol Primary', status: 'Given' });
             parsed.vaccinations.push({ id: 11, cow_id: 27, vaccine_name: 'HS Vaccine (Secondary Booster)', date_given: '2026-08-01', next_vaccination_date: '2027-08-01', treatment_type: 'HS Secondary Booster', status: 'Given' });
             parsed.vaccinations.push({ id: 12, cow_id: 27, vaccine_name: 'BQ Vaccine (Primary)', date_given: '2026-05-01', next_vaccination_date: '2027-06-01', treatment_type: 'BQ Protocol Primary', status: 'Given' });
+            changed = true;
+        }
+        if (!parsed.feeds || parsed.feeds.length === 0) {
+            parsed.feeds = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feeds));
+            parsed.feed_logs = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feed_logs));
             changed = true;
         }
         if (changed) {
@@ -523,6 +569,7 @@ function switchTab(tabName) {
         if (tabName === 'dashboard') loadDashboard();
         if (tabName === 'herd') loadCows();
         if (tabName === 'milk') loadMilkLogs();
+        if (tabName === 'feed') loadFeedModule();
         if (tabName === 'breeding') loadBreedingData();
         if (tabName === 'health') loadHealthAndVax();
         if (tabName === 'alerts') loadAllAlerts();
@@ -831,6 +878,34 @@ async function openCowDetail(cowId) {
             c.classList.toggle('active', c.getAttribute('data-period') === 'daily');
         });
         renderCowDetailMilkHistory(cowId, 'daily');
+
+        // Render Recent Feed Intake
+        const feedContainer = document.getElementById('detailFeedHistory');
+        if (feedContainer) {
+            let cowFeedLogs = cow.feed_history || [];
+            if (!cowFeedLogs.length && !isServerMode) {
+                const store = getLocalStore();
+                cowFeedLogs = (store.feed_logs || []).filter(l => l.cow_id == cowId);
+            }
+            if (cowFeedLogs.length > 0) {
+                feedContainer.innerHTML = cowFeedLogs.slice(0, 3).map(fl => `
+                    <div class="py-2 px-2.5 bg-amber-50/60 border border-amber-200/80 rounded-xl mb-1.5 text-xs">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-amber-950">${fl.log_date}</span>
+                            <span class="font-bold text-amber-800 text-[11px]">${parseFloat(fl.total_as_fed_kg).toFixed(2)} kg As-Fed</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1 text-[10px] text-slate-600 bg-white p-1.5 rounded-lg border border-amber-100 text-center">
+                            <div><span class="text-slate-400 block text-[9px]">DMI</span><b>${parseFloat(fl.total_dm_kg).toFixed(2)} kg</b></div>
+                            <div><span class="text-slate-400 block text-[9px]">CP</span><b>${parseFloat(fl.total_cp_kg).toFixed(2)} kg</b></div>
+                            <div><span class="text-slate-400 block text-[9px]">Ca</span><b>${parseFloat(fl.total_ca_g).toFixed(1)} g</b></div>
+                            <div><span class="text-slate-400 block text-[9px]">P</span><b>${parseFloat(fl.total_p_g).toFixed(1)} g</b></div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                feedContainer.innerHTML = `<p class="text-xs text-slate-400 py-1.5">No recent feeding records found.</p>`;
+            }
+        }
 
         const healthContainer = document.getElementById('detailHealthHistory');
         if (cow.health_history && cow.health_history.length > 0) {
@@ -1916,7 +1991,7 @@ function initFab() {
 }
 
 function populateCowSelectors(cows) {
-    const selectors = ['milkCowSelect', 'heatCowSelect', 'aiCowSelect', 'calvCowSelect', 'healthCowSelect', 'vaxCowSelect', 'growthCowSelect'];
+    const selectors = ['milkCowSelect', 'heatCowSelect', 'aiCowSelect', 'calvCowSelect', 'healthCowSelect', 'vaxCowSelect', 'growthCowSelect', 'feedCowSelect'];
     selectors.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -2467,10 +2542,834 @@ async function saveThiReading() {
             const data = await res.json();
             showToast(`THI log saved! Index: ${data.thi} (${data.stress_level})`);
         } else {
-            showToast(`THI log saved! Index: 81.2 (Moderate Stress)`);
+            showToast('THI log saved! Index: 81.2 (Moderate Stress)');
         }
         closeModal('modalThiCalculator');
     } catch (e) {
         showToast('Failed to save THI log', true);
     }
 }
+
+// =========================================================================
+// 10. DAIRY FEED NUTRIENT CALCULATION MODULE
+// =========================================================================
+let feedsCache = [];
+let feedLogsCache = [];
+let activeFeedSubTab = 'calculator';
+let activeFeedCategory = 'all';
+
+function switchFeedSubTab(subTab, btn) {
+    activeFeedSubTab = subTab;
+    document.querySelectorAll('#feedSubTabs .filter-chip').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const viewCalc = document.getElementById('feedContentCalculator');
+    const viewLib = document.getElementById('feedContentLibrary');
+    const viewHist = document.getElementById('feedContentHistory');
+
+    if (viewCalc) viewCalc.style.display = subTab === 'calculator' ? 'block' : 'none';
+    if (viewLib) viewLib.style.display = subTab === 'library' ? 'block' : 'none';
+    if (viewHist) viewHist.style.display = subTab === 'history' ? 'block' : 'none';
+
+    if (subTab === 'library') renderFeedLibrary();
+    if (subTab === 'history') loadFeedHistory();
+}
+
+async function loadFeedModule(subTab = null) {
+    if (!cowsCache || !cowsCache.length) {
+        await loadCows();
+    } else {
+        populateCowSelectors(cowsCache);
+    }
+
+    // Set today's date if empty
+    const dateInput = document.getElementById('feedLogDate');
+    if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+    }
+
+    // Load feed ingredients
+    await loadFeedIngredients();
+
+    // Ensure initial rows exist in calculator
+    const container = document.getElementById('feedRowsContainer');
+    if (container && container.children.length === 0) {
+        loadExampleFeedRation();
+    } else {
+        recalculateRationTotals();
+    }
+
+    if (subTab) {
+        const btn = document.getElementById(subTab === 'library' ? 'btnSubTabFeedLibrary' : (subTab === 'history' ? 'btnSubTabFeedHistory' : 'btnSubTabFeedCalc'));
+        switchFeedSubTab(subTab, btn);
+    }
+}
+
+async function loadFeedIngredients() {
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php?action=list_ingredients`);
+            const data = await res.json();
+            feedsCache = data.feeds || [];
+        } else {
+            const store = getLocalStore();
+            feedsCache = store.feeds || [];
+        }
+    } catch (e) {
+        console.error('Error fetching feeds:', e);
+        const store = getLocalStore();
+        feedsCache = store.feeds || [];
+    }
+
+    // Update badge count
+    const badge = document.getElementById('feedCountBadge');
+    if (badge) badge.innerText = feedsCache.length;
+}
+
+// Recalculate nutrient intake for each feed & daily total intake
+function recalculateRationTotals() {
+    const container = document.getElementById('feedRowsContainer');
+    if (!container) return;
+
+    const rowElements = container.querySelectorAll('.feed-row-item');
+    const tableBody = document.getElementById('feedBreakdownTableBody');
+    const tableFoot = document.getElementById('feedBreakdownTableFoot');
+
+    let totalAsFed = 0;
+    let totalDm = 0;
+    let totalCp = 0;
+    let totalFat = 0;
+    let totalFiber = 0;
+    let totalNdf = 0;
+    let totalAdf = 0;
+    let totalStarch = 0;
+    let totalSugar = 0;
+    let totalAsh = 0;
+    let totalCa = 0;
+    let totalP = 0;
+    let totalMg = 0;
+    let totalK = 0;
+    let totalNa = 0;
+    let totalS = 0;
+    let totalMe = 0;
+    let totalNel = 0;
+
+    let tableRowsHtml = '';
+
+    rowElements.forEach(row => {
+        const feedSelect = row.querySelector('.feed-select');
+        const amountInput = row.querySelector('.feed-amount');
+        if (!feedSelect || !amountInput) return;
+
+        const feedId = parseInt(feedSelect.value);
+        const asFedKg = parseFloat(amountInput.value) || 0;
+        const feed = feedsCache.find(f => f.id === feedId);
+
+        if (feed && asFedKg > 0) {
+            const dmPct = parseFloat(feed.dm_pct || 0);
+            const cpPct = parseFloat(feed.cp_pct || 0);
+            const fatPct = parseFloat(feed.fat_pct || 0);
+            const fiberPct = parseFloat(feed.fiber_pct || 0);
+            const ndfPct = parseFloat(feed.ndf_pct || 0);
+            const adfPct = parseFloat(feed.adf_pct || 0);
+            const starchPct = parseFloat(feed.starch_pct || 0);
+            const sugarPct = parseFloat(feed.sugar_pct || 0);
+            const ashPct = parseFloat(feed.ash_pct || 0);
+            const caPct = parseFloat(feed.ca_pct || 0);
+            const pPct = parseFloat(feed.p_pct || 0);
+            const mgPct = parseFloat(feed.mg_pct || 0);
+            const kPct = parseFloat(feed.k_pct || 0);
+            const naPct = parseFloat(feed.na_pct || 0);
+            const sPct = parseFloat(feed.s_pct || 0);
+            const meMj = parseFloat(feed.me_mj || 0);
+            const nelMj = parseFloat(feed.nel_mj || 0);
+
+            // 1. Dry Matter Intake (kg) = Feed Amount * DM% / 100
+            const dmKg = asFedKg * (dmPct / 100);
+
+            // 2. Nutrients (% DM basis): Intake (kg) = DM Intake * Nutrient% / 100
+            const cpKg = dmKg * (cpPct / 100);
+            const fatKg = dmKg * (fatPct / 100);
+            const fiberKg = dmKg * (fiberPct / 100);
+            const ndfKg = dmKg * (ndfPct / 100);
+            const adfKg = dmKg * (adfPct / 100);
+            const starchKg = dmKg * (starchPct / 100);
+            const sugarKg = dmKg * (sugarPct / 100);
+            const ashKg = dmKg * (ashPct / 100);
+
+            // 3. Minerals (Ca, P, Mg, K, Na, S): Mineral Intake (g) = DM Intake * Mineral% / 100 * 1000
+            const caG = dmKg * (caPct / 100) * 1000;
+            const pG = dmKg * (pPct / 100) * 1000;
+            const mgG = dmKg * (mgPct / 100) * 1000;
+            const kG = dmKg * (kPct / 100) * 1000;
+            const naG = dmKg * (naPct / 100) * 1000;
+            const sG = dmKg * (sPct / 100) * 1000;
+
+            // 4. Energy (ME, NEL): Energy Intake (MJ) = DM Intake * Energy (MJ/kg DM)
+            const meTotal = dmKg * meMj;
+            const nelTotal = dmKg * nelMj;
+
+            // Accumulate Daily Totals
+            totalAsFed += asFedKg;
+            totalDm += dmKg;
+            totalCp += cpKg;
+            totalFat += fatKg;
+            totalFiber += fiberKg;
+            totalNdf += ndfKg;
+            totalAdf += adfKg;
+            totalStarch += starchKg;
+            totalSugar += sugarKg;
+            totalAsh += ashKg;
+            totalCa += caG;
+            totalP += pG;
+            totalMg += mgG;
+            totalK += kG;
+            totalNa += naG;
+            totalS += sG;
+            totalMe += meTotal;
+            totalNel += nelTotal;
+
+            tableRowsHtml += `
+                <tr>
+                    <td class="font-bold text-slate-800">${feed.name}</td>
+                    <td>${asFedKg.toFixed(2)}</td>
+                    <td class="font-semibold text-emerald-800">${dmKg.toFixed(2)}</td>
+                    <td class="text-blue-800 font-medium">${cpKg.toFixed(2)}</td>
+                    <td>${fatKg.toFixed(2)}</td>
+                    <td>${fiberKg.toFixed(2)}</td>
+                    <td>${ndfKg.toFixed(2)}</td>
+                    <td class="text-amber-800">${caG.toFixed(1)}</td>
+                    <td class="text-amber-800">${pG.toFixed(1)}</td>
+                </tr>
+            `;
+        }
+    });
+
+    if (tableRowsHtml === '') {
+        tableRowsHtml = `<tr><td colspan="9" class="text-center py-4 text-slate-400">Select feed ingredients and enter amounts in kg as-fed.</td></tr>`;
+    }
+
+    if (tableBody) tableBody.innerHTML = tableRowsHtml;
+
+    if (tableFoot) {
+        tableFoot.innerHTML = `
+            <tr>
+                <td class="font-bold text-slate-900">TOTAL</td>
+                <td class="font-bold text-slate-900">${totalAsFed.toFixed(2)}</td>
+                <td class="font-bold text-emerald-900 bg-emerald-50/70">${totalDm.toFixed(2)}</td>
+                <td class="font-bold text-blue-900 bg-blue-50/70">${totalCp.toFixed(2)}</td>
+                <td class="font-bold text-slate-900">${totalFat.toFixed(2)}</td>
+                <td class="font-bold text-slate-900">${totalFiber.toFixed(2)}</td>
+                <td class="font-bold text-slate-900">${totalNdf.toFixed(2)}</td>
+                <td class="font-bold text-amber-900 bg-amber-50/70">${totalCa.toFixed(1)}</td>
+                <td class="font-bold text-amber-900 bg-amber-50/70">${totalP.toFixed(1)}</td>
+            </tr>
+        `;
+    }
+
+    // Update KPI summary cards
+    const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+    setText('totalKpiAsFed', totalAsFed.toFixed(2) + ' kg');
+    setText('totalKpiDm', totalDm.toFixed(2) + ' kg');
+    setText('totalKpiCp', totalCp.toFixed(2) + ' kg');
+    setText('totalKpiFat', totalFat.toFixed(2) + ' kg');
+    setText('totalKpiFiber', totalFiber.toFixed(2) + ' kg');
+    setText('totalKpiNdf', totalNdf.toFixed(2) + ' kg');
+    setText('totalKpiAdf', totalAdf.toFixed(2) + ' kg');
+    setText('totalKpiStarch', totalStarch.toFixed(2) + ' kg');
+    setText('totalKpiSugar', totalSugar.toFixed(2) + ' kg');
+    setText('totalKpiAsh', totalAsh.toFixed(2) + ' kg');
+    setText('totalKpiCa', totalCa.toFixed(1) + ' g');
+    setText('totalKpiP', totalP.toFixed(1) + ' g');
+    setText('totalKpiMg', totalMg.toFixed(1) + ' g');
+    setText('totalKpiK', totalK.toFixed(1) + ' g');
+    setText('totalKpiNa', totalNa.toFixed(1) + ' g');
+    setText('totalKpiS', totalS.toFixed(1) + ' g');
+    setText('totalKpiMe', totalMe.toFixed(1) + ' MJ');
+    setText('totalKpiNel', totalNel.toFixed(1) + ' MJ');
+}
+
+function addFeedRationRow(feedId = null, amount = '') {
+    const container = document.getElementById('feedRowsContainer');
+    if (!container) return;
+
+    const row = document.createElement('div');
+    row.className = 'feed-row-item feed-row-card flex items-center gap-2';
+
+    let optionsHtml = `<option value="">-- Choose Feed --</option>`;
+    feedsCache.forEach(f => {
+        const isSel = (feedId && f.id == feedId) ? 'selected' : '';
+        optionsHtml += `<option value="${f.id}" ${isSel}>${f.name} (${parseFloat(f.dm_pct).toFixed(0)}% DM &bull; ${f.category})</option>`;
+    });
+
+    row.innerHTML = `
+        <div class="flex-1">
+            <select class="feed-select form-control text-xs font-semibold py-1.5" style="border-radius: 8px;">
+                ${optionsHtml}
+            </select>
+        </div>
+        <div class="w-28 flex items-center gap-1">
+            <input type="number" step="0.1" min="0.1" class="feed-amount form-control text-xs font-bold text-right py-1.5" placeholder="0.0" value="${amount}" style="border-radius: 8px;">
+            <span class="text-[11px] font-bold text-slate-500">kg</span>
+        </div>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 border border-transparent transition-colors" onclick="removeFeedRationRow(this)" title="Remove item">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    `;
+
+    const sel = row.querySelector('.feed-select');
+    const inp = row.querySelector('.feed-amount');
+    sel.addEventListener('change', recalculateRationTotals);
+    inp.addEventListener('input', recalculateRationTotals);
+
+    container.appendChild(row);
+    recalculateRationTotals();
+}
+
+function removeFeedRationRow(btn) {
+    const row = btn.closest('.feed-row-item');
+    if (row) {
+        row.remove();
+        recalculateRationTotals();
+    }
+}
+
+function clearFeedRationRows() {
+    const container = document.getElementById('feedRowsContainer');
+    if (container) {
+        container.innerHTML = '';
+        addFeedRationRow();
+    }
+}
+
+function loadExampleFeedRation() {
+    const container = document.getElementById('feedRowsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const findId = (name) => {
+        const f = feedsCache.find(x => x.name.toLowerCase().includes(name.toLowerCase()));
+        return f ? f.id : null;
+    };
+
+    const tmrId = findId('TMR') || 1;
+    const concId = findId('Concentrate') || 2;
+    const silageId = findId('Maize Silage') || 3;
+    const grassId = findId('Grass') || 4;
+
+    addFeedRationRow(tmrId, 25);
+    addFeedRationRow(concId, 5);
+    addFeedRationRow(silageId, 8);
+    addFeedRationRow(grassId, 5);
+
+    showToast('Loaded standard example ration (43 kg As-Fed)');
+}
+
+async function onFeedCowSelectionChange(cowId) {
+    if (!cowId) return;
+    const container = document.getElementById('feedRowsContainer');
+    if (container && container.children.length === 0) {
+        loadExampleFeedRation();
+    }
+}
+
+async function saveCurrentFeedRation() {
+    const cowSelect = document.getElementById('feedCowSelect');
+    const dateInput = document.getElementById('feedLogDate');
+    const notesInput = document.getElementById('feedLogNotes');
+
+    const cowId = parseInt(cowSelect.value);
+    const logDate = dateInput.value || new Date().toISOString().split('T')[0];
+    const notes = (notesInput ? notesInput.value : '').trim();
+
+    if (!cowId) {
+        showToast('Please select a cow first.', true);
+        if (cowSelect) cowSelect.focus();
+        return;
+    }
+
+    const container = document.getElementById('feedRowsContainer');
+    const rowElements = container.querySelectorAll('.feed-row-item');
+    const items = [];
+
+    rowElements.forEach(row => {
+        const feedSelect = row.querySelector('.feed-select');
+        const amountInput = row.querySelector('.feed-amount');
+        const feedId = parseInt(feedSelect.value);
+        const amount = parseFloat(amountInput.value) || 0;
+        if (feedId && amount > 0) {
+            const feed = feedsCache.find(f => f.id === feedId);
+            items.push({
+                feed_id: feedId,
+                feed_name: feed ? feed.name : 'Feed',
+                amount_as_fed_kg: amount
+            });
+        }
+    });
+
+    if (items.length === 0) {
+        showToast('Please enter at least one feed ingredient and amount.', true);
+        return;
+    }
+
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'save_log',
+                    cow_id: cowId,
+                    log_date: logDate,
+                    notes: notes,
+                    items: items
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to save feed ration.');
+        } else {
+            const store = getLocalStore();
+            if (!store.feed_logs) store.feed_logs = [];
+            let tAsFed = 0, tDm = 0, tCp = 0, tFat = 0, tFiber = 0, tNdf = 0, tCa = 0, tP = 0;
+            const processedItems = items.map(it => {
+                const f = feedsCache.find(x => x.id === it.feed_id) || {};
+                const dm = it.amount_as_fed_kg * (parseFloat(f.dm_pct || 90) / 100);
+                const cp = dm * (parseFloat(f.cp_pct || 0) / 100);
+                const fat = dm * (parseFloat(f.fat_pct || 0) / 100);
+                const fiber = dm * (parseFloat(f.fiber_pct || 0) / 100);
+                const ndf = dm * (parseFloat(f.ndf_pct || 0) / 100);
+                const ca = dm * (parseFloat(f.ca_pct || 0) / 100) * 1000;
+                const p = dm * (parseFloat(f.p_pct || 0) / 100) * 1000;
+                tAsFed += it.amount_as_fed_kg;
+                tDm += dm; tCp += cp; tFat += fat; tFiber += fiber; tNdf += ndf; tCa += ca; tP += p;
+                return {
+                    feed_id: it.feed_id,
+                    feed_name: it.feed_name,
+                    amount_as_fed_kg: it.amount_as_fed_kg,
+                    dm_intake_kg: parseFloat(dm.toFixed(2)),
+                    cp_intake_kg: parseFloat(cp.toFixed(3)),
+                    fat_intake_kg: parseFloat(fat.toFixed(3)),
+                    fiber_intake_kg: parseFloat(fiber.toFixed(3)),
+                    ndf_intake_kg: parseFloat(ndf.toFixed(3)),
+                    ca_intake_g: parseFloat(ca.toFixed(2)),
+                    p_intake_g: parseFloat(p.toFixed(2))
+                };
+            });
+
+            const newLog = {
+                id: Date.now(),
+                cow_id: cowId,
+                log_date: logDate,
+                total_as_fed_kg: parseFloat(tAsFed.toFixed(2)),
+                total_dm_kg: parseFloat(tDm.toFixed(2)),
+                total_cp_kg: parseFloat(tCp.toFixed(3)),
+                total_fat_kg: parseFloat(tFat.toFixed(3)),
+                total_fiber_kg: parseFloat(tFiber.toFixed(3)),
+                total_ndf_kg: parseFloat(tNdf.toFixed(3)),
+                total_ca_g: parseFloat(tCa.toFixed(2)),
+                total_p_g: parseFloat(tP.toFixed(2)),
+                notes: notes,
+                items: processedItems
+            };
+            store.feed_logs.unshift(newLog);
+            saveLocalStore(store);
+        }
+
+        showToast('Daily feeding record saved successfully!');
+        if (notesInput) notesInput.value = '';
+        loadFeedHistory(cowId);
+    } catch (err) {
+        showToast(err.message, true);
+    }
+}
+
+function renderFeedLibrary(filterCat = 'all', searchQuery = '') {
+    const container = document.getElementById('feedLibraryCardsContainer');
+    if (!container) return;
+
+    let filtered = feedsCache;
+    if (filterCat && filterCat !== 'all') {
+        filtered = filtered.filter(f => f.category === filterCat);
+    }
+    if (searchQuery && searchQuery.trim() !== '') {
+        const q = searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(f => f.name.toLowerCase().includes(q) || (f.category && f.category.toLowerCase().includes(q)));
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">No feed ingredients matching your criteria.</div>`;
+        return;
+    }
+
+    container.innerHTML = filtered.map(f => `
+        <div class="app-card mb-2.5 p-3 bg-white border border-slate-200">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-slate-900 text-sm">${f.name}</span>
+                        <span class="status-badge badge-gray text-[10px]">${f.category || 'Feed'}</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">${f.notes || 'Nutritional composition on dry matter basis'}</div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-xs font-semibold" onclick="openModalFeedIngredient(${f.id})" title="Edit Feed">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button class="px-2 py-1 bg-red-50 hover:bg-red-100 rounded text-red-600 text-xs font-semibold" onclick="deleteFeedIngredient(${f.id})" title="Delete Feed">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Key Nutrient Badges Grid -->
+            <div class="grid grid-cols-4 gap-1.5 mt-2.5 text-center text-xs">
+                <div class="p-1.5 bg-amber-50 rounded-lg border border-amber-200">
+                    <span class="text-[9px] text-amber-800 font-bold block">DM</span>
+                    <span class="font-bold text-amber-950">${parseFloat(f.dm_pct).toFixed(1)}%</span>
+                </div>
+                <div class="p-1.5 bg-blue-50 rounded-lg border border-blue-200">
+                    <span class="text-[9px] text-blue-800 font-bold block">CP</span>
+                    <span class="font-bold text-blue-950">${parseFloat(f.cp_pct).toFixed(1)}%</span>
+                </div>
+                <div class="p-1.5 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <span class="text-[9px] text-emerald-800 font-bold block">NDF</span>
+                    <span class="font-bold text-emerald-950">${parseFloat(f.ndf_pct).toFixed(1)}%</span>
+                </div>
+                <div class="p-1.5 bg-purple-50 rounded-lg border border-purple-200">
+                    <span class="text-[9px] text-purple-800 font-bold block">ME</span>
+                    <span class="font-bold text-purple-950">${parseFloat(f.me_mj).toFixed(1)} MJ</span>
+                </div>
+            </div>
+
+            <!-- Full composition pill detail -->
+            <div class="flex flex-wrap gap-1.5 mt-2 text-[10px] text-slate-600">
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">Fat: <b>${parseFloat(f.fat_pct).toFixed(1)}%</b></span>
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">Fiber: <b>${parseFloat(f.fiber_pct).toFixed(1)}%</b></span>
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">ADF: <b>${parseFloat(f.adf_pct).toFixed(1)}%</b></span>
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">Starch: <b>${parseFloat(f.starch_pct).toFixed(1)}%</b></span>
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">Sugar: <b>${parseFloat(f.sugar_pct).toFixed(1)}%</b></span>
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">Ca: <b>${parseFloat(f.ca_pct).toFixed(2)}%</b></span>
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">P: <b>${parseFloat(f.p_pct).toFixed(2)}%</b></span>
+                <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">NEL: <b>${parseFloat(f.nel_mj).toFixed(1)} MJ</b></span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterFeedLibrary() {
+    const q = document.getElementById('feedSearchInput') ? document.getElementById('feedSearchInput').value : '';
+    renderFeedLibrary(activeFeedCategory, q);
+}
+
+function filterFeedCategory(category, btn) {
+    activeFeedCategory = category;
+    document.querySelectorAll('#feedCategoryFilters .filter-chip').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const q = document.getElementById('feedSearchInput') ? document.getElementById('feedSearchInput').value : '';
+    renderFeedLibrary(category, q);
+}
+
+function openModalFeedIngredient(feedId = null) {
+    const titleEl = document.getElementById('modalFeedIngredientTitle');
+    const form = document.getElementById('formFeedIngredient');
+    if (form) form.reset();
+
+    const idInput = document.getElementById('feedIngredientId');
+    if (idInput) idInput.value = feedId || '';
+
+    if (feedId) {
+        const feed = feedsCache.find(f => f.id == feedId);
+        if (feed) {
+            if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-600 mr-1.5"></i> Edit ${feed.name}`;
+            document.getElementById('feedIngName').value = feed.name || '';
+            document.getElementById('feedIngCategory').value = feed.category || 'Forage / TMR';
+            document.getElementById('feedIngDm').value = feed.dm_pct || '';
+            document.getElementById('feedIngCp').value = feed.cp_pct || '';
+            document.getElementById('feedIngFat').value = feed.fat_pct || '';
+            document.getElementById('feedIngFiber').value = feed.fiber_pct || '';
+            document.getElementById('feedIngNdf').value = feed.ndf_pct || '';
+            document.getElementById('feedIngAdf').value = feed.adf_pct || '';
+            document.getElementById('feedIngStarch').value = feed.starch_pct || '';
+            document.getElementById('feedIngSugar').value = feed.sugar_pct || '';
+            document.getElementById('feedIngAsh').value = feed.ash_pct || '';
+            document.getElementById('feedIngCa').value = feed.ca_pct || '';
+            document.getElementById('feedIngP').value = feed.p_pct || '';
+            document.getElementById('feedIngMg').value = feed.mg_pct || '';
+            document.getElementById('feedIngK').value = feed.k_pct || '';
+            document.getElementById('feedIngNa').value = feed.na_pct || '';
+            document.getElementById('feedIngS').value = feed.s_pct || '';
+            document.getElementById('feedIngMe').value = feed.me_mj || '';
+            document.getElementById('feedIngNel').value = feed.nel_mj || '';
+            document.getElementById('feedIngNotes').value = feed.notes || '';
+        }
+    } else {
+        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-seedling text-amber-600 mr-1.5"></i> Add New Feed Ingredient`;
+    }
+
+    openModal('modalFeedIngredient');
+}
+
+async function submitFeedIngredient(event) {
+    event.preventDefault();
+    const id = document.getElementById('feedIngredientId').value;
+    const name = document.getElementById('feedIngName').value.trim();
+    const category = document.getElementById('feedIngCategory').value;
+    const dm_pct = parseFloat(document.getElementById('feedIngDm').value) || 0;
+    const cp_pct = parseFloat(document.getElementById('feedIngCp').value) || 0;
+    const fat_pct = parseFloat(document.getElementById('feedIngFat').value) || 0;
+    const fiber_pct = parseFloat(document.getElementById('feedIngFiber').value) || 0;
+    const ndf_pct = parseFloat(document.getElementById('feedIngNdf').value) || 0;
+    const adf_pct = parseFloat(document.getElementById('feedIngAdf').value) || 0;
+    const starch_pct = parseFloat(document.getElementById('feedIngStarch').value) || 0;
+    const sugar_pct = parseFloat(document.getElementById('feedIngSugar').value) || 0;
+    const ash_pct = parseFloat(document.getElementById('feedIngAsh').value) || 0;
+    const ca_pct = parseFloat(document.getElementById('feedIngCa').value) || 0;
+    const p_pct = parseFloat(document.getElementById('feedIngP').value) || 0;
+    const mg_pct = parseFloat(document.getElementById('feedIngMg').value) || 0;
+    const k_pct = parseFloat(document.getElementById('feedIngK').value) || 0;
+    const na_pct = parseFloat(document.getElementById('feedIngNa').value) || 0;
+    const s_pct = parseFloat(document.getElementById('feedIngS').value) || 0;
+    const me_mj = parseFloat(document.getElementById('feedIngMe').value) || 0;
+    const nel_mj = parseFloat(document.getElementById('feedIngNel').value) || 0;
+    const notes = document.getElementById('feedIngNotes').value.trim();
+
+    if (!name) {
+        showToast('Feed name is required.', true);
+        return;
+    }
+    if (dm_pct <= 0 || dm_pct > 100) {
+        showToast('Dry Matter (DM %) must be between 0.1% and 100%.', true);
+        return;
+    }
+
+    const payload = {
+        action: 'save_ingredient',
+        id: id ? parseInt(id) : null,
+        name, category, dm_pct, cp_pct, fat_pct, fiber_pct, ndf_pct, adf_pct,
+        starch_pct, sugar_pct, ash_pct, ca_pct, p_pct, mg_pct, k_pct, na_pct, s_pct,
+        me_mj, nel_mj, notes
+    };
+
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to save feed ingredient.');
+            showToast(data.message || 'Feed ingredient saved successfully.');
+        } else {
+            const store = getLocalStore();
+            if (!store.feeds) store.feeds = [];
+            if (id) {
+                const idx = store.feeds.findIndex(f => f.id == id);
+                if (idx !== -1) store.feeds[idx] = { ...store.feeds[idx], ...payload };
+            } else {
+                payload.id = Date.now();
+                store.feeds.push(payload);
+            }
+            saveLocalStore(store);
+            showToast('Feed ingredient saved!');
+        }
+
+        closeModal('modalFeedIngredient');
+        await loadFeedIngredients();
+        renderFeedLibrary();
+        updateFeedRowSelectOptions();
+        recalculateRationTotals();
+    } catch (err) {
+        showToast(err.message, true);
+    }
+}
+
+async function deleteFeedIngredient(feedId) {
+    if (!confirm('Are you sure you want to delete this feed ingredient?')) return;
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete_ingredient', id: feedId })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to delete feed.');
+        } else {
+            const store = getLocalStore();
+            store.feeds = (store.feeds || []).filter(f => f.id != feedId);
+            saveLocalStore(store);
+        }
+        showToast('Feed ingredient deleted.');
+        await loadFeedIngredients();
+        renderFeedLibrary();
+        updateFeedRowSelectOptions();
+        recalculateRationTotals();
+    } catch (err) {
+        showToast(err.message, true);
+    }
+}
+
+function updateFeedRowSelectOptions() {
+    const container = document.getElementById('feedRowsContainer');
+    if (!container) return;
+    const selects = container.querySelectorAll('.feed-select');
+    selects.forEach(sel => {
+        const curVal = sel.value;
+        let optHtml = `<option value="">-- Choose Feed --</option>`;
+        feedsCache.forEach(f => {
+            optHtml += `<option value="${f.id}" ${f.id == curVal ? 'selected' : ''}>${f.name} (${parseFloat(f.dm_pct).toFixed(0)}% DM &bull; ${f.category})</option>`;
+        });
+        sel.innerHTML = optHtml;
+    });
+}
+
+async function loadFeedHistory(cowId = null) {
+    const container = document.getElementById('feedHistoryContainer');
+    const countBadge = document.getElementById('feedHistoryCount');
+    if (!container) return;
+
+    let logs = [];
+    try {
+        if (isServerMode) {
+            let url = `${API_BASE}/feeds.php?action=list_logs&with_items=1`;
+            if (cowId) url += `&cow_id=${cowId}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            logs = data.logs || [];
+        } else {
+            const store = getLocalStore();
+            logs = store.feed_logs || [];
+            if (cowId) logs = logs.filter(l => l.cow_id == cowId);
+        }
+    } catch (e) {
+        console.error('Error loading feed history:', e);
+    }
+
+    if (countBadge) countBadge.innerText = `${logs.length} records`;
+
+    if (logs.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">No feeding records found. Enter a ration in the calculator to get started!</div>`;
+        return;
+    }
+
+    container.innerHTML = logs.map(l => {
+        const cowName = l.cow_name || (cowsCache.find(c => c.id == l.cow_id) || {}).name || `Cow #${l.cow_id}`;
+        const cowTag = l.tag_number || (cowsCache.find(c => c.id == l.cow_id) || {}).tag_number || '';
+        const items = l.items || [];
+
+        return `
+            <div class="app-card mb-3 p-3 bg-white border border-slate-200">
+                <div class="flex items-start justify-between mb-2">
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-slate-900 text-sm">${cowName}</span>
+                            <span class="text-xs text-slate-500 font-semibold">${cowTag}</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400">${l.log_date} &bull; ${l.notes || 'Daily feeding log'}</div>
+                    </div>
+                    <button class="px-2.5 py-1 bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200 rounded-lg text-xs font-bold" onclick="reloadRationIntoCalculator(${l.id})">
+                        <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Reload
+                    </button>
+                </div>
+
+                <!-- Summary Row -->
+                <div class="grid grid-cols-4 gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-100 text-center mb-2 text-xs">
+                    <div>
+                        <span class="text-[9px] text-slate-400 block font-semibold">AS-FED</span>
+                        <span class="font-bold text-slate-800">${parseFloat(l.total_as_fed_kg).toFixed(1)} kg</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] text-emerald-600 block font-semibold">DM INTAKE</span>
+                        <span class="font-bold text-emerald-900">${parseFloat(l.total_dm_kg).toFixed(2)} kg</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] text-blue-600 block font-semibold">CRUDE PROTEIN</span>
+                        <span class="font-bold text-blue-900">${parseFloat(l.total_cp_kg).toFixed(2)} kg</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] text-amber-700 block font-semibold">CALCIUM / P</span>
+                        <span class="font-bold text-amber-950">${parseFloat(l.total_ca_g).toFixed(0)}g / ${parseFloat(l.total_p_g).toFixed(0)}g</span>
+                    </div>
+                </div>
+
+                <!-- Feed Items Breakdown Pills -->
+                ${items.length > 0 ? `
+                    <div class="text-[10px] text-slate-500 font-semibold mb-1">Ration breakdown:</div>
+                    <div class="space-y-1">
+                        ${items.map(it => `
+                            <div class="flex justify-between items-center text-[11px] py-0.5 border-b border-slate-50">
+                                <span class="font-medium text-slate-700">${it.feed_name}</span>
+                                <span class="text-slate-600 font-bold">${parseFloat(it.amount_as_fed_kg).toFixed(1)} kg as-fed &bull; <span class="text-emerald-700">${parseFloat(it.dm_intake_kg).toFixed(2)} kg DM</span></span>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+async function reloadRationIntoCalculator(logId) {
+    let log = null;
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php?action=get_log&id=${logId}`);
+            log = await res.json();
+        } else {
+            const store = getLocalStore();
+            log = (store.feed_logs || []).find(l => l.id == logId);
+        }
+    } catch (e) {
+        console.error('Error fetching log for reload:', e);
+    }
+
+    if (!log) {
+        showToast('Feed log not found', true);
+        return;
+    }
+
+    // Switch to calculator
+    switchTab('feed');
+    switchFeedSubTab('calculator', document.getElementById('btnSubTabFeedCalc'));
+
+    // Set cow
+    const cowSelect = document.getElementById('feedCowSelect');
+    if (cowSelect) cowSelect.value = log.cow_id;
+
+    // Set date
+    const dateInput = document.getElementById('feedLogDate');
+    if (dateInput) dateInput.value = log.log_date;
+
+    // Clear and populate rows
+    const container = document.getElementById('feedRowsContainer');
+    if (container) {
+        container.innerHTML = '';
+        const items = log.items || [];
+        if (items.length > 0) {
+            items.forEach(it => {
+                addFeedRationRow(it.feed_id, it.amount_as_fed_kg);
+            });
+        } else {
+            addFeedRationRow();
+        }
+    }
+
+    showToast('Loaded past ration record into calculator');
+}
+
+function openLogFeedModal() {
+    switchTab('feed');
+    switchFeedSubTab('calculator', document.getElementById('btnSubTabFeedCalc'));
+}
+
+function openFeedCalculatorForCow(cowId) {
+    switchTab('feed');
+    switchFeedSubTab('calculator', document.getElementById('btnSubTabFeedCalc'));
+    const sel = document.getElementById('feedCowSelect');
+    if (sel) {
+        sel.value = cowId;
+        onFeedCowSelectionChange(cowId);
+    }
+}
+

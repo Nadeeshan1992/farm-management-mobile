@@ -734,14 +734,16 @@ body.fullscreen-mode .app-header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 2px;
     color: var(--text-muted);
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 600;
     cursor: pointer;
     transition: color 0.15s;
-    width: 60px;
-    padding: 4px 0;
+    flex: 1;
+    min-width: 44px;
+    max-width: 62px;
+    padding: 3px 0;
     background: transparent;
     border: none;
     outline: none;
@@ -935,3 +937,70 @@ body.fullscreen-mode .app-header {
     from { transform: translateY(-20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* Feed Module Styles */
+.feed-row-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    transition: all 0.15s ease;
+}
+.feed-row-card:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+.feed-kpi-subcard {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.feed-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+.feed-table th {
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.03em;
+    padding: 8px 10px;
+    text-align: right;
+    border-bottom: 2px solid #cbd5e1;
+}
+.feed-table th:first-child {
+    text-align: left;
+}
+.feed-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: right;
+    color: #1e293b;
+    font-variant-numeric: tabular-nums;
+}
+.feed-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+}
+.feed-table tr:hover td {
+    background: #f8fafc;
+}
+.feed-table tfoot td {
+    background: #f1f5f9;
+    font-weight: 800;
+    border-top: 2px solid #cbd5e1;
+    border-bottom: none;
+    color: #0f172a;
+}
+

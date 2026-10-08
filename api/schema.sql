@@ -135,3 +135,88 @@ CREATE TABLE IF NOT EXISTS `thi_records` (
     `stress_level` ENUM('Normal', 'Mild Stress', 'Moderate Stress', 'Severe Stress', 'Emergency') NOT NULL,
     `notes` VARCHAR(255) NULL
 );
+
+-- 10. Dairy Feed Database (Nutritional Composition)
+CREATE TABLE IF NOT EXISTS `feeds` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(150) NOT NULL UNIQUE,
+    `category` VARCHAR(50) DEFAULT 'Forage / TMR',
+    `dm_pct` DECIMAL(6,2) NOT NULL DEFAULT 90.00,       -- Dry Matter (DM %)
+    `cp_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,        -- Crude Protein (% DM)
+    `fat_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,       -- Crude Fat (% DM)
+    `fiber_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,     -- Crude Fiber (% DM)
+    `ndf_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,       -- NDF (% DM)
+    `adf_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,       -- ADF (% DM)
+    `starch_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,    -- Starch (% DM)
+    `sugar_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,     -- Sugar (% DM)
+    `ash_pct` DECIMAL(6,2) NOT NULL DEFAULT 0.00,       -- Ash (% DM)
+    `ca_pct` DECIMAL(6,3) NOT NULL DEFAULT 0.000,      -- Calcium (Ca % DM)
+    `p_pct` DECIMAL(6,3) NOT NULL DEFAULT 0.000,       -- Phosphorus (P % DM)
+    `mg_pct` DECIMAL(6,3) NOT NULL DEFAULT 0.000,      -- Magnesium (Mg % DM)
+    `k_pct` DECIMAL(6,3) NOT NULL DEFAULT 0.000,       -- Potassium (K % DM)
+    `na_pct` DECIMAL(6,3) NOT NULL DEFAULT 0.000,      -- Sodium (Na % DM)
+    `s_pct` DECIMAL(6,3) NOT NULL DEFAULT 0.000,       -- Sulfur (S % DM)
+    `me_mj` DECIMAL(6,2) NOT NULL DEFAULT 0.00,        -- ME (MJ/kg DM)
+    `nel_mj` DECIMAL(6,2) NOT NULL DEFAULT 0.00,       -- NEL (MJ/kg DM)
+    `notes` TEXT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 11. Daily Feed Logs (Aggregated per cow & day)
+CREATE TABLE IF NOT EXISTS `daily_feed_logs` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `cow_id` INT NOT NULL,
+    `log_date` DATE NOT NULL,
+    `total_as_fed_kg` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_dm_kg` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_cp_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_fat_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_fiber_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_ndf_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_adf_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_starch_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_sugar_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_ash_kg` DECIMAL(8,3) NOT NULL DEFAULT 0.000,
+    `total_ca_g` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_p_g` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_mg_g` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_k_g` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_na_g` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_s_g` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_me_mj` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `total_nel_mj` DECIMAL(8,2) NOT NULL DEFAULT 0.00,
+    `notes` TEXT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`cow_id`) REFERENCES `cows`(`id`) ON DELETE CASCADE
+);
+
+-- 12. Daily Feed Line Items (Per feed breakdown)
+CREATE TABLE IF NOT EXISTS `daily_feed_items` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `feed_log_id` INT NOT NULL,
+    `feed_id` INT NULL,
+    `feed_name` VARCHAR(150) NOT NULL,
+    `amount_as_fed_kg` DECIMAL(8,2) NOT NULL,
+    `dm_intake_kg` DECIMAL(8,2) NOT NULL,
+    `cp_intake_kg` DECIMAL(8,3) NOT NULL,
+    `fat_intake_kg` DECIMAL(8,3) NOT NULL,
+    `fiber_intake_kg` DECIMAL(8,3) NOT NULL,
+    `ndf_intake_kg` DECIMAL(8,3) NOT NULL,
+    `adf_intake_kg` DECIMAL(8,3) NOT NULL,
+    `starch_intake_kg` DECIMAL(8,3) NOT NULL,
+    `sugar_intake_kg` DECIMAL(8,3) NOT NULL,
+    `ash_intake_kg` DECIMAL(8,3) NOT NULL,
+    `ca_intake_g` DECIMAL(8,2) NOT NULL,
+    `p_intake_g` DECIMAL(8,2) NOT NULL,
+    `mg_intake_g` DECIMAL(8,2) NOT NULL,
+    `k_intake_g` DECIMAL(8,2) NOT NULL,
+    `na_intake_g` DECIMAL(8,2) NOT NULL,
+    `s_intake_g` DECIMAL(8,2) NOT NULL,
+    `me_intake_mj` DECIMAL(8,2) NOT NULL,
+    `nel_intake_mj` DECIMAL(8,2) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`feed_log_id`) REFERENCES `daily_feed_logs`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`feed_id`) REFERENCES `feeds`(`id`) ON DELETE SET NULL
+);

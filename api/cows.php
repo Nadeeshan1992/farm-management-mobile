@@ -52,6 +52,15 @@ if ($method === 'GET') {
         // Attach calculated HS & BQ vaccination schedule
         $cow['vaccine_schedule'] = calculateCowVaccineSchedule($cow, $cow['vaccination_history']);
 
+        // Attach recent daily feed logs
+        try {
+            $feedStmt = $db->prepare("SELECT * FROM daily_feed_logs WHERE cow_id = ? ORDER BY log_date DESC LIMIT 7");
+            $feedStmt->execute([$id]);
+            $cow['feed_history'] = $feedStmt->fetchAll();
+        } catch (Exception $e) {
+            $cow['feed_history'] = [];
+        }
+
         jsonResponse($cow);
     }
 

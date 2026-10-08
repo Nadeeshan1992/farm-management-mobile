@@ -68,6 +68,28 @@ function getDb(): PDO {
             } catch (Exception $ex) {}
         }
 
+        // Ensure feed tables exist and default seeds are populated
+        try {
+            $pdo->query("SELECT 1 FROM `feeds` LIMIT 1");
+        } catch (Exception $e) {
+            $schemaFile = __DIR__ . '/schema.sql';
+            if (file_exists($schemaFile)) {
+                $sql = file_get_contents($schemaFile);
+                $pdo->exec($sql);
+            }
+        }
+
+        try {
+            $feedCount = (int)$pdo->query("SELECT COUNT(*) FROM `feeds`")->fetchColumn();
+            if ($feedCount === 0) {
+                $seedFile = __DIR__ . '/seed.sql';
+                if (file_exists($seedFile)) {
+                    $seedSql = file_get_contents($seedFile);
+                    $pdo->exec($seedSql);
+                }
+            }
+        } catch (Exception $e) {}
+
         return $pdo;
     } catch (PDOException $e) {
         jsonResponse([
