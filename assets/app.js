@@ -1364,6 +1364,568 @@ async function loadMilkLogs() {
     }
 }
 
+// ================= MILK RECORDS PDF EXPORT ENGINE =================
+function openMilkPdfModal() {
+    const select = document.getElementById('pdfMilkCowSelect');
+    if (select) {
+        let opts = `<option value="0">🐄 All Herd (Whole Farm Overview)</option>`;
+        cowsCache.forEach(c => {
+            const isSel = (selectedMilkCowId && c.id == selectedMilkCowId) ? 'selected' : '';
+            opts += `<option value="${c.id}" ${isSel}>${c.tag_number} - ${c.name} (${c.breed || 'Cow'})</option>`;
+        });
+        select.innerHTML = opts;
+    }
+
+    const activePeriod = currentMilkPeriod || 'daily';
+    const rad = document.querySelector(`input[name="pdfPeriod"][value="${activePeriod}"]`);
+    if (rad) rad.checked = true;
+
+    openModal('modalMilkPdfExport');
+}
+
+async function submitMilkPdfExport(e) {
+    if (e) e.preventDefault();
+    const select = document.getElementById('pdfMilkCowSelect');
+    const cowId = select ? parseInt(select.value) || 0 : 0;
+    const rad = document.querySelector('input[name="pdfPeriod"]:checked');
+    const period = rad ? rad.value : 'daily';
+
+    closeModal('modalMilkPdfExport');
+    await generateMilkRecordsPdf(cowId, period);
+}
+
+async function submitMilkPdfPrint() {
+    const select = document.getElementById('pdfMilkCowSelect');
+    const cowId = select ? parseInt(select.value) || 0 : 0;
+    const rad = document.querySelector('input[name="pdfPeriod"]:checked');
+    const period = rad ? rad.value : 'daily';
+
+    closeModal('modalMilkPdfExport');
+    const exportData = await fetchMilkExportData(cowId, period);
+    if (exportData && exportData.records && exportData.records.length > 0) {
+        openPrintableMilkReport(exportData);
+    } else {
+        showToast('No milk records available to print.', true);
+    }
+}
+
+async function fetchMilkExportData(cowId, period) {
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/milk.php?cow_id=${cowId}&period=${period}&limit=500`);
+            return await res.json();
+        } else {
+            const store = getLocalStore();
+            let raw = (store.milk || []).map(m => {
+                const cow = (store.cows || []).find(c => c.id == m.cow_id) || {};
+                return { ...m, tag_number: cow.tag_number || 'COW', name: cow.name || 'Cow', breed: cow.breed || '' };
+            });
+            let cowInfo = null, cowStats = null;
+            if (cowId > 0) {
+                raw = raw.filter(m => m.cow_id == cowId);
+                cowInfo = (store.cows || []).find(c => c.id == cowId);
+                const total = raw.reduce((sum, r) => sum + (parseFloat(r.total_yield) || 0), 0);
+                const avg = raw.length > 0 ? (total / raw.length) : 0;
+                const peak = raw.reduce((max, r) => Math.max(max, (parseFloat(r.total_yield) || 0)), 0);
+                cowStats = {
+                    total_yield: total.toFixed(2),
+                    avg_yield: avg.toFixed(2),
+                    peak_yield: peak.toFixed(2),
+                    days_count: raw.length
+                };
+            }
+            let records = [];
+            if (period === 'weekly') records = aggregateMilkWeekly(raw);
+            else if (period === 'monthly') records = aggregateMilkMonthly(raw);
+            else records = raw.sort((a,b) => (b.record_date > a.record_date ? 1 : -1));
+
+            return {
+                stats: { daily_average: 16.6, weekly_average: 185.1, monthly_average: 173.0 },
+                cow_info: cowInfo,
+                cow_stats: cowStats,
+                period: period,
+                cow_id: cowId,
+                records: records
+            };
+        }
+    } catch (e) {
+        console.error('Failed to fetch milk records for PDF:', e);
+        return null;
+    }
+}
+
+async function generateMilkRecordsPdf(cowId = null, period = null) {
+    if (cowId === null) cowId = selectedMilkCowId || 0;
+    if (period === null) period = currentMilkPeriod || 'daily';
+
+    showToast('Generating Milk Records PDF...');
+
+    const exportData = await fetchMilkExportData(cowId, period);
+
+    if (!exportData || !exportData.records || exportData.records.length === 0) {
+        showToast('No milk records available to export.', true);
+        return;
+    }
+
+    // Check jsPDF availability
+    const jspdfLib = window.jspdf ? (window.jspdf.jsPDF || window.jspdf) : window.jsPDF;
+    if (!jspdfLib) {
+        console.warn('jsPDF not loaded in window, falling back to printable browser view.');
+        openPrintableMilkReport(exportData);
+        return;
+    }
+
+    try {
+        const doc = new jspdfLib({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        const primaryColor = [22, 101, 52];     // Dark green #166534
+        const emeraldColor = [21, 128, 61];     // Medium green #15803d
+        const accentBg = [240, 253, 244];       // Light green bg #f0fdf4
+        const slateDark = [30, 41, 59];         // Text #1e293b
+        const slateMuted = [100, 116, 139];     // Muted text #64748b
+        const borderGray = [226, 232, 240];     // Border #e2e8f0
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 14;
+        let y = 14;
+
+        // 1. Header Banner
+        doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.roundedRect(margin, y, pageWidth - (margin * 2), 22, 3, 3, 'F');
+
+        // Brand Name & Slogan inside Header Banner
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text('DairyMate', margin + 6, y + 9);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.text('A helpful partner for dairy farmers.', margin + 6, y + 15);
+
+        // Right side of Header Banner: Report Badge
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('MILK PRODUCTION REPORT', pageWidth - margin - 6, y + 9, { align: 'right' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        const nowStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        doc.text(`Generated: ${nowStr}`, pageWidth - margin - 6, y + 15, { align: 'right' });
+
+        y += 27;
+
+        // 2. Report Metadata & Cow / Herd Scope Card
+        doc.setFillColor(248, 250, 252); // slate-50
+        doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+        doc.roundedRect(margin, y, pageWidth - (margin * 2), 17, 2, 2, 'FD');
+
+        const cowInfo = exportData.cow_info;
+        const isSingleCow = cowId > 0 && cowInfo;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(slateDark[0], slateDark[1], slateDark[2]);
+        doc.text('Report Scope:', margin + 4, y + 5.5);
+        doc.setFont('helvetica', 'normal');
+        const scopeText = isSingleCow 
+            ? `${cowInfo.tag_number} - ${cowInfo.name} (${cowInfo.breed || 'Cow'}) | Parity: ${cowInfo.parity || 0} | Status: ${cowInfo.reproductive_status || 'Milking'}`
+            : 'All Herd (Whole Farm Overview)';
+        doc.text(scopeText, margin + 28, y + 5.5);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('View Mode:', margin + 4, y + 12);
+        doc.setFont('helvetica', 'normal');
+        const periodLabel = period.charAt(0).toUpperCase() + period.slice(1) + ' Production Logs';
+        doc.text(`${periodLabel} (${exportData.records.length} records)`, margin + 28, y + 12);
+
+        y += 21;
+
+        // 3. Summary KPI Highlight Cards (4 boxes)
+        let totalYieldSum = 0;
+        let morningSum = 0;
+        let eveningSum = 0;
+        let peakYield = 0;
+
+        exportData.records.forEach(r => {
+            totalYieldSum += parseFloat(r.total_yield || 0);
+            morningSum += parseFloat(r.morning_yield || r.morning_total || 0);
+            eveningSum += parseFloat(r.evening_yield || r.evening_total || 0);
+            const dayPeak = parseFloat(r.max_day_yield || r.total_yield || 0);
+            if (dayPeak > peakYield) peakYield = dayPeak;
+        });
+
+        const avgYield = exportData.records.length > 0 ? (totalYieldSum / exportData.records.length) : 0;
+
+        const kpiBoxWidth = (pageWidth - (margin * 2) - 9) / 4;
+        const kpis = [
+            { label: 'TOTAL MILK YIELD', val: `${totalYieldSum.toFixed(1)} L`, sub: `${exportData.records.length} entries` },
+            { label: 'AVERAGE YIELD', val: `${avgYield.toFixed(2)} L`, sub: isSingleCow ? 'per day' : 'per entry' },
+            { label: 'PEAK PRODUCTION', val: `${peakYield.toFixed(1)} L`, sub: 'highest yield' },
+            { label: 'AM / PM SPLIT', val: `${morningSum.toFixed(0)}L / ${eveningSum.toFixed(0)}L`, sub: 'morning / evening' }
+        ];
+
+        kpis.forEach((kpi, idx) => {
+            const kx = margin + idx * (kpiBoxWidth + 3);
+            doc.setFillColor(accentBg[0], accentBg[1], accentBg[2]);
+            doc.setDrawColor(187, 247, 208); // green-200
+            doc.roundedRect(kx, y, kpiBoxWidth, 16, 2, 2, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(6.5);
+            doc.setTextColor(emeraldColor[0], emeraldColor[1], emeraldColor[2]);
+            doc.text(kpi.label, kx + (kpiBoxWidth / 2), y + 4.5, { align: 'center' });
+
+            doc.setFontSize(10);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.text(kpi.val, kx + (kpiBoxWidth / 2), y + 10, { align: 'center' });
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6.5);
+            doc.setTextColor(slateMuted[0], slateMuted[1], slateMuted[2]);
+            doc.text(kpi.sub, kx + (kpiBoxWidth / 2), y + 14, { align: 'center' });
+        });
+
+        y += 20;
+
+        // 4. Data Table Configuration based on Period
+        let headers = [];
+        let tableData = [];
+
+        if (period === 'weekly') {
+            headers = [['#', 'Period / Week', 'Cow Tag', 'Cow Name', 'Days', 'Morning (L)', 'Evening (L)', 'Total (L)', 'Daily Avg (L)', 'Peak (L)']];
+            tableData = exportData.records.map((r, i) => [
+                i + 1,
+                r.period_label || 'Week',
+                r.tag_number || (cowInfo ? cowInfo.tag_number : '-'),
+                r.name || (cowInfo ? cowInfo.name : '-'),
+                r.days_recorded || 1,
+                parseFloat(r.morning_total || 0).toFixed(1),
+                parseFloat(r.evening_total || 0).toFixed(1),
+                parseFloat(r.total_yield || 0).toFixed(2),
+                parseFloat(r.avg_daily_yield || 0).toFixed(2),
+                r.max_day_yield ? parseFloat(r.max_day_yield).toFixed(1) : '-'
+            ]);
+        } else if (period === 'monthly') {
+            headers = [['#', 'Month & Year', 'Cow Tag', 'Cow Name', 'Days', 'Morning (L)', 'Evening (L)', 'Total (L)', 'Daily Avg (L)', 'Peak (L)']];
+            tableData = exportData.records.map((r, i) => [
+                i + 1,
+                r.period_label || 'Month',
+                r.tag_number || (cowInfo ? cowInfo.tag_number : '-'),
+                r.name || (cowInfo ? cowInfo.name : '-'),
+                r.days_recorded || 1,
+                parseFloat(r.morning_total || 0).toFixed(1),
+                parseFloat(r.evening_total || 0).toFixed(1),
+                parseFloat(r.total_yield || 0).toFixed(2),
+                parseFloat(r.avg_daily_yield || 0).toFixed(2),
+                r.max_day_yield ? parseFloat(r.max_day_yield).toFixed(1) : '-'
+            ]);
+        } else {
+            // Daily
+            headers = [['#', 'Date', 'Cow Tag', 'Cow Name', 'Breed', 'Morning (L)', 'Evening (L)', 'Total (L)', 'Drop %', 'Status']];
+            tableData = exportData.records.map((r, i) => {
+                const drop = r.drop_percentage ? parseFloat(r.drop_percentage) : null;
+                let dropTxt = '-';
+                let statusTxt = 'Normal';
+                if (drop !== null && !isNaN(drop)) {
+                    dropTxt = drop > 0 ? `-${drop.toFixed(1)}%` : `+${Math.abs(drop).toFixed(1)}%`;
+                    if (drop >= 10) statusTxt = 'Alert (>=10%)';
+                }
+                return [
+                    i + 1,
+                    r.record_date || '-',
+                    r.tag_number || (cowInfo ? cowInfo.tag_number : '-'),
+                    r.name || (cowInfo ? cowInfo.name : '-'),
+                    r.breed || (cowInfo ? cowInfo.breed : '-'),
+                    parseFloat(r.morning_yield || 0).toFixed(1),
+                    parseFloat(r.evening_yield || 0).toFixed(1),
+                    parseFloat(r.total_yield || 0).toFixed(2),
+                    dropTxt,
+                    statusTxt
+                ];
+            });
+        }
+
+        const tableConfig = {
+            startY: y,
+            head: headers,
+            body: tableData,
+            margin: { left: margin, right: margin, bottom: 16 },
+            theme: 'striped',
+            styles: {
+                fontSize: 7.5,
+                cellPadding: 2,
+                textColor: slateDark,
+                font: 'helvetica'
+            },
+            headStyles: {
+                fillColor: primaryColor,
+                textColor: [255, 255, 255],
+                fontStyle: 'bold',
+                halign: 'center'
+            },
+            alternateRowStyles: {
+                fillColor: [248, 250, 252]
+            },
+            columnStyles: {
+                0: { halign: 'center', cellWidth: 8 },
+                1: { halign: 'left' },
+                4: { halign: 'center' },
+                5: { halign: 'right' },
+                6: { halign: 'right' },
+                7: { halign: 'right', fontStyle: 'bold', textColor: primaryColor },
+                8: { halign: 'center' },
+                9: { halign: 'center' }
+            },
+            didDrawPage: function (data) {
+                const totalPages = doc.internal.getNumberOfPages();
+                const str = `Page ${doc.internal.getCurrentPageInfo().pageNumber} of ${totalPages}`;
+                doc.setFontSize(8);
+                doc.setTextColor(slateMuted[0], slateMuted[1], slateMuted[2]);
+                doc.text('DairyMate - Confidential Farm Milk Production Records', margin, doc.internal.pageSize.getHeight() - 8);
+                doc.text(str, pageWidth - margin, doc.internal.pageSize.getHeight() - 8, { align: 'right' });
+            }
+        };
+
+        if (typeof doc.autoTable === 'function') {
+            doc.autoTable(tableConfig);
+        } else if (typeof window.jspdf !== 'undefined' && typeof window.jspdf.autoTable === 'function') {
+            window.jspdf.autoTable(doc, tableConfig);
+        } else {
+            openPrintableMilkReport(exportData);
+            return;
+        }
+
+        const filePrefix = isSingleCow ? `DairyMate_Milk_${cowInfo.tag_number}` : 'DairyMate_Herd_Milk';
+        const dateStamp = new Date().toISOString().split('T')[0];
+        const fileName = `${filePrefix}_${period}_${dateStamp}.pdf`;
+
+        doc.save(fileName);
+        showToast(`PDF downloaded: ${fileName}`);
+    } catch (err) {
+        console.error('jsPDF generation failed:', err);
+        openPrintableMilkReport(exportData);
+    }
+}
+
+function openPrintableMilkReport(exportData) {
+    const period = exportData.period || 'daily';
+    const isSingleCow = exportData.cow_id > 0 && exportData.cow_info;
+    const cow = exportData.cow_info;
+    const records = exportData.records || [];
+
+    let totalYieldSum = 0;
+    let morningSum = 0;
+    let eveningSum = 0;
+    let peakYield = 0;
+
+    records.forEach(r => {
+        totalYieldSum += parseFloat(r.total_yield || 0);
+        morningSum += parseFloat(r.morning_yield || r.morning_total || 0);
+        eveningSum += parseFloat(r.evening_yield || r.evening_total || 0);
+        const dayPeak = parseFloat(r.max_day_yield || r.total_yield || 0);
+        if (dayPeak > peakYield) peakYield = dayPeak;
+    });
+
+    const avgYield = records.length > 0 ? (totalYieldSum / records.length) : 0;
+    const nowStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    let rowsHtml = '';
+    if (period === 'weekly') {
+        rowsHtml = records.map((r, i) => `
+            <tr>
+                <td style="text-align:center;">${i + 1}</td>
+                <td><b>${r.period_label || 'Week'}</b></td>
+                <td>${r.tag_number || (cow ? cow.tag_number : '-')}</td>
+                <td>${r.name || (cow ? cow.name : '-')}</td>
+                <td style="text-align:center;">${r.days_recorded || 1}</td>
+                <td style="text-align:right;">${parseFloat(r.morning_total || 0).toFixed(1)}</td>
+                <td style="text-align:right;">${parseFloat(r.evening_total || 0).toFixed(1)}</td>
+                <td style="text-align:right; font-weight:bold; color:#166534;">${parseFloat(r.total_yield || 0).toFixed(2)}</td>
+                <td style="text-align:right;">${parseFloat(r.avg_daily_yield || 0).toFixed(2)}</td>
+                <td style="text-align:right;">${r.max_day_yield ? parseFloat(r.max_day_yield).toFixed(1) : '-'}</td>
+            </tr>
+        `).join('');
+    } else if (period === 'monthly') {
+        rowsHtml = records.map((r, i) => `
+            <tr>
+                <td style="text-align:center;">${i + 1}</td>
+                <td><b>${r.period_label || 'Month'}</b></td>
+                <td>${r.tag_number || (cow ? cow.tag_number : '-')}</td>
+                <td>${r.name || (cow ? cow.name : '-')}</td>
+                <td style="text-align:center;">${r.days_recorded || 1}</td>
+                <td style="text-align:right;">${parseFloat(r.morning_total || 0).toFixed(1)}</td>
+                <td style="text-align:right;">${parseFloat(r.evening_total || 0).toFixed(1)}</td>
+                <td style="text-align:right; font-weight:bold; color:#166534;">${parseFloat(r.total_yield || 0).toFixed(2)}</td>
+                <td style="text-align:right;">${parseFloat(r.avg_daily_yield || 0).toFixed(2)}</td>
+                <td style="text-align:right;">${r.max_day_yield ? parseFloat(r.max_day_yield).toFixed(1) : '-'}</td>
+            </tr>
+        `).join('');
+    } else {
+        rowsHtml = records.map((r, i) => {
+            const drop = r.drop_percentage ? parseFloat(r.drop_percentage) : null;
+            const isAlert = drop !== null && drop >= 10;
+            return `
+                <tr style="${isAlert ? 'background-color:#fef2f2;' : ''}">
+                    <td style="text-align:center;">${i + 1}</td>
+                    <td>${r.record_date}</td>
+                    <td><b>${r.tag_number || (cow ? cow.tag_number : '-')}</b></td>
+                    <td>${r.name || (cow ? cow.name : '-')}</td>
+                    <td style="text-align:right;">${parseFloat(r.morning_yield || 0).toFixed(1)}</td>
+                    <td style="text-align:right;">${parseFloat(r.evening_yield || 0).toFixed(1)}</td>
+                    <td style="text-align:right; font-weight:bold; color:#166534;">${parseFloat(r.total_yield || 0).toFixed(2)}</td>
+                    <td style="text-align:center; ${isAlert ? 'color:#dc2626; font-weight:bold;' : ''}">
+                        ${drop !== null ? (drop >= 0 ? `-${drop.toFixed(1)}%` : `+${Math.abs(drop).toFixed(1)}%`) : '-'}
+                    </td>
+                    <td style="text-align:center;">
+                        ${isAlert ? '<span style="color:#b91c1c; font-weight:bold;">⚠️ Drop ≥ 10%</span>' : '<span style="color:#166534;">Normal</span>'}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    const printHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>DairyMate Milk Production Report - ${period}</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; color: #1e293b; }
+                .header-banner { background: #166534; color: white; padding: 16px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+                .header-banner h1 { margin: 0; font-size: 22px; }
+                .header-banner p { margin: 4px 0 0; font-size: 11px; opacity: 0.9; }
+                .report-badge { text-align: right; }
+                .report-badge h2 { margin: 0; font-size: 15px; }
+                .report-badge span { font-size: 11px; opacity: 0.85; }
+                .scope-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; }
+                .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+                .kpi-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; text-align: center; }
+                .kpi-title { font-size: 10px; font-weight: bold; color: #15803d; text-transform: uppercase; }
+                .kpi-val { font-size: 18px; font-weight: 800; color: #166534; margin: 4px 0; }
+                .kpi-sub { font-size: 10px; color: #64748b; }
+                table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+                th { background: #166534; color: white; padding: 8px 6px; text-align: left; font-weight: bold; border: 1px solid #14532d; }
+                td { padding: 6px; border: 1px solid #e2e8f0; }
+                tr:nth-child(even) { background: #f8fafc; }
+                .footer { font-size: 10px; color: #64748b; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+                @media print {
+                    body { margin: 10px; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="no-print" style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <button onclick="window.print()" style="padding: 9px 18px; background: #166534; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">🖨️ Print / Save as PDF</button>
+                <button onclick="window.close()" style="padding: 9px 18px; background: #e2e8f0; color: #334155; border: none; border-radius: 8px; cursor: pointer; font-size: 13px;">Close Window</button>
+            </div>
+            <div class="header-banner">
+                <div>
+                    <h1>🐄 DairyMate</h1>
+                    <p>A helpful partner for dairy farmers.</p>
+                </div>
+                <div class="report-badge">
+                    <h2>MILK PRODUCTION REPORT</h2>
+                    <span>Generated: ${nowStr}</span>
+                </div>
+            </div>
+            <div class="scope-box">
+                <div><b>Report Scope:</b> ${isSingleCow ? `${cow.tag_number} - ${cow.name} (${cow.breed || 'Cow'}) • Status: ${cow.reproductive_status || 'Milking'}` : 'All Herd (Whole Farm Overview)'}</div>
+                <div style="margin-top: 4px;"><b>View Mode:</b> ${period.toUpperCase()} Milk Production Logs (${records.length} records)</div>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-title">Total Milk Yield</div>
+                    <div class="kpi-val">${totalYieldSum.toFixed(1)} L</div>
+                    <div class="kpi-sub">${records.length} entries</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Average Yield</div>
+                    <div class="kpi-val">${avgYield.toFixed(2)} L</div>
+                    <div class="kpi-sub">${isSingleCow ? 'per day' : 'per entry'}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Peak Production</div>
+                    <div class="kpi-val">${peakYield.toFixed(1)} L</div>
+                    <div class="kpi-sub">highest logged yield</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">AM / PM Split</div>
+                    <div class="kpi-val">${morningSum.toFixed(0)}L / ${eveningSum.toFixed(0)}L</div>
+                    <div class="kpi-sub">morning / evening</div>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    ${period === 'weekly' ? `
+                        <tr>
+                            <th style="width:25px; text-align:center;">#</th>
+                            <th>Week / Period</th>
+                            <th>Cow Tag</th>
+                            <th>Cow Name</th>
+                            <th style="text-align:center;">Days</th>
+                            <th style="text-align:right;">Morning (L)</th>
+                            <th style="text-align:right;">Evening (L)</th>
+                            <th style="text-align:right;">Total (L)</th>
+                            <th style="text-align:right;">Daily Avg (L)</th>
+                            <th style="text-align:right;">Peak (L)</th>
+                        </tr>
+                    ` : period === 'monthly' ? `
+                        <tr>
+                            <th style="width:25px; text-align:center;">#</th>
+                            <th>Month & Year</th>
+                            <th>Cow Tag</th>
+                            <th>Cow Name</th>
+                            <th style="text-align:center;">Days</th>
+                            <th style="text-align:right;">Morning (L)</th>
+                            <th style="text-align:right;">Evening (L)</th>
+                            <th style="text-align:right;">Total (L)</th>
+                            <th style="text-align:right;">Daily Avg (L)</th>
+                            <th style="text-align:right;">Peak (L)</th>
+                        </tr>
+                    ` : `
+                        <tr>
+                            <th style="width:25px; text-align:center;">#</th>
+                            <th>Date</th>
+                            <th>Cow Tag</th>
+                            <th>Cow Name</th>
+                            <th>Breed</th>
+                            <th style="text-align:right;">Morning (L)</th>
+                            <th style="text-align:right;">Evening (L)</th>
+                            <th style="text-align:right;">Total (L)</th>
+                            <th style="text-align:center;">Drop %</th>
+                            <th style="text-align:center;">Status</th>
+                        </tr>
+                    `}
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+            <div class="footer">
+                <span>DairyMate — Smart Dairy & Cattle Herd Management</span>
+                <span>Confidential Farm Records</span>
+            </div>
+        </body>
+        </html>
+    `;
+
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+        printWin.document.open();
+        printWin.document.write(printHtml);
+        printWin.document.close();
+    } else {
+        showToast('Pop-up blocked. Please allow pop-ups to print.', true);
+    }
+}
+
 // 4. Breeding & Calving View
 async function loadBreedingData(subTab = 'heats') {
     const container = document.getElementById('breedingContentContainer');
