@@ -199,6 +199,7 @@ CREATE TABLE IF NOT EXISTS `daily_feed_items` (
     `feed_id` INT NULL,
     `feed_name` VARCHAR(150) NOT NULL,
     `amount_as_fed_kg` DECIMAL(8,2) NOT NULL,
+    `dm_pct` DECIMAL(6,2) NULL,                         -- Dry Matter % entered by farmer
     `dm_intake_kg` DECIMAL(8,2) NOT NULL,
     `cp_intake_kg` DECIMAL(8,3) NOT NULL,
     `fat_intake_kg` DECIMAL(8,3) NOT NULL,

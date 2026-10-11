@@ -90,6 +90,15 @@ function getDb(): PDO {
             }
         } catch (Exception $e) {}
 
+        // Ensure dm_pct exists in daily_feed_items
+        try {
+            $pdo->query("SELECT `dm_pct` FROM `daily_feed_items` LIMIT 1");
+        } catch (Exception $e) {
+            try {
+                $pdo->exec("ALTER TABLE `daily_feed_items` ADD COLUMN `dm_pct` DECIMAL(6,2) NULL AFTER `amount_as_fed_kg`");
+            } catch (Exception $ex) {}
+        }
+
         return $pdo;
     } catch (PDOException $e) {
         jsonResponse([

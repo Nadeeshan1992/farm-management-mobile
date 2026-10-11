@@ -141,10 +141,10 @@ const DEFAULT_SEED_DATA = {
             total_nel_mj: 134.86,
             notes: 'Balanced standard lactation diet entry',
             items: [
-                { feed_id: 1, feed_name: 'TMR', amount_as_fed_kg: 25.00, dm_intake_kg: 11.25, cp_intake_kg: 1.800, fat_intake_kg: 0.394, fiber_intake_kg: 2.025, ndf_intake_kg: 3.938, ca_intake_g: 90.00, p_intake_g: 50.63 },
-                { feed_id: 2, feed_name: 'Concentrate', amount_as_fed_kg: 5.00, dm_intake_kg: 4.40, cp_intake_kg: 0.792, fat_intake_kg: 0.176, fiber_intake_kg: 0.352, ndf_intake_kg: 0.792, ca_intake_g: 39.60, p_intake_g: 26.40 },
-                { feed_id: 3, feed_name: 'Maize Silage', amount_as_fed_kg: 8.00, dm_intake_kg: 2.80, cp_intake_kg: 0.224, fat_intake_kg: 0.084, fiber_intake_kg: 0.644, ndf_intake_kg: 1.260, ca_intake_g: 7.00, p_intake_g: 6.16 },
-                { feed_id: 4, feed_name: 'Grass/Forage', amount_as_fed_kg: 5.00, dm_intake_kg: 1.25, cp_intake_kg: 0.131, fat_intake_kg: 0.031, fiber_intake_kg: 0.375, ndf_intake_kg: 0.688, ca_intake_g: 5.00, p_intake_g: 3.13 }
+                { feed_id: 1, feed_name: 'TMR', amount_as_fed_kg: 25.00, dm_pct: 45.00, dm_intake_kg: 11.25, cp_intake_kg: 1.800, fat_intake_kg: 0.394, fiber_intake_kg: 2.025, ndf_intake_kg: 3.938, ca_intake_g: 90.00, p_intake_g: 50.63 },
+                { feed_id: 2, feed_name: 'Concentrate', amount_as_fed_kg: 5.00, dm_pct: 88.00, dm_intake_kg: 4.40, cp_intake_kg: 0.792, fat_intake_kg: 0.176, fiber_intake_kg: 0.352, ndf_intake_kg: 0.792, ca_intake_g: 39.60, p_intake_g: 26.40 },
+                { feed_id: 3, feed_name: 'Maize Silage', amount_as_fed_kg: 8.00, dm_pct: 35.00, dm_intake_kg: 2.80, cp_intake_kg: 0.224, fat_intake_kg: 0.084, fiber_intake_kg: 0.644, ndf_intake_kg: 1.260, ca_intake_g: 7.00, p_intake_g: 6.16 },
+                { feed_id: 4, feed_name: 'Grass/Forage', amount_as_fed_kg: 5.00, dm_pct: 25.00, dm_intake_kg: 1.25, cp_intake_kg: 0.131, fat_intake_kg: 0.031, fiber_intake_kg: 0.375, ndf_intake_kg: 0.688, ca_intake_g: 5.00, p_intake_g: 3.13 }
             ]
         }
     ]
@@ -2659,14 +2659,20 @@ function recalculateRationTotals() {
     rowElements.forEach(row => {
         const feedSelect = row.querySelector('.feed-select');
         const amountInput = row.querySelector('.feed-amount');
+        const dmInput = row.querySelector('.feed-dm-pct');
         if (!feedSelect || !amountInput) return;
 
         const feedId = parseInt(feedSelect.value);
         const asFedKg = parseFloat(amountInput.value) || 0;
         const feed = feedsCache.find(f => f.id === feedId);
 
+        // Farmer manual DM % takes priority, fallback to feed default
+        let dmPct = dmInput ? parseFloat(dmInput.value) : NaN;
+        if (isNaN(dmPct) || dmPct < 0) {
+            dmPct = feed ? parseFloat(feed.dm_pct || 0) : 0;
+        }
+
         if (feed && asFedKg > 0) {
-            const dmPct = parseFloat(feed.dm_pct || 0);
             const cpPct = parseFloat(feed.cp_pct || 0);
             const fatPct = parseFloat(feed.fat_pct || 0);
             const fiberPct = parseFloat(feed.fiber_pct || 0);
@@ -2731,7 +2737,10 @@ function recalculateRationTotals() {
 
             tableRowsHtml += `
                 <tr>
-                    <td class="font-bold text-slate-800">${feed.name}</td>
+                    <td class="font-bold text-slate-800">
+                        <div>${feed.name}</div>
+                        <div class="text-[10px] text-amber-700 font-semibold">${dmPct.toFixed(1)}% DM</div>
+                    </td>
                     <td>${asFedKg.toFixed(2)}</td>
                     <td class="font-semibold text-emerald-800">${dmKg.toFixed(2)}</td>
                     <td class="text-blue-800 font-medium">${cpKg.toFixed(2)}</td>
@@ -2789,38 +2798,75 @@ function recalculateRationTotals() {
     setText('totalKpiNel', totalNel.toFixed(1) + ' MJ');
 }
 
-function addFeedRationRow(feedId = null, amount = '') {
+function addFeedRationRow(feedId = null, amount = '', dmPct = null) {
     const container = document.getElementById('feedRowsContainer');
     if (!container) return;
 
     const row = document.createElement('div');
-    row.className = 'feed-row-item feed-row-card flex items-center gap-2';
+    row.className = 'feed-row-item feed-row-card p-2.5 mb-2 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-slate-300 transition-all';
+
+    let initialDm = '';
+    if (dmPct !== null && dmPct !== undefined && !isNaN(dmPct)) {
+        initialDm = parseFloat(dmPct).toFixed(1);
+    } else if (feedId) {
+        const found = feedsCache.find(f => f.id == feedId);
+        if (found) initialDm = parseFloat(found.dm_pct || 0).toFixed(1);
+    }
 
     let optionsHtml = `<option value="">-- Choose Feed --</option>`;
     feedsCache.forEach(f => {
         const isSel = (feedId && f.id == feedId) ? 'selected' : '';
-        optionsHtml += `<option value="${f.id}" ${isSel}>${f.name} (${parseFloat(f.dm_pct).toFixed(0)}% DM &bull; ${f.category})</option>`;
+        optionsHtml += `<option value="${f.id}" ${isSel}>${f.name} (${f.category || 'Feed'})</option>`;
     });
 
     row.innerHTML = `
-        <div class="flex-1">
-            <select class="feed-select form-control text-xs font-semibold py-1.5" style="border-radius: 8px;">
-                ${optionsHtml}
-            </select>
+        <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex-1 min-w-0">
+                <select class="feed-select form-control text-xs font-semibold py-1.5 w-full bg-white" style="border-radius: 8px;">
+                    ${optionsHtml}
+                </select>
+            </div>
+            <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 border border-transparent transition-colors flex-shrink-0" onclick="removeFeedRationRow(this)" title="Remove item">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
         </div>
-        <div class="w-28 flex items-center gap-1">
-            <input type="number" step="0.1" min="0.1" class="feed-amount form-control text-xs font-bold text-right py-1.5" placeholder="0.0" value="${amount}" style="border-radius: 8px;">
-            <span class="text-[11px] font-bold text-slate-500">kg</span>
+        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-200/70">
+            <div>
+                <label class="block text-[10px] font-bold text-amber-700 uppercase mb-0.5">
+                    <i class="fa-solid fa-percent mr-0.5"></i> Dry Matter (DM %)
+                </label>
+                <div class="relative flex items-center">
+                    <input type="number" step="0.1" min="0.1" max="100" class="feed-dm-pct form-control text-xs font-bold py-1.5 pr-6 w-full bg-white text-slate-800" placeholder="e.g. 45" value="${initialDm}" style="border-radius: 8px;">
+                    <span class="absolute right-2 text-[11px] font-bold text-slate-400 pointer-events-none">%</span>
+                </div>
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-emerald-700 uppercase mb-0.5">
+                    <i class="fa-solid fa-weight-hanging mr-0.5"></i> Amount (As-Fed)
+                </label>
+                <div class="relative flex items-center">
+                    <input type="number" step="0.1" min="0.1" class="feed-amount form-control text-xs font-bold py-1.5 pr-7 w-full bg-white text-slate-800" placeholder="0.0" value="${amount}" style="border-radius: 8px;">
+                    <span class="absolute right-2 text-[11px] font-bold text-slate-400 pointer-events-none">kg</span>
+                </div>
+            </div>
         </div>
-        <button type="button" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 border border-transparent transition-colors" onclick="removeFeedRationRow(this)" title="Remove item">
-            <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
     `;
 
     const sel = row.querySelector('.feed-select');
-    const inp = row.querySelector('.feed-amount');
-    sel.addEventListener('change', recalculateRationTotals);
-    inp.addEventListener('input', recalculateRationTotals);
+    const dmInp = row.querySelector('.feed-dm-pct');
+    const amtInp = row.querySelector('.feed-amount');
+
+    sel.addEventListener('change', () => {
+        const curId = parseInt(sel.value);
+        const curFeed = feedsCache.find(f => f.id === curId);
+        if (curFeed) {
+            dmInp.value = parseFloat(curFeed.dm_pct || 0).toFixed(1);
+        }
+        recalculateRationTotals();
+    });
+
+    dmInp.addEventListener('input', recalculateRationTotals);
+    amtInp.addEventListener('input', recalculateRationTotals);
 
     container.appendChild(row);
     recalculateRationTotals();
@@ -2857,10 +2903,10 @@ function loadExampleFeedRation() {
     const silageId = findId('Maize Silage') || 3;
     const grassId = findId('Grass') || 4;
 
-    addFeedRationRow(tmrId, 25);
-    addFeedRationRow(concId, 5);
-    addFeedRationRow(silageId, 8);
-    addFeedRationRow(grassId, 5);
+    addFeedRationRow(tmrId, 25, 45.0);
+    addFeedRationRow(concId, 5, 88.0);
+    addFeedRationRow(silageId, 8, 35.0);
+    addFeedRationRow(grassId, 5, 25.0);
 
     showToast('Loaded standard example ration (43 kg As-Fed)');
 }
@@ -2895,14 +2941,21 @@ async function saveCurrentFeedRation() {
     rowElements.forEach(row => {
         const feedSelect = row.querySelector('.feed-select');
         const amountInput = row.querySelector('.feed-amount');
+        const dmInput = row.querySelector('.feed-dm-pct');
         const feedId = parseInt(feedSelect.value);
         const amount = parseFloat(amountInput.value) || 0;
+        let dmPct = dmInput ? parseFloat(dmInput.value) : NaN;
+
         if (feedId && amount > 0) {
             const feed = feedsCache.find(f => f.id === feedId);
+            if (isNaN(dmPct) || dmPct <= 0) {
+                dmPct = feed ? parseFloat(feed.dm_pct || 90) : 90;
+            }
             items.push({
                 feed_id: feedId,
                 feed_name: feed ? feed.name : 'Feed',
-                amount_as_fed_kg: amount
+                amount_as_fed_kg: amount,
+                dm_pct: dmPct
             });
         }
     });
@@ -2933,7 +2986,10 @@ async function saveCurrentFeedRation() {
             let tAsFed = 0, tDm = 0, tCp = 0, tFat = 0, tFiber = 0, tNdf = 0, tCa = 0, tP = 0;
             const processedItems = items.map(it => {
                 const f = feedsCache.find(x => x.id === it.feed_id) || {};
-                const dm = it.amount_as_fed_kg * (parseFloat(f.dm_pct || 90) / 100);
+                const dmPct = (it.dm_pct !== undefined && !isNaN(it.dm_pct) && it.dm_pct > 0)
+                    ? parseFloat(it.dm_pct)
+                    : parseFloat(f.dm_pct || 90);
+                const dm = it.amount_as_fed_kg * (dmPct / 100);
                 const cp = dm * (parseFloat(f.cp_pct || 0) / 100);
                 const fat = dm * (parseFloat(f.fat_pct || 0) / 100);
                 const fiber = dm * (parseFloat(f.fiber_pct || 0) / 100);
@@ -2946,6 +3002,7 @@ async function saveCurrentFeedRation() {
                     feed_id: it.feed_id,
                     feed_name: it.feed_name,
                     amount_as_fed_kg: it.amount_as_fed_kg,
+                    dm_pct: dmPct,
                     dm_intake_kg: parseFloat(dm.toFixed(2)),
                     cp_intake_kg: parseFloat(cp.toFixed(3)),
                     fat_intake_kg: parseFloat(fat.toFixed(3)),
@@ -3218,7 +3275,7 @@ function updateFeedRowSelectOptions() {
         const curVal = sel.value;
         let optHtml = `<option value="">-- Choose Feed --</option>`;
         feedsCache.forEach(f => {
-            optHtml += `<option value="${f.id}" ${f.id == curVal ? 'selected' : ''}>${f.name} (${parseFloat(f.dm_pct).toFixed(0)}% DM &bull; ${f.category})</option>`;
+            optHtml += `<option value="${f.id}" ${f.id == curVal ? 'selected' : ''}>${f.name} (${f.category || 'Feed'})</option>`;
         });
         sel.innerHTML = optHtml;
     });
@@ -3300,7 +3357,7 @@ async function loadFeedHistory(cowId = null) {
                         ${items.map(it => `
                             <div class="flex justify-between items-center text-[11px] py-0.5 border-b border-slate-50">
                                 <span class="font-medium text-slate-700">${it.feed_name}</span>
-                                <span class="text-slate-600 font-bold">${parseFloat(it.amount_as_fed_kg).toFixed(1)} kg as-fed &bull; <span class="text-emerald-700">${parseFloat(it.dm_intake_kg).toFixed(2)} kg DM</span></span>
+                                <span class="text-slate-600 font-bold">${parseFloat(it.amount_as_fed_kg).toFixed(1)} kg as-fed &bull; <span class="text-amber-700 font-medium">${it.dm_pct ? parseFloat(it.dm_pct).toFixed(1) + '% DM &bull; ' : ''}</span><span class="text-emerald-700">${parseFloat(it.dm_intake_kg).toFixed(2)} kg DM</span></span>
                             </div>
                         `).join('')}
                     </div>
@@ -3348,7 +3405,7 @@ async function reloadRationIntoCalculator(logId) {
         const items = log.items || [];
         if (items.length > 0) {
             items.forEach(it => {
-                addFeedRationRow(it.feed_id, it.amount_as_fed_kg);
+                addFeedRationRow(it.feed_id, it.amount_as_fed_kg, it.dm_pct);
             });
         } else {
             addFeedRationRow();

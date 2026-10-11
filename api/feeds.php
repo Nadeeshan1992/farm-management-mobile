@@ -283,7 +283,10 @@ if ($method === 'POST') {
             }
 
             $feedName = $feedData ? $feedData['name'] : trim($item['feed_name'] ?? 'Custom Feed');
-            $dmPct = $feedData ? (float)$feedData['dm_pct'] : (float)($item['dm_pct'] ?? 90.0);
+            // Farmer-entered DM% takes priority, falling back to database feed DM%
+            $dmPct = (isset($item['dm_pct']) && is_numeric($item['dm_pct']) && (float)$item['dm_pct'] > 0)
+                ? (float)$item['dm_pct']
+                : ($feedData ? (float)$feedData['dm_pct'] : 90.0);
             $cpPct = $feedData ? (float)$feedData['cp_pct'] : (float)($item['cp_pct'] ?? 0.0);
             $fatPct = $feedData ? (float)$feedData['fat_pct'] : (float)($item['fat_pct'] ?? 0.0);
             $fiberPct = $feedData ? (float)$feedData['fiber_pct'] : (float)($item['fiber_pct'] ?? 0.0);
@@ -351,6 +354,7 @@ if ($method === 'POST') {
                 'feed_id' => $feedId,
                 'feed_name' => $feedName,
                 'amount_as_fed_kg' => round($amountAsFed, 2),
+                'dm_pct' => round($dmPct, 2),
                 'dm_intake_kg' => round($dmIntakeKg, 2),
                 'cp_intake_kg' => round($cpIntakeKg, 3),
                 'fat_intake_kg' => round($fatIntakeKg, 3),
@@ -427,16 +431,16 @@ if ($method === 'POST') {
             // Insert line items
             $itemIns = $db->prepare("
                 INSERT INTO daily_feed_items (
-                    feed_log_id, feed_id, feed_name, amount_as_fed_kg, dm_intake_kg, 
+                    feed_log_id, feed_id, feed_name, amount_as_fed_kg, dm_pct, dm_intake_kg, 
                     cp_intake_kg, fat_intake_kg, fiber_intake_kg, ndf_intake_kg, adf_intake_kg, 
                     starch_intake_kg, sugar_intake_kg, ash_intake_kg, ca_intake_g, p_intake_g, 
                     mg_intake_g, k_intake_g, na_intake_g, s_intake_g, me_intake_mj, nel_intake_mj
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
             foreach ($processedItems as $pi) {
                 $itemIns->execute([
-                    $savedLogId, $pi['feed_id'], $pi['feed_name'], $pi['amount_as_fed_kg'], $pi['dm_intake_kg'],
+                    $savedLogId, $pi['feed_id'], $pi['feed_name'], $pi['amount_as_fed_kg'], $pi['dm_pct'], $pi['dm_intake_kg'],
                     $pi['cp_intake_kg'], $pi['fat_intake_kg'], $pi['fiber_intake_kg'], $pi['ndf_intake_kg'], $pi['adf_intake_kg'],
                     $pi['starch_intake_kg'], $pi['sugar_intake_kg'], $pi['ash_intake_kg'], $pi['ca_intake_g'], $pi['p_intake_g'],
                     $pi['mg_intake_g'], $pi['k_intake_g'], $pi['na_intake_g'], $pi['s_intake_g'], $pi['me_intake_mj'], $pi['nel_intake_mj']
