@@ -1,6 +1,6 @@
-# 🐄 AgriCow - Dairy & Cattle Farm Management Mobile App
+# 🐄 DairyMate - A helpful partner for dairy farmers.
 
-A modern, interactive mobile application for dairy and cattle farm management, featuring herd registry, heat/estrus detection, AI breeding, pregnancy monitoring, calving records, daily milk logging with drop alerts, veterinary health, vaccinations, weight tracking, and THI heat stress calculations.
+A modern, interactive mobile application for dairy and cattle farm management, featuring herd registry, dairy feed ration & nutrient intake calculations, heat/estrus detection, AI breeding, pregnancy monitoring, calving records, daily milk logging with drop alerts, veterinary health & vaccination protocols, weight tracking, and THI heat stress calculations.
 
 ---
 
