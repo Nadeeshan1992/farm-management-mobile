@@ -3992,3 +3992,951 @@ function openFeedCalculatorForCow(cowId) {
     }
 }
 
+// ================= DAIRY FEED & NUTRITION PDF EXPORT ENGINE =================
+function openFeedPdfModal(defaultCowId = null) {
+    const select = document.getElementById('feedPdfCowSelect');
+    if (select) {
+        let opts = `<option value="0">🐄 All Herd (Whole Farm Overview)</option>`;
+        cowsCache.forEach(c => {
+            opts += `<option value="${c.id}">${c.tag_number} - ${c.name} (${c.breed || 'Cow'})</option>`;
+        });
+        select.innerHTML = opts;
+
+        const calcCowSelect = document.getElementById('feedCowSelect');
+        const activeCalcCow = calcCowSelect ? parseInt(calcCowSelect.value) : 0;
+        const targetId = defaultCowId || (activeCalcCow > 0 ? activeCalcCow : 0);
+        if (targetId > 0) {
+            select.value = targetId;
+        }
+    }
+
+    const radCurrent = document.querySelector('input[name="feedPdfType"][value="current"]');
+    if (radCurrent) radCurrent.checked = true;
+    onFeedPdfTypeChange('current');
+
+    openModal('modalFeedPdfExport');
+}
+
+function onFeedPdfTypeChange(type) {
+    const cowGroup = document.getElementById('feedPdfCowGroup');
+    const highlights = document.getElementById('feedPdfHighlightsList');
+
+    if (cowGroup) {
+        cowGroup.style.display = (type === 'library') ? 'none' : 'block';
+    }
+
+    if (highlights) {
+        if (type === 'current') {
+            highlights.innerHTML = `
+                <li>Official DairyMate calculation engine credentials</li>
+                <li>Separate As-Fed (kg) vs Dry Matter Intake (DMI kg)</li>
+                <li>Farmer-entered manual DM % for each feed ingredient</li>
+                <li>Full 17-parameter nutrient intake breakdown (CP, Fat, Fiber, NDF, ADF, Minerals, Energy)</li>
+            `;
+        } else if (type === 'history') {
+            highlights.innerHTML = `
+                <li>Historical feeding log records for individual cow or whole herd</li>
+                <li>Chronological daily feeding entries with As-Fed and DM Intake</li>
+                <li>Total Crude Protein (CP), Calcium (Ca) and Phosphorus (P)</li>
+                <li>Ration breakdown ingredients and farmer notes</li>
+            `;
+        } else if (type === 'library') {
+            highlights.innerHTML = `
+                <li>Complete nutrient database specs for all feeds in library</li>
+                <li>Dry Matter (DM %), Crude Protein (CP %), Crude Fat, Fiber, NDF, ADF</li>
+                <li>Essential Minerals: Ca %, P %, Mg %, K %, Na %, S % on DM basis</li>
+                <li>Energy values: ME (MJ/kg DM) and NEL (MJ/kg DM)</li>
+            `;
+        }
+    }
+}
+
+async function submitFeedPdfExport(e) {
+    if (e) e.preventDefault();
+    const typeRad = document.querySelector('input[name="feedPdfType"]:checked');
+    const type = typeRad ? typeRad.value : 'current';
+    const select = document.getElementById('feedPdfCowSelect');
+    const cowId = select ? parseInt(select.value) || 0 : 0;
+
+    closeModal('modalFeedPdfExport');
+    await generateFeedRecordsPdf(type, cowId);
+}
+
+async function submitFeedPdfPrint() {
+    const typeRad = document.querySelector('input[name="feedPdfType"]:checked');
+    const type = typeRad ? typeRad.value : 'current';
+    const select = document.getElementById('feedPdfCowSelect');
+    const cowId = select ? parseInt(select.value) || 0 : 0;
+
+    closeModal('modalFeedPdfExport');
+    const exportData = await fetchFeedExportData(type, cowId);
+    if (exportData) {
+        openPrintableFeedReport(exportData);
+    } else {
+        showToast('No feed data available to print.', true);
+    }
+}
+
+async function fetchFeedExportData(type = 'current', cowId = 0) {
+    if (type === 'current') {
+        const calcCowSelect = document.getElementById('feedCowSelect');
+        const targetCowId = cowId > 0 ? cowId : (calcCowSelect ? parseInt(calcCowSelect.value) || 0 : 0);
+        let cowInfo = cowsCache.find(c => c.id == targetCowId) || null;
+        if (!cowInfo && cowsCache.length > 0) {
+            cowInfo = cowsCache[0];
+        }
+
+        const dateInput = document.getElementById('feedLogDate');
+        const notesInput = document.getElementById('feedLogNotes');
+        const logDate = (dateInput && dateInput.value) ? dateInput.value : new Date().toISOString().split('T')[0];
+        const notes = (notesInput ? notesInput.value : '').trim();
+
+        const container = document.getElementById('feedRowsContainer');
+        let rowElements = container ? container.querySelectorAll('.feed-row-item') : [];
+
+        if (!rowElements || rowElements.length === 0 || Array.from(rowElements).every(r => !(parseFloat((r.querySelector('.feed-amount') || {}).value) > 0))) {
+            loadExampleFeedRation();
+            rowElements = container.querySelectorAll('.feed-row-item');
+        }
+
+        const items = [];
+        let totalAsFed = 0, totalDm = 0, totalCp = 0, totalFat = 0, totalFiber = 0;
+        let totalNdf = 0, totalAdf = 0, totalStarch = 0, totalSugar = 0, totalAsh = 0;
+        let totalCa = 0, totalP = 0, totalMg = 0, totalK = 0, totalNa = 0, totalS = 0;
+        let totalMe = 0, totalNel = 0;
+
+        rowElements.forEach(row => {
+            const feedSelect = row.querySelector('.feed-select');
+            const amountInput = row.querySelector('.feed-amount');
+            const dmInput = row.querySelector('.feed-dm-pct');
+            if (!feedSelect || !amountInput) return;
+
+            const feedId = parseInt(feedSelect.value);
+            const asFedKg = parseFloat(amountInput.value) || 0;
+            const feed = feedsCache.find(f => f.id === feedId);
+
+            let dmPct = dmInput ? parseFloat(dmInput.value) : NaN;
+            if (isNaN(dmPct) || dmPct <= 0) {
+                dmPct = feed ? parseFloat(feed.dm_pct || 0) : 0;
+            }
+
+            if (feed && asFedKg > 0) {
+                const cpPct = parseFloat(feed.cp_pct || 0);
+                const fatPct = parseFloat(feed.fat_pct || 0);
+                const fiberPct = parseFloat(feed.fiber_pct || 0);
+                const ndfPct = parseFloat(feed.ndf_pct || 0);
+                const adfPct = parseFloat(feed.adf_pct || 0);
+                const starchPct = parseFloat(feed.starch_pct || 0);
+                const sugarPct = parseFloat(feed.sugar_pct || 0);
+                const ashPct = parseFloat(feed.ash_pct || 0);
+                const caPct = parseFloat(feed.ca_pct || 0);
+                const pPct = parseFloat(feed.p_pct || 0);
+                const mgPct = parseFloat(feed.mg_pct || 0);
+                const kPct = parseFloat(feed.k_pct || 0);
+                const naPct = parseFloat(feed.na_pct || 0);
+                const sPct = parseFloat(feed.s_pct || 0);
+                const meMj = parseFloat(feed.me_mj || 0);
+                const nelMj = parseFloat(feed.nel_mj || 0);
+
+                const dmKg = asFedKg * (dmPct / 100);
+                const cpKg = dmKg * (cpPct / 100);
+                const fatKg = dmKg * (fatPct / 100);
+                const fiberKg = dmKg * (fiberPct / 100);
+                const ndfKg = dmKg * (ndfPct / 100);
+                const adfKg = dmKg * (adfPct / 100);
+                const starchKg = dmKg * (starchPct / 100);
+                const sugarKg = dmKg * (sugarPct / 100);
+                const ashKg = dmKg * (ashPct / 100);
+                const caG = dmKg * (caPct / 100) * 1000;
+                const pG = dmKg * (pPct / 100) * 1000;
+                const mgG = dmKg * (mgPct / 100) * 1000;
+                const kG = dmKg * (kPct / 100) * 1000;
+                const naG = dmKg * (naPct / 100) * 1000;
+                const sG = dmKg * (sPct / 100) * 1000;
+                const meTotal = dmKg * meMj;
+                const nelTotal = dmKg * nelMj;
+
+                totalAsFed += asFedKg;
+                totalDm += dmKg;
+                totalCp += cpKg;
+                totalFat += fatKg;
+                totalFiber += fiberKg;
+                totalNdf += ndfKg;
+                totalAdf += adfKg;
+                totalStarch += starchKg;
+                totalSugar += sugarKg;
+                totalAsh += ashKg;
+                totalCa += caG;
+                totalP += pG;
+                totalMg += mgG;
+                totalK += kG;
+                totalNa += naG;
+                totalS += sG;
+                totalMe += meTotal;
+                totalNel += nelTotal;
+
+                items.push({
+                    feed_id: feed.id,
+                    feed_name: feed.name,
+                    category: feed.category || 'Feed',
+                    as_fed_kg: asFedKg,
+                    dm_pct: dmPct,
+                    dm_kg: dmKg,
+                    cp_kg: cpKg,
+                    fat_kg: fatKg,
+                    fiber_kg: fiberKg,
+                    ndf_kg: ndfKg,
+                    adf_kg: adfKg,
+                    starch_kg: starchKg,
+                    sugar_kg: sugarKg,
+                    ash_kg: ashKg,
+                    ca_g: caG,
+                    p_g: pG,
+                    mg_g: mgG,
+                    k_g: kG,
+                    na_g: naG,
+                    s_g: sG,
+                    me_mj: meTotal,
+                    nel_mj: nelTotal
+                });
+            }
+        });
+
+        return {
+            type: 'current',
+            cow_id: targetCowId,
+            cow_info: cowInfo,
+            log_date: logDate,
+            notes: notes,
+            items: items,
+            totals: {
+                as_fed_kg: totalAsFed,
+                dm_kg: totalDm,
+                cp_kg: totalCp,
+                fat_kg: totalFat,
+                fiber_kg: totalFiber,
+                ndf_kg: totalNdf,
+                adf_kg: totalAdf,
+                starch_kg: totalStarch,
+                sugar_kg: totalSugar,
+                ash_kg: totalAsh,
+                ca_g: totalCa,
+                p_g: totalP,
+                mg_g: totalMg,
+                k_g: totalK,
+                na_g: totalNa,
+                s_g: totalS,
+                me_mj: totalMe,
+                nel_mj: totalNel
+            }
+        };
+    } else if (type === 'history') {
+        let logs = [];
+        let cowInfo = cowId > 0 ? (cowsCache.find(c => c.id == cowId) || null) : null;
+        try {
+            if (isServerMode) {
+                let url = `${API_BASE}/feeds.php?action=list_logs&with_items=1`;
+                if (cowId > 0) url += `&cow_id=${cowId}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                logs = data.logs || [];
+            } else {
+                const store = getLocalStore();
+                logs = store.feed_logs || [];
+                if (cowId > 0) logs = logs.filter(l => l.cow_id == cowId);
+            }
+        } catch (err) {
+            console.error('Error fetching feed logs for export:', err);
+        }
+
+        return {
+            type: 'history',
+            cow_id: cowId,
+            cow_info: cowInfo,
+            logs: logs
+        };
+    } else if (type === 'library') {
+        return {
+            type: 'library',
+            feeds: feedsCache || []
+        };
+    }
+}
+
+async function generateFeedRecordsPdf(type = 'current', cowId = 0) {
+    showToast('Generating Feed & Nutrition PDF...');
+
+    const exportData = await fetchFeedExportData(type, cowId);
+    if (!exportData) {
+        showToast('No feed data available to export.', true);
+        return;
+    }
+
+    const jspdfLib = window.jspdf ? (window.jspdf.jsPDF || window.jspdf) : window.jsPDF;
+    if (!jspdfLib) {
+        console.warn('jsPDF not loaded in window, falling back to printable browser view.');
+        openPrintableFeedReport(exportData);
+        return;
+    }
+
+    try {
+        const doc = new jspdfLib({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        // Ensure autoTable plugin is attached
+        if (typeof doc.autoTable !== 'function') {
+            if (window.jspdf && typeof window.jspdf.autoTable === 'function') {
+                doc.autoTable = (opts) => window.jspdf.autoTable(doc, opts);
+            } else if (window.jspdfAutotable && window.jspdfAutotable.applyPlugin) {
+                window.jspdfAutotable.applyPlugin(jspdfLib);
+            }
+        }
+
+        const amberPrimary = [180, 83, 9];      // #b45309
+        const amberLight = [254, 243, 199];      // #fef3c7
+        const slateDark = [30, 41, 59];          // #1e293b
+        const slateMuted = [100, 116, 139];      // #64748b
+        const borderGray = [226, 232, 240];      // #e2e8f0
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 12;
+        let y = 12;
+
+        // 1. Header Banner
+        doc.setFillColor(amberPrimary[0], amberPrimary[1], amberPrimary[2]);
+        doc.roundedRect(margin, y, pageWidth - (margin * 2), 22, 3, 3, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text('DairyMate', margin + 6, y + 9);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.text('A helpful partner for dairy farmers.', margin + 6, y + 15);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        const reportTitle = type === 'library'
+            ? 'FEED INGREDIENT DATABASE'
+            : (type === 'history' ? 'RATION FEEDING HISTORY' : 'FEED RATION & NUTRIENT REPORT');
+        doc.text(reportTitle, pageWidth - margin - 6, y + 9, { align: 'right' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        const nowStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        doc.text(`Generated: ${nowStr}`, pageWidth - margin - 6, y + 15, { align: 'right' });
+
+        y += 26;
+
+        if (type === 'current') {
+            const cow = exportData.cow_info;
+            const totals = exportData.totals;
+
+            // Metadata Box
+            doc.setFillColor(248, 250, 252);
+            doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+            doc.roundedRect(margin, y, pageWidth - (margin * 2), 17, 2, 2, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(slateDark[0], slateDark[1], slateDark[2]);
+            doc.text('Animal Details:', margin + 4, y + 5.5);
+            doc.setFont('helvetica', 'normal');
+            const cowTxt = cow 
+                ? `${cow.tag_number} - ${cow.name} (${cow.breed || 'Cow'}) | Parity: ${cow.parity || 0} | Status: ${cow.reproductive_status || 'Lactating'}`
+                : 'Whole Herd Formulation';
+            doc.text(cowTxt, margin + 28, y + 5.5);
+
+            doc.setFont('helvetica', 'bold');
+            doc.text('Feeding Date:', margin + 4, y + 12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`${exportData.log_date || nowStr} ${exportData.notes ? '• Note: ' + exportData.notes : ''}`, margin + 28, y + 12);
+
+            y += 21;
+
+            // Top KPI Summary Cards (4 boxes)
+            const kpiBoxWidth = (pageWidth - (margin * 2) - 9) / 4;
+            const kpis = [
+                { label: 'TOTAL AS-FED', val: `${totals.as_fed_kg.toFixed(2)} kg`, sub: `${exportData.items.length} feeds given` },
+                { label: 'DRY MATTER (DMI)', val: `${totals.dm_kg.toFixed(2)} kg`, sub: `${((totals.dm_kg / (totals.as_fed_kg || 1)) * 100).toFixed(1)}% avg DM` },
+                { label: 'CRUDE PROTEIN', val: `${totals.cp_kg.toFixed(2)} kg`, sub: `${((totals.cp_kg / (totals.dm_kg || 1)) * 100).toFixed(1)}% of DM` },
+                { label: 'MINERALS (Ca / P)', val: `${totals.ca_g.toFixed(0)}g / ${totals.p_g.toFixed(0)}g`, sub: `ratio: ${(totals.ca_g / (totals.p_g || 1)).toFixed(2)}:1` }
+            ];
+
+            kpis.forEach((kpi, idx) => {
+                const kx = margin + idx * (kpiBoxWidth + 3);
+                doc.setFillColor(amberLight[0], amberLight[1], amberLight[2]);
+                doc.setDrawColor(251, 191, 36);
+                doc.roundedRect(kx, y, kpiBoxWidth, 16, 2, 2, 'FD');
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(6.5);
+                doc.setTextColor(amberPrimary[0], amberPrimary[1], amberPrimary[2]);
+                doc.text(kpi.label, kx + (kpiBoxWidth / 2), y + 4.5, { align: 'center' });
+
+                doc.setFontSize(10);
+                doc.setTextColor(slateDark[0], slateDark[1], slateDark[2]);
+                doc.text(kpi.val, kx + (kpiBoxWidth / 2), y + 10, { align: 'center' });
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(6.5);
+                doc.setTextColor(slateMuted[0], slateMuted[1], slateMuted[2]);
+                doc.text(kpi.sub, kx + (kpiBoxWidth / 2), y + 14, { align: 'center' });
+            });
+
+            y += 20;
+
+            // Table 1: Feed Ingredient Intake Breakdown Table
+            const head1 = [['#', 'Feed Ingredient', 'Category', 'As-Fed kg', 'DM %', 'DMI kg', 'CP kg', 'Fat kg', 'Fiber kg', 'NDF kg', 'Ca g', 'P g']];
+            const body1 = exportData.items.map((it, i) => [
+                i + 1,
+                it.feed_name,
+                it.category,
+                it.as_fed_kg.toFixed(2),
+                it.dm_pct.toFixed(1) + '%',
+                it.dm_kg.toFixed(2),
+                it.cp_kg.toFixed(2),
+                it.fat_kg.toFixed(2),
+                it.fiber_kg.toFixed(2),
+                it.ndf_kg.toFixed(2),
+                it.ca_g.toFixed(1),
+                it.p_g.toFixed(1)
+            ]);
+
+            const foot1 = [[
+                '', 'TOTAL DAILY INTAKE', '',
+                totals.as_fed_kg.toFixed(2), '-',
+                totals.dm_kg.toFixed(2),
+                totals.cp_kg.toFixed(2),
+                totals.fat_kg.toFixed(2),
+                totals.fiber_kg.toFixed(2),
+                totals.ndf_kg.toFixed(2),
+                totals.ca_g.toFixed(1),
+                totals.p_g.toFixed(1)
+            ]];
+
+            doc.autoTable({
+                startY: y,
+                head: head1,
+                body: body1,
+                foot: foot1,
+                margin: { left: margin, right: margin },
+                theme: 'striped',
+                styles: { fontSize: 7, cellPadding: 2, font: 'helvetica', textColor: slateDark },
+                headStyles: { fillColor: amberPrimary, textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                footStyles: { fillColor: amberLight, textColor: [120, 53, 15], fontStyle: 'bold' },
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 7 },
+                    1: { halign: 'left', fontStyle: 'bold' },
+                    2: { halign: 'left' },
+                    3: { halign: 'right', fontStyle: 'bold' },
+                    4: { halign: 'center', textColor: amberPrimary },
+                    5: { halign: 'right', fontStyle: 'bold' },
+                    6: { halign: 'right' },
+                    7: { halign: 'right' },
+                    8: { halign: 'right' },
+                    9: { halign: 'right' },
+                    10: { halign: 'right' },
+                    11: { halign: 'right' }
+                }
+            });
+
+            // Table 2: 17-Nutrient Complete Daily Intake Summary Table
+            const afterY = doc.lastAutoTable ? (doc.lastAutoTable.finalY + 8) : (y + 60);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(amberPrimary[0], amberPrimary[1], amberPrimary[2]);
+            doc.text('Complete Daily Nutrient & Energy Intake Summary (17 Parameters)', margin, afterY);
+
+            const summaryHead = [['Nutrient Parameter', 'Daily Total Intake', 'Nutrient Parameter', 'Daily Total Intake']];
+            const summaryBody = [
+                ['Total As-Fed Quantity', `${totals.as_fed_kg.toFixed(2)} kg/day`, 'Dry Matter Intake (DMI)', `${totals.dm_kg.toFixed(2)} kg/day`],
+                ['Crude Protein (CP)', `${totals.cp_kg.toFixed(3)} kg (${((totals.cp_kg / (totals.dm_kg || 1)) * 100).toFixed(1)}% DM)`, 'Crude Fat (EE)', `${totals.fat_kg.toFixed(3)} kg`],
+                ['Crude Fiber (CF)', `${totals.fiber_kg.toFixed(3)} kg`, 'Neutral Detergent Fiber (NDF)', `${totals.ndf_kg.toFixed(3)} kg`],
+                ['Acid Detergent Fiber (ADF)', `${totals.adf_kg.toFixed(3)} kg`, 'Starch', `${totals.starch_kg.toFixed(3)} kg`],
+                ['Non-Fiber Sugars', `${totals.sugar_kg.toFixed(3)} kg`, 'Total Ash (Minerals)', `${totals.ash_kg.toFixed(3)} kg`],
+                ['Calcium (Ca)', `${totals.ca_g.toFixed(1)} g/day`, 'Phosphorus (P)', `${totals.p_g.toFixed(1)} g/day`],
+                ['Magnesium (Mg)', `${totals.mg_g.toFixed(1)} g/day`, 'Potassium (K)', `${totals.k_g.toFixed(1)} g/day`],
+                ['Sodium (Na)', `${totals.na_g.toFixed(1)} g/day`, 'Sulfur (S)', `${totals.s_g.toFixed(1)} g/day`],
+                ['Metabolisable Energy (ME)', `${totals.me_mj.toFixed(1)} MJ/day`, 'Net Energy Lactation (NEL)', `${totals.nel_mj.toFixed(1)} MJ/day`]
+            ];
+
+            doc.autoTable({
+                startY: afterY + 3,
+                head: summaryHead,
+                body: summaryBody,
+                margin: { left: margin, right: margin, bottom: 14 },
+                theme: 'grid',
+                styles: { fontSize: 7.5, cellPadding: 2, font: 'helvetica', textColor: slateDark },
+                headStyles: { fillColor: [71, 85, 105], textColor: [255, 255, 255], fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [248, 250, 252] },
+                columnStyles: {
+                    0: { fontStyle: 'bold', cellWidth: 50 },
+                    1: { halign: 'right', fontStyle: 'bold', textColor: amberPrimary, cellWidth: 41 },
+                    2: { fontStyle: 'bold', cellWidth: 50 },
+                    3: { halign: 'right', fontStyle: 'bold', textColor: amberPrimary, cellWidth: 41 }
+                },
+                didDrawPage: function () {
+                    const totalPages = doc.internal.getNumberOfPages();
+                    const str = `Page ${doc.internal.getCurrentPageInfo().pageNumber} of ${totalPages}`;
+                    doc.setFontSize(8);
+                    doc.setTextColor(slateMuted[0], slateMuted[1], slateMuted[2]);
+                    doc.text('DairyMate — Dairy Feed Nutrient Calculation Engine | Confidential Farm Records', margin, doc.internal.pageSize.getHeight() - 8);
+                    doc.text(str, pageWidth - margin, doc.internal.pageSize.getHeight() - 8, { align: 'right' });
+                }
+            });
+
+            const cowTag = cow ? cow.tag_number : 'Herd';
+            const fileName = `DairyMate_Feed_Ration_${cowTag}_${exportData.log_date}.pdf`;
+            doc.save(fileName);
+            showToast(`PDF downloaded: ${fileName}`);
+        } else if (type === 'history') {
+            const cow = exportData.cow_info;
+            const logs = exportData.logs || [];
+
+            doc.setFillColor(248, 250, 252);
+            doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+            doc.roundedRect(margin, y, pageWidth - (margin * 2), 17, 2, 2, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(slateDark[0], slateDark[1], slateDark[2]);
+            doc.text('History Scope:', margin + 4, y + 5.5);
+            doc.setFont('helvetica', 'normal');
+            const scopeTxt = cow 
+                ? `${cow.tag_number} - ${cow.name} (${cow.breed || 'Cow'})`
+                : 'All Herd (Whole Farm Ration Logs)';
+            doc.text(scopeTxt, margin + 28, y + 5.5);
+
+            doc.setFont('helvetica', 'bold');
+            doc.text('Total Records:', margin + 4, y + 12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`${logs.length} feeding log entries`, margin + 28, y + 12);
+
+            y += 22;
+
+            if (logs.length === 0) {
+                doc.setFontSize(10);
+                doc.setTextColor(slateMuted[0], slateMuted[1], slateMuted[2]);
+                doc.text('No feeding log records found for this scope.', margin, y + 10);
+            } else {
+                const histHead = [['#', 'Date', 'Cow Tag', 'Cow Name', 'As-Fed kg', 'DMI kg', 'CP kg', 'Ca g', 'P g', 'Ration Breakdown']];
+                const histBody = logs.map((l, i) => {
+                    const cName = l.cow_name || (cowsCache.find(c => c.id == l.cow_id) || {}).name || `Cow #${l.cow_id}`;
+                    const cTag = l.tag_number || (cowsCache.find(c => c.id == l.cow_id) || {}).tag_number || '-';
+                    const itemsDesc = (l.items || []).map(it => `${it.feed_name} (${it.amount_as_fed_kg}kg)`).join(', ');
+
+                    return [
+                        i + 1,
+                        l.log_date,
+                        cTag,
+                        cName,
+                        parseFloat(l.total_as_fed_kg || 0).toFixed(1),
+                        parseFloat(l.total_dm_kg || 0).toFixed(2),
+                        parseFloat(l.total_cp_kg || 0).toFixed(2),
+                        parseFloat(l.total_ca_g || 0).toFixed(0),
+                        parseFloat(l.total_p_g || 0).toFixed(0),
+                        itemsDesc || l.notes || '-'
+                    ];
+                });
+
+                doc.autoTable({
+                    startY: y,
+                    head: histHead,
+                    body: histBody,
+                    margin: { left: margin, right: margin, bottom: 14 },
+                    theme: 'striped',
+                    styles: { fontSize: 7, cellPadding: 2, font: 'helvetica', textColor: slateDark },
+                    headStyles: { fillColor: amberPrimary, textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 7 },
+                        1: { halign: 'center', cellWidth: 18 },
+                        2: { halign: 'center', fontStyle: 'bold', cellWidth: 18 },
+                        4: { halign: 'right', fontStyle: 'bold' },
+                        5: { halign: 'right', fontStyle: 'bold', textColor: [21, 128, 61] },
+                        6: { halign: 'right', fontStyle: 'bold', textColor: [30, 64, 175] },
+                        7: { halign: 'right' },
+                        8: { halign: 'right' }
+                    },
+                    didDrawPage: function () {
+                        const totalPages = doc.internal.getNumberOfPages();
+                        const str = `Page ${doc.internal.getCurrentPageInfo().pageNumber} of ${totalPages}`;
+                        doc.setFontSize(8);
+                        doc.setTextColor(slateMuted[0], slateMuted[1], slateMuted[2]);
+                        doc.text('DairyMate — Historical Feed Records | Confidential Farm Records', margin, doc.internal.pageSize.getHeight() - 8);
+                        doc.text(str, pageWidth - margin, doc.internal.pageSize.getHeight() - 8, { align: 'right' });
+                    }
+                });
+            }
+
+            const fileName = `DairyMate_Feed_History_${cow ? cow.tag_number : 'Herd'}_${nowStr.split(',')[0].replace(/\s+/g, '_')}.pdf`;
+            doc.save(fileName);
+            showToast(`PDF downloaded: ${fileName}`);
+        } else if (type === 'library') {
+            const feeds = exportData.feeds || [];
+
+            doc.setFillColor(248, 250, 252);
+            doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
+            doc.roundedRect(margin, y, pageWidth - (margin * 2), 14, 2, 2, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(slateDark[0], slateDark[1], slateDark[2]);
+            doc.text('Database Specification:', margin + 4, y + 5.5);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`${feeds.length} feed ingredients registered • All nutrient values on 100% Dry Matter basis`, margin + 44, y + 5.5);
+
+            y += 18;
+
+            const libHead = [['#', 'Feed Name', 'Category', 'DM %', 'CP %', 'Fat %', 'Fiber %', 'NDF %', 'ADF %', 'Ca %', 'P %', 'ME', 'NEL']];
+            const libBody = feeds.map((f, i) => [
+                i + 1,
+                f.name,
+                f.category || 'Feed',
+                parseFloat(f.dm_pct || 0).toFixed(1) + '%',
+                parseFloat(f.cp_pct || 0).toFixed(1) + '%',
+                parseFloat(f.fat_pct || 0).toFixed(1) + '%',
+                parseFloat(f.fiber_pct || 0).toFixed(1) + '%',
+                parseFloat(f.ndf_pct || 0).toFixed(1) + '%',
+                parseFloat(f.adf_pct || 0).toFixed(1) + '%',
+                parseFloat(f.ca_pct || 0).toFixed(2) + '%',
+                parseFloat(f.p_pct || 0).toFixed(2) + '%',
+                parseFloat(f.me_mj || 0).toFixed(1),
+                parseFloat(f.nel_mj || 0).toFixed(1)
+            ]);
+
+            doc.autoTable({
+                startY: y,
+                head: libHead,
+                body: libBody,
+                margin: { left: margin, right: margin, bottom: 14 },
+                theme: 'striped',
+                styles: { fontSize: 7, cellPadding: 2, font: 'helvetica', textColor: slateDark },
+                headStyles: { fillColor: amberPrimary, textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 7 },
+                    1: { halign: 'left', fontStyle: 'bold' },
+                    3: { halign: 'center', fontStyle: 'bold', textColor: amberPrimary },
+                    4: { halign: 'right', fontStyle: 'bold' },
+                    11: { halign: 'right' },
+                    12: { halign: 'right' }
+                },
+                didDrawPage: function () {
+                    const totalPages = doc.internal.getNumberOfPages();
+                    const str = `Page ${doc.internal.getCurrentPageInfo().pageNumber} of ${totalPages}`;
+                    doc.setFontSize(8);
+                    doc.setTextColor(slateMuted[0], slateMuted[1], slateMuted[2]);
+                    doc.text('DairyMate — Feed Composition Database | Confidential Farm Records', margin, doc.internal.pageSize.getHeight() - 8);
+                    doc.text(str, pageWidth - margin, doc.internal.pageSize.getHeight() - 8, { align: 'right' });
+                }
+            });
+
+            const fileName = `DairyMate_Feed_Database_${nowStr.split(',')[0].replace(/\s+/g, '_')}.pdf`;
+            doc.save(fileName);
+            showToast(`PDF downloaded: ${fileName}`);
+        }
+    } catch (err) {
+        console.error('jsPDF generation for feed failed:', err);
+        openPrintableFeedReport(exportData);
+    }
+}
+
+function openPrintableFeedReport(exportData) {
+    const type = exportData.type || 'current';
+    const nowStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    let contentHtml = '';
+
+    if (type === 'current') {
+        const cow = exportData.cow_info;
+        const totals = exportData.totals;
+        const items = exportData.items || [];
+
+        contentHtml = `
+            <div class="scope-box">
+                <div><b>Animal Details:</b> ${cow ? `${cow.tag_number} - ${cow.name} (${cow.breed || 'Cow'}) • Status: ${cow.reproductive_status || 'Lactating'} • Parity: ${cow.parity || 0}` : 'Whole Herd Formulation'}</div>
+                <div style="margin-top: 4px;"><b>Feeding Date:</b> ${exportData.log_date} ${exportData.notes ? '• Note: ' + exportData.notes : ''}</div>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-title">Total As-Fed</div>
+                    <div class="kpi-val">${totals.as_fed_kg.toFixed(2)} kg</div>
+                    <div class="kpi-sub">${items.length} feeds given</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Dry Matter (DMI)</div>
+                    <div class="kpi-val">${totals.dm_kg.toFixed(2)} kg</div>
+                    <div class="kpi-sub">${((totals.dm_kg / (totals.as_fed_kg || 1)) * 100).toFixed(1)}% avg DM</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Crude Protein (CP)</div>
+                    <div class="kpi-val">${totals.cp_kg.toFixed(2)} kg</div>
+                    <div class="kpi-sub">${((totals.cp_kg / (totals.dm_kg || 1)) * 100).toFixed(1)}% of DM</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Minerals (Ca / P)</div>
+                    <div class="kpi-val">${totals.ca_g.toFixed(0)}g / ${totals.p_g.toFixed(0)}g</div>
+                    <div class="kpi-sub">ratio: ${(totals.ca_g / (totals.p_g || 1)).toFixed(2)}:1</div>
+                </div>
+            </div>
+            <h3 style="color:#b45309; margin-bottom: 8px;">Feed Ingredient Intake Breakdown (Feed-Level)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:25px; text-align:center;">#</th>
+                        <th>Feed Ingredient</th>
+                        <th>Category</th>
+                        <th style="text-align:right;">As-Fed kg</th>
+                        <th style="text-align:center;">DM %</th>
+                        <th style="text-align:right;">DMI kg</th>
+                        <th style="text-align:right;">CP kg</th>
+                        <th style="text-align:right;">Fat kg</th>
+                        <th style="text-align:right;">Fiber kg</th>
+                        <th style="text-align:right;">NDF kg</th>
+                        <th style="text-align:right;">Ca g</th>
+                        <th style="text-align:right;">P g</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${items.map((it, i) => `
+                        <tr>
+                            <td style="text-align:center;">${i + 1}</td>
+                            <td><b>${it.feed_name}</b></td>
+                            <td>${it.category}</td>
+                            <td style="text-align:right; font-weight:bold;">${it.as_fed_kg.toFixed(2)}</td>
+                            <td style="text-align:center; color:#b45309; font-weight:bold;">${it.dm_pct.toFixed(1)}%</td>
+                            <td style="text-align:right; font-weight:bold; color:#15803d;">${it.dm_kg.toFixed(2)}</td>
+                            <td style="text-align:right;">${it.cp_kg.toFixed(2)}</td>
+                            <td style="text-align:right;">${it.fat_kg.toFixed(2)}</td>
+                            <td style="text-align:right;">${it.fiber_kg.toFixed(2)}</td>
+                            <td style="text-align:right;">${it.ndf_kg.toFixed(2)}</td>
+                            <td style="text-align:right;">${it.ca_g.toFixed(1)}</td>
+                            <td style="text-align:right;">${it.p_g.toFixed(1)}</td>
+                        </tr>
+                    `).join('')}
+                    <tr style="background:#fef3c7; font-weight:bold; color:#78350f;">
+                        <td colspan="3" style="text-align:center;">TOTAL DAILY INTAKE</td>
+                        <td style="text-align:right;">${totals.as_fed_kg.toFixed(2)}</td>
+                        <td style="text-align:center;">-</td>
+                        <td style="text-align:right;">${totals.dm_kg.toFixed(2)}</td>
+                        <td style="text-align:right;">${totals.cp_kg.toFixed(2)}</td>
+                        <td style="text-align:right;">${totals.fat_kg.toFixed(2)}</td>
+                        <td style="text-align:right;">${totals.fiber_kg.toFixed(2)}</td>
+                        <td style="text-align:right;">${totals.ndf_kg.toFixed(2)}</td>
+                        <td style="text-align:right;">${totals.ca_g.toFixed(1)}</td>
+                        <td style="text-align:right;">${totals.p_g.toFixed(1)}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="color:#b45309; margin: 18px 0 8px;">Complete Daily Nutrient & Energy Intake Summary (17 Parameters)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nutrient Parameter</th>
+                        <th style="text-align:right;">Daily Total Intake</th>
+                        <th>Nutrient Parameter</th>
+                        <th style="text-align:right;">Daily Total Intake</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Total As-Fed Quantity</b></td><td style="text-align:right; font-weight:bold; color:#b45309;">${totals.as_fed_kg.toFixed(2)} kg/day</td>
+                        <td><b>Dry Matter Intake (DMI)</b></td><td style="text-align:right; font-weight:bold; color:#b45309;">${totals.dm_kg.toFixed(2)} kg/day</td>
+                    </tr>
+                    <tr>
+                        <td><b>Crude Protein (CP)</b></td><td style="text-align:right; font-weight:bold;">${totals.cp_kg.toFixed(3)} kg</td>
+                        <td><b>Crude Fat (EE)</b></td><td style="text-align:right;">${totals.fat_kg.toFixed(3)} kg</td>
+                    </tr>
+                    <tr>
+                        <td><b>Crude Fiber (CF)</b></td><td style="text-align:right;">${totals.fiber_kg.toFixed(3)} kg</td>
+                        <td><b>Neutral Detergent Fiber (NDF)</b></td><td style="text-align:right;">${totals.ndf_kg.toFixed(3)} kg</td>
+                    </tr>
+                    <tr>
+                        <td><b>Acid Detergent Fiber (ADF)</b></td><td style="text-align:right;">${totals.adf_kg.toFixed(3)} kg</td>
+                        <td><b>Starch</b></td><td style="text-align:right;">${totals.starch_kg.toFixed(3)} kg</td>
+                    </tr>
+                    <tr>
+                        <td><b>Non-Fiber Sugars</b></td><td style="text-align:right;">${totals.sugar_kg.toFixed(3)} kg</td>
+                        <td><b>Total Ash (Minerals)</b></td><td style="text-align:right;">${totals.ash_kg.toFixed(3)} kg</td>
+                    </tr>
+                    <tr>
+                        <td><b>Calcium (Ca)</b></td><td style="text-align:right;">${totals.ca_g.toFixed(1)} g/day</td>
+                        <td><b>Phosphorus (P)</b></td><td style="text-align:right;">${totals.p_g.toFixed(1)} g/day</td>
+                    </tr>
+                    <tr>
+                        <td><b>Magnesium (Mg)</b></td><td style="text-align:right;">${totals.mg_g.toFixed(1)} g/day</td>
+                        <td><b>Potassium (K)</b></td><td style="text-align:right;">${totals.k_g.toFixed(1)} g/day</td>
+                    </tr>
+                    <tr>
+                        <td><b>Sodium (Na)</b></td><td style="text-align:right;">${totals.na_g.toFixed(1)} g/day</td>
+                        <td><b>Sulfur (S)</b></td><td style="text-align:right;">${totals.s_g.toFixed(1)} g/day</td>
+                    </tr>
+                    <tr>
+                        <td><b>Metabolisable Energy (ME)</b></td><td style="text-align:right; font-weight:bold; color:#b45309;">${totals.me_mj.toFixed(1)} MJ/day</td>
+                        <td><b>Net Energy Lactation (NEL)</b></td><td style="text-align:right; font-weight:bold; color:#b45309;">${totals.nel_mj.toFixed(1)} MJ/day</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    } else if (type === 'history') {
+        const cow = exportData.cow_info;
+        const logs = exportData.logs || [];
+
+        contentHtml = `
+            <div class="scope-box">
+                <div><b>History Scope:</b> ${cow ? `${cow.tag_number} - ${cow.name} (${cow.breed || 'Cow'})` : 'All Herd (Whole Farm Ration Logs)'}</div>
+                <div style="margin-top: 4px;"><b>Total Records:</b> ${logs.length} feeding log entries</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:25px; text-align:center;">#</th>
+                        <th>Date</th>
+                        <th>Cow Tag</th>
+                        <th>Cow Name</th>
+                        <th style="text-align:right;">As-Fed kg</th>
+                        <th style="text-align:right;">DMI kg</th>
+                        <th style="text-align:right;">CP kg</th>
+                        <th style="text-align:right;">Ca g</th>
+                        <th style="text-align:right;">P g</th>
+                        <th>Ration Breakdown</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${logs.map((l, i) => `
+                        <tr>
+                            <td style="text-align:center;">${i + 1}</td>
+                            <td>${l.log_date}</td>
+                            <td><b>${l.tag_number || '-'}</b></td>
+                            <td>${l.cow_name || '-'}</td>
+                            <td style="text-align:right; font-weight:bold;">${parseFloat(l.total_as_fed_kg || 0).toFixed(1)}</td>
+                            <td style="text-align:right; color:#15803d; font-weight:bold;">${parseFloat(l.total_dm_kg || 0).toFixed(2)}</td>
+                            <td style="text-align:right; color:#1e40af; font-weight:bold;">${parseFloat(l.total_cp_kg || 0).toFixed(2)}</td>
+                            <td style="text-align:right;">${parseFloat(l.total_ca_g || 0).toFixed(0)}</td>
+                            <td style="text-align:right;">${parseFloat(l.total_p_g || 0).toFixed(0)}</td>
+                            <td>${(l.items || []).map(it => `${it.feed_name} (${it.amount_as_fed_kg}kg)`).join(', ') || l.notes || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    } else if (type === 'library') {
+        const feeds = exportData.feeds || [];
+
+        contentHtml = `
+            <div class="scope-box">
+                <div><b>Database Specification:</b> ${feeds.length} feed ingredients registered • All nutrient values on 100% Dry Matter basis</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:25px; text-align:center;">#</th>
+                        <th>Feed Name</th>
+                        <th>Category</th>
+                        <th style="text-align:center;">DM %</th>
+                        <th style="text-align:right;">CP %</th>
+                        <th style="text-align:right;">Fat %</th>
+                        <th style="text-align:right;">Fiber %</th>
+                        <th style="text-align:right;">NDF %</th>
+                        <th style="text-align:right;">ADF %</th>
+                        <th style="text-align:right;">Ca %</th>
+                        <th style="text-align:right;">P %</th>
+                        <th style="text-align:right;">ME MJ</th>
+                        <th style="text-align:right;">NEL MJ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${feeds.map((f, i) => `
+                        <tr>
+                            <td style="text-align:center;">${i + 1}</td>
+                            <td><b>${f.name}</b></td>
+                            <td>${f.category || 'Feed'}</td>
+                            <td style="text-align:center; color:#b45309; font-weight:bold;">${parseFloat(f.dm_pct || 0).toFixed(1)}%</td>
+                            <td style="text-align:right; font-weight:bold;">${parseFloat(f.cp_pct || 0).toFixed(1)}%</td>
+                            <td style="text-align:right;">${parseFloat(f.fat_pct || 0).toFixed(1)}%</td>
+                            <td style="text-align:right;">${parseFloat(f.fiber_pct || 0).toFixed(1)}%</td>
+                            <td style="text-align:right;">${parseFloat(f.ndf_pct || 0).toFixed(1)}%</td>
+                            <td style="text-align:right;">${parseFloat(f.adf_pct || 0).toFixed(1)}%</td>
+                            <td style="text-align:right;">${parseFloat(f.ca_pct || 0).toFixed(2)}%</td>
+                            <td style="text-align:right;">${parseFloat(f.p_pct || 0).toFixed(2)}%</td>
+                            <td style="text-align:right;">${parseFloat(f.me_mj || 0).toFixed(1)}</td>
+                            <td style="text-align:right;">${parseFloat(f.nel_mj || 0).toFixed(1)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    const printHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>DairyMate Feed & Nutrition Report - ${type}</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; color: #1e293b; }
+                .header-banner { background: #b45309; color: white; padding: 16px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+                .header-banner h1 { margin: 0; font-size: 22px; }
+                .header-banner p { margin: 4px 0 0; font-size: 11px; opacity: 0.9; }
+                .report-badge { text-align: right; }
+                .report-badge h2 { margin: 0; font-size: 14px; }
+                .report-badge span { font-size: 11px; opacity: 0.85; }
+                .scope-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; }
+                .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+                .kpi-card { background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; text-align: center; }
+                .kpi-title { font-size: 10px; font-weight: bold; color: #b45309; text-transform: uppercase; }
+                .kpi-val { font-size: 18px; font-weight: 800; color: #78350f; margin: 4px 0; }
+                .kpi-sub { font-size: 10px; color: #64748b; }
+                table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 16px; }
+                th { background: #b45309; color: white; padding: 7px 6px; text-align: left; font-weight: bold; border: 1px solid #92400e; font-size: 10.5px; }
+                td { padding: 6px; border: 1px solid #e2e8f0; }
+                tr:nth-child(even) { background: #f8fafc; }
+                .footer { font-size: 10px; color: #64748b; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 20px; }
+                @media print {
+                    body { margin: 10px; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="no-print" style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <button onclick="window.print()" style="padding: 9px 18px; background: #b45309; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">🖨️ Print / Save as PDF</button>
+                <button onclick="window.close()" style="padding: 9px 18px; background: #e2e8f0; color: #334155; border: none; border-radius: 8px; cursor: pointer; font-size: 13px;">Close Window</button>
+            </div>
+            <div class="header-banner">
+                <div>
+                    <h1>🐄 DairyMate</h1>
+                    <p>A helpful partner for dairy farmers.</p>
+                </div>
+                <div class="report-badge">
+                    <h2>FEED & NUTRITION REPORT</h2>
+                    <span>Generated: ${nowStr}</span>
+                </div>
+            </div>
+            ${contentHtml}
+            <div class="footer">
+                <span>DairyMate — Dairy Feed Nutrient Calculation Engine</span>
+                <span>Confidential Farm Records</span>
+            </div>
+        </body>
+        </html>
+    `;
+
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+        printWin.document.open();
+        printWin.document.write(printHtml);
+        printWin.document.close();
+    } else {
+        showToast('Pop-up blocked. Please allow pop-ups to print.', true);
+    }
+}
+
+

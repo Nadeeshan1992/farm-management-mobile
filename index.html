@@ -330,9 +330,14 @@
                         </div>
                         <div class="text-[11px] text-slate-500">Real-time Dry Matter & Nutrient Intake Calculator</div>
                     </div>
-                    <button class="px-2.5 py-1.5 bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-amber-700 flex items-center gap-1" onclick="openModalFeedIngredient()">
-                        <i class="fa-solid fa-plus text-[10px]"></i> Add Feed
-                    </button>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" class="px-2.5 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-xl text-xs font-bold shadow-xs flex items-center gap-1 transition-colors" onclick="openFeedPdfModal()" title="Export Feed & Nutrition PDF Report">
+                            <i class="fa-solid fa-file-pdf text-red-600"></i> PDF Report
+                        </button>
+                        <button class="px-2.5 py-1.5 bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-amber-700 flex items-center gap-1" onclick="openModalFeedIngredient()">
+                            <i class="fa-solid fa-plus text-[10px]"></i> Add Feed
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Feed Subtabs -->
@@ -918,6 +923,79 @@
             </div>
         </div>
 
+        <!-- 2C. Modal: Export Dairy Feed & Nutrition PDF -->
+        <div id="modalFeedPdfExport" class="modal-overlay">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf text-red-600"></i> Export Feed & Nutrition PDF
+                    </span>
+                    <button class="sheet-close" onclick="closeModal('modalFeedPdfExport')">&times;</button>
+                </div>
+                <div class="sheet-body">
+                    <form id="formFeedPdfExport" onsubmit="submitFeedPdfExport(event)">
+                        <!-- Report Type Selection -->
+                        <div class="form-group mb-3">
+                            <label class="form-label font-bold text-slate-700">Select Report Type</label>
+                            <div class="space-y-1.5">
+                                <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-semibold has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50/70 has-[:checked]:text-amber-950">
+                                    <input type="radio" name="feedPdfType" value="current" checked class="accent-amber-600 mt-0.5" onchange="onFeedPdfTypeChange(this.value)">
+                                    <div>
+                                        <div class="font-bold text-slate-800">Current Calculator Ration (Recommended)</div>
+                                        <div class="text-[11px] text-slate-500 font-normal">Active feed intake breakdown, manual DM %, DMI, and 17 daily nutrient totals</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-semibold has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50/70 has-[:checked]:text-amber-950">
+                                    <input type="radio" name="feedPdfType" value="history" class="accent-amber-600 mt-0.5" onchange="onFeedPdfTypeChange(this.value)">
+                                    <div>
+                                        <div class="font-bold text-slate-800">Ration Feeding History Logs</div>
+                                        <div class="text-[11px] text-slate-500 font-normal">Historical feeding log records for an individual cow or the whole herd</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 text-xs font-semibold has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50/70 has-[:checked]:text-amber-950">
+                                    <input type="radio" name="feedPdfType" value="library" class="accent-amber-600 mt-0.5" onchange="onFeedPdfTypeChange(this.value)">
+                                    <div>
+                                        <div class="font-bold text-slate-800">Feed Ingredient Nutrient Library</div>
+                                        <div class="text-[11px] text-slate-500 font-normal">Complete nutritional database specs (DM%, CP%, Fiber%, Minerals & Energy)</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Target Cow Selection (used for history or current) -->
+                        <div class="form-group mb-3" id="feedPdfCowGroup">
+                            <label class="form-label font-bold text-slate-700">Target Cow</label>
+                            <select id="feedPdfCowSelect" class="form-control">
+                                <option value="0">🐄 All Herd (Whole Farm Overview)</option>
+                            </select>
+                        </div>
+
+                        <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80 mb-4 text-xs text-slate-600">
+                            <div class="flex items-center gap-1.5 font-bold text-amber-900 mb-1">
+                                <i class="fa-solid fa-wheat-awn text-amber-600"></i> Feed Report Highlights:
+                            </div>
+                            <ul class="list-disc list-inside space-y-0.5 text-[11px] text-slate-600" id="feedPdfHighlightsList">
+                                <li>Official DairyMate calculation engine credentials</li>
+                                <li>Separate As-Fed (kg) vs Dry Matter Intake (DMI kg)</li>
+                                <li>All nutrient percentages on DM basis (CP, Fat, Fiber, NDF, ADF, Starch, Sugar, Ash)</li>
+                                <li>Complete Minerals (Ca, P, Mg, K, Na, S) & Net Energy (ME, NEL)</li>
+                            </ul>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-file-pdf"></i> Download PDF
+                            </button>
+                            <button type="button" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold flex items-center gap-1" onclick="submitFeedPdfPrint()">
+                                <i class="fa-solid fa-print"></i> Print
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- 3. Modal: Log Heat / Estrus -->
         <div id="modalLogHeat" class="modal-overlay">
             <div class="modal-sheet">
@@ -1332,7 +1410,12 @@
                     <!-- Feed Intake Section -->
                     <div class="flex items-center justify-between mt-3 mb-1.5">
                         <span class="text-xs font-bold text-slate-800"><i class="fa-solid fa-wheat-awn text-amber-600 mr-1"></i> Feed & Nutrient Intake</span>
-                        <button type="button" class="text-[11px] text-amber-700 font-bold hover:underline" onclick="closeModal('modalCowDetail'); openFeedCalculatorForCow(activeCowDetailId);">+ Calculate Feed</button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" class="text-[10px] text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-2 py-0.5 rounded-lg font-bold flex items-center gap-1 transition-colors" onclick="generateFeedRecordsPdf('history', activeCowDetailId)" title="Export Individual Cow Feed PDF">
+                                <i class="fa-solid fa-file-pdf text-red-600"></i> PDF
+                            </button>
+                            <button type="button" class="text-[11px] text-amber-700 font-bold hover:underline" onclick="closeModal('modalCowDetail'); openFeedCalculatorForCow(activeCowDetailId);">+ Calculate Feed</button>
+                        </div>
                     </div>
                     <div id="detailFeedHistory" class="mb-3"></div>
 
