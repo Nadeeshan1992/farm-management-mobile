@@ -4962,16 +4962,19 @@ function openPrintableFeedReport(exportData) {
 let currentUser = null;
 
 async function initAuth() {
-    // 1. Check local storage session
-    const savedUser = localStorage.getItem('dairymate_user');
+    // 1. Check active session
+    const savedUser = sessionStorage.getItem('dairymate_user') || localStorage.getItem('dairymate_user');
     if (savedUser) {
         try {
             currentUser = JSON.parse(savedUser);
-            updateUserHeaderUI();
-            hideLoginOverlay();
-            return;
+            if (currentUser && currentUser.username) {
+                updateUserHeaderUI();
+                hideLoginOverlay();
+                return;
+            }
         } catch (e) {
             localStorage.removeItem('dairymate_user');
+            sessionStorage.removeItem('dairymate_user');
         }
     }
 
@@ -4983,7 +4986,7 @@ async function initAuth() {
                 const data = await res.json();
                 if (data && data.authenticated && data.user) {
                     currentUser = data.user;
-                    localStorage.setItem('dairymate_user', JSON.stringify(currentUser));
+                    sessionStorage.setItem('dairymate_user', JSON.stringify(currentUser));
                     updateUserHeaderUI();
                     hideLoginOverlay();
                     return;
@@ -4992,7 +4995,7 @@ async function initAuth() {
         } catch (e) {}
     }
 
-    // 3. Not logged in -> Show Login Overlay
+    // 3. Not logged in -> Show Clean Login Form
     showLoginOverlay();
 }
 
@@ -5001,9 +5004,11 @@ function showLoginOverlay() {
     if (overlay) {
         overlay.style.display = 'flex';
         const userInp = document.getElementById('loginUsername');
-        if (userInp && !userInp.value) {
-            selectLoginPreset('admin');
-        }
+        const passInp = document.getElementById('loginPassword');
+        if (userInp) userInp.value = '';
+        if (passInp) passInp.value = '';
+        const errBox = document.getElementById('loginErrorMsg');
+        if (errBox) errBox.classList.add('hidden');
     }
 }
 
@@ -5142,6 +5147,7 @@ async function handleLoginSubmit(event) {
 
     currentUser = authUser;
     localStorage.setItem('dairymate_user', JSON.stringify(currentUser));
+    sessionStorage.setItem('dairymate_user', JSON.stringify(currentUser));
     updateUserHeaderUI();
     hideLoginOverlay();
     showToast(`Welcome back, ${currentUser.full_name}! (${currentUser.role.toUpperCase()})`);
@@ -5240,8 +5246,9 @@ async function handleUserLogout() {
 
     currentUser = null;
     localStorage.removeItem('dairymate_user');
+    sessionStorage.removeItem('dairymate_user');
     showLoginOverlay();
-    showToast('Signed out successfully.');
+    showToast('Signed out. Please enter username and password to log in.');
 }
 
 // ================= CLINICAL SYMPTOMS SELECTOR =================
