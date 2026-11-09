@@ -5160,8 +5160,8 @@ function updateUserHeaderUI() {
     if (badgeEl) {
         badgeEl.textContent = isAdmin ? 'Admin' : 'Farmer';
         badgeEl.className = isAdmin 
-            ? 'text-[9px] px-1.5 py-0.5 rounded-full bg-purple-700 text-white uppercase font-extrabold tracking-wider'
-            : 'text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-700 text-white uppercase font-extrabold tracking-wider';
+            ? 'hidden min-[480px]:inline-block text-[9px] px-1.5 py-0.5 rounded-full bg-purple-700 text-white uppercase font-extrabold tracking-wider'
+            : 'hidden min-[480px]:inline-block text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-700 text-white uppercase font-extrabold tracking-wider';
     }
     if (dropNameEl) dropNameEl.textContent = currentUser.full_name || (isAdmin ? 'Farm Administrator' : 'Dairy Farmer');
     if (dropRoleEl) {
@@ -5222,20 +5222,30 @@ function switchUserRoleQuick() {
     showToast(`Switched account role to: ${newRole.toUpperCase()}`);
 }
 
-async function handleUserLogout() {
-    const menu = document.getElementById('userDropdownMenu');
-    if (menu) menu.classList.add('hidden');
+function handleUserLogout() {
+    try {
+        const menu = document.getElementById('userDropdownMenu');
+        if (menu) menu.classList.add('hidden');
+    } catch (e) {}
 
-    if (isServerMode) {
-        try {
-            await fetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' });
-        } catch (e) {}
-    }
-
+    // 1. Immediately wipe client credentials and local storage
     currentUser = null;
-    localStorage.removeItem('dairymate_user');
-    sessionStorage.removeItem('dairymate_user');
-    window.location.href = 'login.html?logout=1';
+    try {
+        localStorage.removeItem('dairymate_user');
+        sessionStorage.removeItem('dairymate_user');
+    } catch (e) {}
+
+    // 2. Fire backend session destroy requests asynchronously
+    try {
+        fetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST', keepalive: true }).catch(() => {});
+        fetch(`${API_BASE}/auth.php?action=logout`, { method: 'GET', keepalive: true }).catch(() => {});
+    } catch (e) {}
+    try {
+        fetch('login.php?logout=1', { method: 'GET', keepalive: true }).catch(() => {});
+    } catch (e) {}
+
+    // 3. Force instant navigation to standalone login page
+    window.location.replace('login.html?logout=1');
 }
 
 // ================= CLINICAL SYMPTOMS SELECTOR =================

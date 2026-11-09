@@ -31,6 +31,12 @@
                 <p class="text-xs text-slate-500 mt-1">Access your dairy herd, milk records & feed nutrition</p>
             </div>
 
+            <!-- Logged Out Notice Banner -->
+            <div id="logoutNotice" class="hidden mb-5 p-3 rounded-xl bg-blue-50 text-blue-800 text-xs font-semibold flex items-center space-x-2 border border-blue-200">
+                <i class="fa-solid fa-circle-info text-blue-500 text-sm"></i>
+                <span>You have been signed out successfully.</span>
+            </div>
+
             <!-- Error Banner -->
             <div id="loginError" class="hidden mb-5 p-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-semibold flex items-center space-x-2 border border-rose-200">
                 <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>
@@ -151,6 +157,8 @@
     function hideAlerts() {
         document.getElementById('loginError').classList.add('hidden');
         document.getElementById('loginSuccess').classList.add('hidden');
+        const notice = document.getElementById('logoutNotice');
+        if (notice) notice.classList.add('hidden');
     }
 
     // Auto-detect role when user types username
@@ -249,8 +257,8 @@
         document.getElementById('loginSuccessMsg').textContent = `Welcome, ${user.full_name}! Redirecting...`;
 
         setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 400);
+            window.location.replace('index.html');
+        }, 350);
     }
 
     function showError(msg) {
@@ -260,12 +268,35 @@
         box.classList.remove('hidden');
     }
 
-    // Check if user came via logout param
+    // Check if user came via logout param or is already logged in
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('logout') === '1') {
-            localStorage.removeItem('dairymate_user');
-            sessionStorage.removeItem('dairymate_user');
+            // Show logged out notice
+            const notice = document.getElementById('logoutNotice');
+            if (notice) notice.classList.remove('hidden');
+
+            // Force clean all client and server sessions
+            try {
+                localStorage.removeItem('dairymate_user');
+                sessionStorage.removeItem('dairymate_user');
+            } catch (e) {}
+            try {
+                fetch('api/auth.php?action=logout', { method: 'POST', keepalive: true }).catch(() => {});
+                fetch('api/auth.php?action=logout', { method: 'GET', keepalive: true }).catch(() => {});
+            } catch (e) {}
+            return;
+        }
+
+        // Auto-redirect only if active session exists and NOT logging out
+        const saved = sessionStorage.getItem('dairymate_user') || localStorage.getItem('dairymate_user');
+        if (saved) {
+            try {
+                const u = JSON.parse(saved);
+                if (u && u.username) {
+                    window.location.replace('index.html');
+                }
+            } catch (e) {}
         }
     });
 </script>

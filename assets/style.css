@@ -222,10 +222,11 @@ body.fullscreen-mode .phone-notch {
 .app-header {
     background: #ffffff;
     border-bottom: 1px solid var(--border-color);
-    padding: 34px 16px 12px 16px;
+    padding: 34px 12px 12px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     z-index: 20;
     position: sticky;
     top: 0;
@@ -238,44 +239,63 @@ body.fullscreen-mode .app-header {
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .farm-logo {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(135deg, #15803d, #22c55e);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+    flex-shrink: 0;
+}
+
+.header-title {
+    min-width: 0;
 }
 
 .header-title h1 {
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--text-main);
     line-height: 1.2;
+    white-space: nowrap;
 }
 
 .header-title p {
-    font-size: 0.72rem;
+    font-size: 0.70rem;
     color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+}
+
+@media (max-width: 480px) {
+    .header-title p {
+        display: none;
+    }
 }
 
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .icon-btn {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
     background: #ffffff;
@@ -283,6 +303,50 @@ body.fullscreen-mode .app-header {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.icon-btn:hover {
+    background: var(--gray-bg);
+    color: var(--text-main);
+}
+
+/* Dedicated Logout Button */
+.logout-btn {
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 10px;
+    border: 1px solid #fecdd3;
+    background: #fff1f2;
+    color: #e11d48;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.logout-btn:hover {
+    background: #e11d48;
+    color: #ffffff;
+    border-color: #e11d48;
+}
+
+@media (max-width: 440px) {
+    .logout-btn {
+        width: 34px;
+        padding: 0;
+    }
+    .logout-btn span {
+        display: none;
+    }
+}
     cursor: pointer;
     position: relative;
     transition: background 0.15s;

@@ -11,6 +11,16 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $input = getJsonInput();
 $action = $_GET['action'] ?? ($input['action'] ?? 'default');
 
+// Universal Logout Handler (Supports both GET and POST)
+if ($action === 'logout') {
+    $_SESSION['user'] = null;
+    unset($_SESSION['user']);
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_destroy();
+    }
+    jsonResponse(['success' => true, 'message' => 'Logged out successfully']);
+}
+
 // 1. GET: Check Current Session or List Users
 if ($method === 'GET') {
     if ($action === 'me') {
