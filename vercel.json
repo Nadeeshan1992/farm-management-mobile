@@ -5,6 +5,9 @@
   "routes": [
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/login", "dest": "/login.html" },
+    { "src": "/login.html", "dest": "/login.html" },
+    { "src": "/login.php", "dest": "/login.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }

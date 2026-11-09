@@ -4969,7 +4969,6 @@ async function initAuth() {
             currentUser = JSON.parse(savedUser);
             if (currentUser && currentUser.username) {
                 updateUserHeaderUI();
-                hideLoginOverlay();
                 return;
             }
         } catch (e) {
@@ -4988,33 +4987,22 @@ async function initAuth() {
                     currentUser = data.user;
                     sessionStorage.setItem('dairymate_user', JSON.stringify(currentUser));
                     updateUserHeaderUI();
-                    hideLoginOverlay();
                     return;
                 }
             }
         } catch (e) {}
     }
 
-    // 3. Not logged in -> Show Clean Login Form
-    showLoginOverlay();
+    // 3. Not logged in -> Redirect to dedicated login page
+    window.location.replace('login.html');
 }
 
 function showLoginOverlay() {
-    const overlay = document.getElementById('loginOverlay');
-    if (overlay) {
-        overlay.style.display = 'flex';
-        const userInp = document.getElementById('loginUsername');
-        const passInp = document.getElementById('loginPassword');
-        if (userInp) userInp.value = '';
-        if (passInp) passInp.value = '';
-        const errBox = document.getElementById('loginErrorMsg');
-        if (errBox) errBox.classList.add('hidden');
-    }
+    window.location.href = 'login.html';
 }
 
 function hideLoginOverlay() {
-    const overlay = document.getElementById('loginOverlay');
-    if (overlay) overlay.style.display = 'none';
+    // Login is now handled on dedicated login.html page
 }
 
 function selectLoginPreset(role) {
@@ -5247,8 +5235,7 @@ async function handleUserLogout() {
     currentUser = null;
     localStorage.removeItem('dairymate_user');
     sessionStorage.removeItem('dairymate_user');
-    showLoginOverlay();
-    showToast('Signed out. Please enter username and password to log in.');
+    window.location.href = 'login.html?logout=1';
 }
 
 // ================= CLINICAL SYMPTOMS SELECTOR =================
