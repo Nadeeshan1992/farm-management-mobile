@@ -5160,8 +5160,8 @@ function updateUserHeaderUI() {
     if (badgeEl) {
         badgeEl.textContent = isAdmin ? 'Admin' : 'Farmer';
         badgeEl.className = isAdmin 
-            ? 'hidden min-[480px]:inline-block text-[9px] px-1.5 py-0.5 rounded-full bg-purple-700 text-white uppercase font-extrabold tracking-wider'
-            : 'hidden min-[480px]:inline-block text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-700 text-white uppercase font-extrabold tracking-wider';
+            ? 'text-[9px] px-1.5 py-0.5 rounded-full bg-purple-700 text-white uppercase font-extrabold tracking-wider'
+            : 'text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-700 text-white uppercase font-extrabold tracking-wider';
     }
     if (dropNameEl) dropNameEl.textContent = currentUser.full_name || (isAdmin ? 'Farm Administrator' : 'Dairy Farmer');
     if (dropRoleEl) {

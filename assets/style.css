@@ -241,8 +241,8 @@ body.fullscreen-mode .app-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    min-width: 0;
-    flex-shrink: 1;
+    flex-shrink: 0;
+    min-width: max-content;
 }
 
 .farm-logo {
@@ -254,37 +254,33 @@ body.fullscreen-mode .app-header {
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: bold;
-    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.25);
     flex-shrink: 0;
 }
 
 .header-title {
-    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .header-title h1 {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 1.05rem;
+    font-weight: 800;
     color: var(--text-main);
-    line-height: 1.2;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
     white-space: nowrap;
 }
 
 .header-title p {
-    font-size: 0.70rem;
+    font-size: 0.68rem;
+    font-weight: 500;
     color: var(--text-muted);
+    line-height: 1.1;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 130px;
-}
-
-@media (max-width: 480px) {
-    .header-title p {
-        display: none;
-    }
 }
 
 .header-actions {
@@ -307,6 +303,7 @@ body.fullscreen-mode .app-header {
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    text-decoration: none;
 }
 
 .icon-btn:hover {
@@ -314,41 +311,43 @@ body.fullscreen-mode .app-header {
     color: var(--text-main);
 }
 
-/* Dedicated Logout Button */
-.logout-btn {
+/* User Profile Pill Button */
+.user-pill-btn {
     height: 34px;
-    padding: 0 10px;
+    padding: 0 8px;
     border-radius: 10px;
-    border: 1px solid #fecdd3;
-    background: #fff1f2;
-    color: #e11d48;
+    border: 1px solid #a7f3d0;
+    background: #ecfdf5;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 5px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
     user-select: none;
 }
 
-.logout-btn:hover {
-    background: #e11d48;
-    color: #ffffff;
-    border-color: #e11d48;
+.user-pill-btn:hover {
+    background: #d1fae5;
+    border-color: #6ee7b7;
 }
 
-@media (max-width: 440px) {
-    .logout-btn {
-        width: 34px;
-        padding: 0;
-    }
-    .logout-btn span {
-        display: none;
-    }
+/* Dedicated Logout Button */
+.logout-icon-btn {
+    background: #fff1f2 !important;
+    border-color: #fecdd3 !important;
+    color: #e11d48 !important;
+    text-decoration: none;
+}
+
+.logout-icon-btn:hover {
+    background: #e11d48 !important;
+    border-color: #e11d48 !important;
+    color: #ffffff !important;
+}
+
+.logout-icon-btn:hover i {
+    color: #ffffff !important;
 }
     cursor: pointer;
     position: relative;

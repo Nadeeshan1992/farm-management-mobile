@@ -11,7 +11,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="assets/style.css?v=2.2">
+    <link rel="stylesheet" href="assets/style.css?v=2.3">
     <script>
         function handleUserLogout(e) {
             if (e && e.preventDefault) e.preventDefault();
@@ -65,19 +65,22 @@
 
                 <!-- User Profile & Role Menu -->
                 <div class="relative user-profile-wrapper">
-                    <button id="userProfileBtn" type="button" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold text-emerald-800 transition-all shadow-xs flex-shrink-0 cursor-pointer" onclick="toggleUserDropdown(event)" title="Current User & Role (Click to View)">
-                        <i class="fa-solid fa-circle-user text-sm text-emerald-600"></i>
-                        <span id="headerUserName" class="max-w-[55px] truncate text-[11px]">Admin</span>
-                        <span id="headerRoleBadge" class="hidden min-[480px]:inline-block text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-700 text-white uppercase font-extrabold tracking-wider">Admin</span>
+                    <button id="userProfileBtn" type="button" class="user-pill-btn" onclick="toggleUserDropdown(event)" title="Current User & Role (Click to View Options)">
+                        <i class="fa-solid fa-circle-user text-emerald-600 text-sm"></i>
+                        <span id="headerUserName" class="text-xs font-bold text-emerald-950 capitalize max-w-[50px] truncate">Admin</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-emerald-600"></i>
                     </button>
                     <!-- Dropdown Menu -->
-                    <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 animate-fadeIn">
-                        <div class="px-3.5 py-2 border-b border-slate-100">
-                            <p class="text-xs font-bold text-slate-800" id="dropdownUserFullName">Farm Administrator</p>
-                            <p class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-                                <span id="dropdownRoleDesc">Role: Administrator (Full Access)</span>
-                            </p>
+                    <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2.5 z-50 animate-fadeIn">
+                        <div class="px-3.5 py-2 border-b border-slate-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-800" id="dropdownUserFullName">Farm Administrator</p>
+                                <p class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                                    <span id="dropdownRoleDesc">Role: Administrator (Full Access)</span>
+                                </p>
+                            </div>
+                            <span id="headerRoleBadge" class="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-700 text-white uppercase font-extrabold tracking-wider">Admin</span>
                         </div>
                         <div class="py-1">
                             <button type="button" onclick="openBackupRestoreModal()" class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
@@ -92,16 +95,15 @@
                         <div class="border-t border-slate-100 pt-1">
                             <a href="login.html?logout=1" onclick="handleUserLogout(event); return false;" class="w-full text-left px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-bold transition-colors cursor-pointer">
                                 <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
-                                <span>Sign Out</span>
+                                <span>Sign Out / Log Out</span>
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Instant Logout Button (Dual Link & Function Action) -->
-                <a href="login.html?logout=1" onclick="handleUserLogout(event); return false;" class="logout-btn" title="Sign Out & Lock App">
+                <!-- Instant Logout Button (Clean Red Icon Action) -->
+                <a href="login.html?logout=1" onclick="handleUserLogout(event); return false;" class="icon-btn logout-icon-btn" title="Sign Out & Lock App">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
-                    <span>Logout</span>
                 </a>
 
                 <button id="screenModeBtn" type="button" class="icon-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen / Phone Frame">
@@ -1736,6 +1738,6 @@
         document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"><\/script>');
     }
 </script>
-<script src="assets/app.js?v=2.2"></script>
+<script src="assets/app.js?v=2.3"></script>
 </body>
 </html>
