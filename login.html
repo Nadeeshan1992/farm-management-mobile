@@ -268,36 +268,25 @@
         box.classList.remove('hidden');
     }
 
-    // Check if user came via logout param or is already logged in
+    // Standalone Login: Always clear any old session so page is ready for fresh login
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('logout') === '1') {
-            // Show logged out notice
             const notice = document.getElementById('logoutNotice');
             if (notice) notice.classList.remove('hidden');
-
-            // Force clean all client and server sessions
-            try {
-                localStorage.removeItem('dairymate_user');
-                sessionStorage.removeItem('dairymate_user');
-            } catch (e) {}
-            try {
-                fetch('api/auth.php?action=logout', { method: 'POST', keepalive: true }).catch(() => {});
-                fetch('api/auth.php?action=logout', { method: 'GET', keepalive: true }).catch(() => {});
-            } catch (e) {}
-            return;
         }
 
-        // Auto-redirect only if active session exists and NOT logging out
-        const saved = sessionStorage.getItem('dairymate_user') || localStorage.getItem('dairymate_user');
-        if (saved) {
-            try {
-                const u = JSON.parse(saved);
-                if (u && u.username) {
-                    window.location.replace('index.html');
-                }
-            } catch (e) {}
-        }
+        // Wipe any leftover session credentials
+        try {
+            localStorage.removeItem('dairymate_user');
+            sessionStorage.removeItem('dairymate_user');
+        } catch (e) {}
+
+        // Fire server logout to clean PHP session
+        try {
+            fetch('api/auth.php?action=logout', { method: 'POST', keepalive: true }).catch(() => {});
+            fetch('api/auth.php?action=logout', { method: 'GET', keepalive: true }).catch(() => {});
+        } catch (e) {}
     });
 </script>
 </body>

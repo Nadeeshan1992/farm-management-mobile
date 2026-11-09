@@ -198,6 +198,7 @@ body.fullscreen-mode .mobile-screen {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    pointer-events: none;
 }
 
 .notch-camera {
@@ -327,9 +328,11 @@ body.fullscreen-mode .app-header {
     gap: 5px;
     font-size: 0.72rem;
     font-weight: 700;
+    text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    user-select: none;
 }
 
 .logout-btn:hover {

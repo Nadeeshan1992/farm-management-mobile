@@ -11,7 +11,25 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/style.css?v=2.2">
+    <script>
+        function handleUserLogout(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            try {
+                const menu = document.getElementById('userDropdownMenu');
+                if (menu) menu.classList.add('hidden');
+            } catch (err) {}
+            try {
+                localStorage.removeItem('dairymate_user');
+                sessionStorage.removeItem('dairymate_user');
+            } catch (err) {}
+            try {
+                fetch('api/auth.php?action=logout', { method: 'POST', keepalive: true }).catch(() => {});
+                fetch('api/auth.php?action=logout', { method: 'GET', keepalive: true }).catch(() => {});
+            } catch (err) {}
+            window.location.replace('login.html?logout=1');
+        }
+    </script>
 </head>
 <body>
 
@@ -72,19 +90,19 @@
                             </button>
                         </div>
                         <div class="border-t border-slate-100 pt-1">
-                            <button type="button" onclick="handleUserLogout()" class="w-full text-left px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-bold transition-colors">
+                            <a href="login.html?logout=1" onclick="handleUserLogout(event); return false;" class="w-full text-left px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-bold transition-colors cursor-pointer">
                                 <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
                                 <span>Sign Out</span>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Instant Logout Button -->
-                <button type="button" onclick="handleUserLogout()" class="logout-btn" title="Sign Out & Lock App">
+                <!-- Instant Logout Button (Dual Link & Function Action) -->
+                <a href="login.html?logout=1" onclick="handleUserLogout(event); return false;" class="logout-btn" title="Sign Out & Lock App">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
                     <span>Logout</span>
-                </button>
+                </a>
 
                 <button id="screenModeBtn" type="button" class="icon-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen / Phone Frame">
                     <i id="screenModeIcon" class="fa-solid fa-expand"></i>
@@ -1718,6 +1736,6 @@
         document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"><\/script>');
     }
 </script>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=2.2"></script>
 </body>
 </html>
