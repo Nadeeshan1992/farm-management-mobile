@@ -27,6 +27,88 @@
         <!-- Toast Alert Notification -->
         <div id="toastMsg" class="toast-msg"></div>
 
+        <!-- ================= LOGIN SCREEN OVERLAY ================= -->
+        <div id="loginOverlay" class="login-screen-overlay" style="display: none;">
+            <div class="login-card">
+                <!-- Logo & Brand -->
+                <div class="text-center mb-4">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 border border-white/30 text-3xl mb-2 shadow-inner">
+                        🐄
+                    </div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">DairyMate</h2>
+                    <p class="text-xs text-emerald-200/90 font-medium">A helpful partner for dairy farmers.</p>
+                </div>
+
+                <!-- Role Quick Select Demo Pills -->
+                <div class="bg-black/20 p-2.5 rounded-2xl border border-white/10 mb-3.5">
+                    <div class="text-[10px] uppercase font-bold tracking-wider text-emerald-200 mb-1.5 text-center">Quick Demo Login</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="selectLoginPreset('admin')" class="py-2 px-2 bg-white/15 hover:bg-white/25 border border-white/25 rounded-xl text-xs font-bold text-white transition-all text-center flex items-center justify-center gap-1 active:scale-95">
+                            <span>👑 Admin</span>
+                        </button>
+                        <button type="button" onclick="selectLoginPreset('farmer')" class="py-2 px-2 bg-white/15 hover:bg-white/25 border border-white/25 rounded-xl text-xs font-bold text-white transition-all text-center flex items-center justify-center gap-1 active:scale-95">
+                            <span>👨‍🌾 Farmer</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <form id="formLogin" onsubmit="handleLoginSubmit(event)" class="space-y-3">
+                    <div id="loginErrorMsg" class="hidden p-2 bg-rose-500/25 border border-rose-400/40 rounded-xl text-xs text-rose-200 text-center font-medium flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span id="loginErrorText">Invalid credentials</span>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-emerald-100">Username</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-emerald-300 pointer-events-none">
+                                <i class="fa-solid fa-user text-xs"></i>
+                            </span>
+                            <input type="text" id="loginUsername" required class="w-full pl-9 pr-3 py-2 bg-white/10 border border-white/20 focus:border-emerald-400 focus:bg-white/20 rounded-xl text-xs text-white placeholder-emerald-200/50 outline-none transition-all" placeholder="Enter username (admin or farmer)">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-emerald-100">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-emerald-300 pointer-events-none">
+                                <i class="fa-solid fa-lock text-xs"></i>
+                            </span>
+                            <input type="password" id="loginPassword" required class="w-full pl-9 pr-9 py-2 bg-white/10 border border-white/20 focus:border-emerald-400 focus:bg-white/20 rounded-xl text-xs text-white placeholder-emerald-200/50 outline-none transition-all" placeholder="Enter password">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-emerald-300 hover:text-white transition-colors">
+                                <i id="passwordToggleIcon" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-semibold text-emerald-100">Select Role</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center gap-1.5 p-1.5 rounded-xl bg-white/10 border border-white/15 cursor-pointer text-xs font-bold text-white hover:bg-white/20 transition-all">
+                                <input type="radio" name="loginRole" id="radioRoleAdmin" value="admin" checked class="accent-emerald-400">
+                                <span>👑 Admin</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-1.5 rounded-xl bg-white/10 border border-white/15 cursor-pointer text-xs font-bold text-white hover:bg-white/20 transition-all">
+                                <input type="radio" name="loginRole" id="radioRoleFarmer" value="farmer" class="accent-emerald-400">
+                                <span>👨‍🌾 Farmer</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnLoginSubmit" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-950/40 flex items-center justify-center gap-2 transition-all mt-3">
+                        <span>Sign In to DairyMate</span>
+                        <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+                    </button>
+                </form>
+
+                <!-- Role Footnote -->
+                <div class="mt-3 pt-2.5 border-t border-white/10 text-[10px] text-emerald-200/70 leading-tight text-center">
+                    <b>Admin:</b> Full control &bull; <b>Farmer:</b> Milking, feed & health logs.
+                </div>
+            </div>
+        </div>
+
         <!-- Mobile Header -->
         <header class="app-header">
             <div class="header-brand">
@@ -44,6 +126,42 @@
                     <i class="fa-regular fa-bell"></i>
                     <span id="bellBadge" class="badge-count" style="display:none;">0</span>
                 </button>
+
+                <!-- User Profile & Role Menu -->
+                <div class="relative user-profile-wrapper">
+                    <button id="userProfileBtn" class="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold text-emerald-800 transition-all shadow-xs" onclick="toggleUserDropdown(event)" title="Current User & Role">
+                        <i class="fa-solid fa-circle-user text-sm text-emerald-600"></i>
+                        <span id="headerUserName" class="max-w-[55px] truncate text-[11px]">Admin</span>
+                        <span id="headerRoleBadge" class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-700 text-white uppercase font-extrabold tracking-wider">Admin</span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 animate-fadeIn">
+                        <div class="px-3.5 py-2 border-b border-slate-100">
+                            <p class="text-xs font-bold text-slate-800" id="dropdownUserFullName">Farm Administrator</p>
+                            <p class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                                <span id="dropdownRoleDesc">Role: Administrator (Full Access)</span>
+                            </p>
+                        </div>
+                        <div class="py-1">
+                            <button type="button" onclick="openBackupRestoreModal()" class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+                                <i class="fa-solid fa-database text-emerald-600 w-4 text-center"></i>
+                                <span>Backup & Restore Data</span>
+                            </button>
+                            <button type="button" onclick="switchUserRoleQuick()" class="w-full text-left px-3.5 py-2 text-xs text-indigo-700 hover:bg-indigo-50 flex items-center gap-2 transition-colors font-medium">
+                                <i class="fa-solid fa-arrows-rotate text-indigo-600 w-4 text-center"></i>
+                                <span id="switchRoleText">Switch to Farmer Role</span>
+                            </button>
+                        </div>
+                        <div class="border-t border-slate-100 pt-1">
+                            <button type="button" onclick="handleUserLogout()" class="w-full text-left px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-bold transition-colors">
+                                <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
+                                <span>Sign Out</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <button id="screenModeBtn" class="icon-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen / Phone Frame">
                     <i id="screenModeIcon" class="fa-solid fa-expand"></i>
                 </button>
@@ -219,6 +337,8 @@
                     <button class="filter-chip" data-status="Dry" onclick="filterHerd('Dry', this)">Dry</button>
                     <button class="filter-chip" data-status="Open" onclick="filterHerd('Open', this)">Open</button>
                     <button class="filter-chip" data-status="Heifer" onclick="filterHerd('Heifer', this)">Heifer</button>
+                    <button class="filter-chip" data-status="Sold" onclick="filterHerd('Sold', this)"><i class="fa-solid fa-handshake text-indigo-600 mr-1"></i> Sold</button>
+                    <button class="filter-chip" data-status="Deceased" onclick="filterHerd('Deceased', this)"><i class="fa-solid fa-skull-crossbones text-slate-500 mr-1"></i> Deceased</button>
                 </div>
 
                 <!-- Cow Cards List -->
@@ -797,6 +917,8 @@
                                     <option value="Fresh">Fresh</option>
                                     <option value="Dry">Dry</option>
                                     <option value="Heifer">Heifer</option>
+                                    <option value="Sold">Sold</option>
+                                    <option value="Deceased">Deceased / Culled</option>
                                 </select>
                             </div>
                         </div>
@@ -1239,8 +1361,26 @@
                             <input type="text" id="healthDiseaseOther" class="form-control mt-2" placeholder="Specify other disease or problem..." style="display: none;">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Symptoms</label>
-                            <input type="text" id="healthSymptoms" class="form-control" placeholder="e.g. Swollen quarter, limping, fever">
+                            <label class="form-label flex items-center justify-between">
+                                <span>Symptoms & Clinical Signs</span>
+                                <span class="text-[10px] text-slate-400 font-normal">Select or type custom</span>
+                            </label>
+                            <select id="healthSymptomsSelect" class="form-control mb-1.5" onchange="onHealthSymptomsSelect(this.value)">
+                                <option value="">-- Choose Common Clinical Signs --</option>
+                                <option value="High fever (>103°F / >39.5°C), shivering & lethargy">High fever (>103°F / >39.5°C), shivering & lethargy</option>
+                                <option value="Swollen, hard, hot or painful udder / quarters">Swollen, hard, hot or painful udder / quarters</option>
+                                <option value="Watery, clotted, flaky or blood-tinged milk">Watery, clotted, flaky or blood-tinged milk</option>
+                                <option value="Severe lameness, limping & swollen joints">Severe lameness, limping & swollen joints</option>
+                                <option value="Loss of appetite (off-feed) & sharp milk drop">Loss of appetite (off-feed) & sharp milk drop</option>
+                                <option value="Excessive drooling, salivation & mouth lesions">Excessive drooling, salivation & mouth lesions</option>
+                                <option value="Skin nodules, lumps, scabs & edema (LSD signs)">Skin nodules, lumps, scabs & edema (LSD signs)</option>
+                                <option value="Rapid breathing, coughing & nasal discharge">Rapid breathing, coughing & nasal discharge</option>
+                                <option value="Profuse diarrhea, loose stool & dehydration">Profuse diarrhea, loose stool & dehydration</option>
+                                <option value="Heavy tick infestation & pale mucous membranes">Heavy tick infestation & pale mucous membranes</option>
+                                <option value="Bloat / rumen tympany (distended left flank)">Bloat / rumen tympany (distended left flank)</option>
+                                <option value="Other">Other / Type Below...</option>
+                            </select>
+                            <input type="text" id="healthSymptoms" class="form-control" placeholder="Symptoms details (auto-selected or typed)...">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Treatment *</label>
@@ -1442,6 +1582,14 @@
                     <!-- Vaccination History -->
                     <div class="text-xs font-bold text-slate-700 mb-1">Vaccinations:</div>
                     <div id="detailVaxHistory"></div>
+
+                    <!-- Animal Management Actions -->
+                    <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between gap-2" id="detailAdminActions">
+                        <span class="text-[11px] text-slate-500 font-medium">Animal Record Actions:</span>
+                        <button type="button" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors" onclick="deleteCow(activeCowDetailId)" id="btnDeleteCowProfile">
+                            <i class="fa-solid fa-trash-can text-rose-600"></i> Delete Cow
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1577,6 +1725,56 @@
                             <button type="submit" class="btn-submit flex-1" style="margin-top: 0; padding: 10px;">Save Nutrient Data</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12. Modal: Backup & Restore Farm Data -->
+        <div id="modalBackupRestore" class="modal-overlay" style="z-index: 10006;">
+            <div class="modal-sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-header">
+                    <div>
+                        <span class="sheet-title"><i class="fa-solid fa-database text-emerald-600 mr-1.5"></i> Farm Data Backup & Restore</span>
+                        <div class="text-xs text-slate-500">Safeguard your cows, milk logs, feeds & breeding history</div>
+                    </div>
+                    <button type="button" class="sheet-close" onclick="closeModal('modalBackupRestore')">&times;</button>
+                </div>
+                <div class="sheet-body space-y-4">
+                    <!-- Export Section -->
+                    <div class="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-2xl">
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm font-bold shadow-xs">
+                                <i class="fa-solid fa-download"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-emerald-950">Export Farm Database (JSON)</h4>
+                                <p class="text-[10px] text-emerald-800">Download a full snapshot of all registered animals, milk yield logs, health and feed rations.</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="exportFarmBackupJson()" class="w-full mt-1.5 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <span>Download Complete Backup (.json)</span>
+                        </button>
+                    </div>
+
+                    <!-- Import / Restore Section -->
+                    <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <div class="flex items-center gap-2.5 mb-2">
+                            <div class="w-8 h-8 rounded-xl bg-slate-700 text-white flex items-center justify-center text-sm font-bold shadow-xs">
+                                <i class="fa-solid fa-upload"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Restore From Backup File</h4>
+                                <p class="text-[10px] text-slate-600">Restore your entire farm data onto another phone or browser from a saved .json file.</p>
+                            </div>
+                        </div>
+                        <input type="file" id="backupFileInput" accept=".json" class="hidden" onchange="importFarmBackupJson(event)">
+                        <button type="button" onclick="document.getElementById('backupFileInput').click()" class="w-full mt-1.5 py-2.5 px-3 bg-white hover:bg-slate-100 active:bg-slate-200 text-slate-800 border border-slate-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition-all">
+                            <i class="fa-solid fa-file-arrow-up text-emerald-600"></i>
+                            <span>Select & Restore Backup File</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

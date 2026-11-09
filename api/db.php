@@ -99,6 +99,36 @@ function getDb(): PDO {
             } catch (Exception $ex) {}
         }
 
+        // Ensure users table exists with default admin and farmer accounts
+        try {
+            $pdo->query("SELECT 1 FROM `users` LIMIT 1");
+        } catch (Exception $e) {
+            try {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS `users` (
+                    `id` INT AUTO_INCREMENT PRIMARY KEY,
+                    `username` VARCHAR(50) NOT NULL UNIQUE,
+                    `password` VARCHAR(255) NOT NULL,
+                    `full_name` VARCHAR(100) NOT NULL,
+                    `role` ENUM('admin', 'farmer') NOT NULL DEFAULT 'farmer',
+                    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            } catch (Exception $ex) {}
+        }
+
+        try {
+            $userCount = (int)$pdo->query("SELECT COUNT(*) FROM `users`")->fetchColumn();
+            if ($userCount === 0) {
+                $uStmt = $pdo->prepare("INSERT INTO `users` (`username`, `password`, `full_name`, `role`) VALUES (?, ?, ?, ?)");
+                $uStmt->execute(['admin', password_hash('admin123', PASSWORD_DEFAULT), 'Farm Administrator', 'admin']);
+                $uStmt->execute(['farmer', password_hash('farmer123', PASSWORD_DEFAULT), 'Dairy Farmer / Operator', 'farmer']);
+            }
+        } catch (Exception $e) {}
+
+        // Ensure reproductive_status enum allows Sold and Deceased
+        try {
+            $pdo->exec("ALTER TABLE `cows` MODIFY COLUMN `reproductive_status` VARCHAR(50) DEFAULT 'Open'");
+        } catch (Exception $e) {}
+
         return $pdo;
     } catch (PDOException $e) {
         jsonResponse([
@@ -237,7 +267,8 @@ function calculateCowVaccineSchedule($cow, $existingVaccinations = []): array {
     ];
 
     // Periodic boosters: every 22 months starting from secondary
-    $diffMonths = max(22, (int)($today->diff($secDt)->m + ($today->diff($secDt)->y * 12)));
+    $bqSecDt = new DateTime($bqBaseSecondary);
+    $diffMonths = max(22, (int)($today->diff($bqSecDt)->m + ($today->diff($bqSecDt)->y * 12)));
     $numBoosters = max(2, (int)ceil($diffMonths / 22) + 1);
     for ($i = 1; $i <= $numBoosters; $i++) {
         $monthsAdd = 22 * $i;

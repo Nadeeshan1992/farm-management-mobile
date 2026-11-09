@@ -189,6 +189,11 @@ if ($method === 'PUT') {
 }
 
 if ($method === 'DELETE') {
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
+    if (!empty($_SESSION['user']) && $_SESSION['user']['role'] === 'farmer') {
+        jsonResponse(['error' => 'Permission denied. Only Farm Administrators can remove animal profiles.'], 403);
+    }
+
     $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
     if ($id <= 0) {
         jsonResponse(['error' => 'Valid Cow ID required.'], 422);

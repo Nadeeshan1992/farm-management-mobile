@@ -221,3 +221,18 @@ CREATE TABLE IF NOT EXISTS `daily_feed_items` (
     FOREIGN KEY (`feed_log_id`) REFERENCES `daily_feed_logs`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`feed_id`) REFERENCES `feeds`(`id`) ON DELETE SET NULL
 );
+
+-- 12. System Users & Roles
+CREATE TABLE IF NOT EXISTS `users` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `username` VARCHAR(50) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    `full_name` VARCHAR(100) NOT NULL,
+    `role` ENUM('admin', 'farmer') NOT NULL DEFAULT 'farmer',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO `users` (`username`, `password`, `full_name`, `role`) VALUES
+('admin', '$2y$10$wO8o3w90b1xPspHh68O2vOnQZ6Yq712c9iH4H62zG1K9aM5c7bWbC', 'Farm Administrator', 'admin'),
+('farmer', '$2y$10$h9g2e4W8L7j.9v0d9S1K8u3mF4j7z6X2N1v0P9s8Q7r6T5u4V3w2e', 'Dairy Farmer / Operator', 'farmer')
+ON DUPLICATE KEY UPDATE `full_name`=VALUES(`full_name`);

@@ -331,7 +331,8 @@ function calculateVaccineSchedule(cow, existingVaccinations = []) {
     ];
 
     // Periodic Boosters every 22 months from secondary
-    const diffMonths = Math.max(22, Math.floor((today - secDateObj) / (30.4 * 86400000)));
+    const bqSecDateObj = new Date(bqBaseSecondary);
+    const diffMonths = Math.max(22, Math.floor((today - bqSecDateObj) / (30.4 * 86400000)));
     const numBoosters = Math.max(2, Math.ceil(diffMonths / 22) + 1);
     for (let i = 1; i <= numBoosters; i++) {
         const periodicDate = addMonthsToDate(bqBaseSecondary, 22 * i);
@@ -480,6 +481,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check if running on local server or static Vercel
     await detectEnvironment();
+    await initAuth();
 
     loadDashboard();
     loadCows();
@@ -871,6 +873,12 @@ async function openCowDetail(cowId) {
         const parityBox = document.getElementById('detailParityBox');
         if (parityBox) {
             parityBox.style.display = isMale ? 'none' : 'block';
+        }
+
+        const deleteCowBtn = document.getElementById('btnDeleteCowProfile');
+        if (deleteCowBtn) {
+            const isFarmer = (currentUser && currentUser.role === 'farmer');
+            deleteCowBtn.style.display = isFarmer ? 'none' : 'inline-flex';
         }
         activeCowDetailId = cowId;
         cowDetailActivePeriod = 'daily';
@@ -3804,6 +3812,10 @@ async function submitFeedIngredient(event) {
 }
 
 async function deleteFeedIngredient(feedId) {
+    if (currentUser && currentUser.role === 'farmer') {
+        showToast('Permission denied: Only Farm Administrators can delete feed ingredients.', 'error');
+        return;
+    }
     if (!confirm('Are you sure you want to delete this feed ingredient?')) return;
     try {
         if (isServerMode) {
@@ -4938,5 +4950,431 @@ function openPrintableFeedReport(exportData) {
         showToast('Pop-up blocked. Please allow pop-ups to print.', true);
     }
 }
+
+// ================= USER AUTHENTICATION & ROLE MANAGEMENT (Admin & Farmer) =================
+let currentUser = null;
+
+async function initAuth() {
+    // 1. Check local storage session
+    const savedUser = localStorage.getItem('dairymate_user');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            updateUserHeaderUI();
+            hideLoginOverlay();
+            return;
+        } catch (e) {
+            localStorage.removeItem('dairymate_user');
+        }
+    }
+
+    // 2. If server mode, check active PHP session
+    if (isServerMode) {
+        try {
+            const res = await fetch(`${API_BASE}/auth.php?action=me`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.authenticated && data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem('dairymate_user', JSON.stringify(currentUser));
+                    updateUserHeaderUI();
+                    hideLoginOverlay();
+                    return;
+                }
+            }
+        } catch (e) {}
+    }
+
+    // 3. Not logged in -> Show Login Overlay
+    showLoginOverlay();
+}
+
+function showLoginOverlay() {
+    const overlay = document.getElementById('loginOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        const userInp = document.getElementById('loginUsername');
+        if (userInp && !userInp.value) {
+            selectLoginPreset('admin');
+        }
+    }
+}
+
+function hideLoginOverlay() {
+    const overlay = document.getElementById('loginOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function selectLoginPreset(role) {
+    const userInp = document.getElementById('loginUsername');
+    const passInp = document.getElementById('loginPassword');
+    const radAdmin = document.getElementById('radioRoleAdmin');
+    const radFarmer = document.getElementById('radioRoleFarmer');
+    const errBox = document.getElementById('loginErrorMsg');
+    if (errBox) errBox.classList.add('hidden');
+
+    if (role === 'admin') {
+        if (userInp) userInp.value = 'admin';
+        if (passInp) passInp.value = 'admin123';
+        if (radAdmin) radAdmin.checked = true;
+    } else {
+        if (userInp) userInp.value = 'farmer';
+        if (passInp) passInp.value = 'farmer123';
+        if (radFarmer) radFarmer.checked = true;
+    }
+}
+
+function togglePasswordVisibility() {
+    const passInp = document.getElementById('loginPassword');
+    const icon = document.getElementById('passwordToggleIcon');
+    if (!passInp || !icon) return;
+    if (passInp.type === 'password') {
+        passInp.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        passInp.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+async function handleLoginSubmit(event) {
+    if (event) event.preventDefault();
+    const username = (document.getElementById('loginUsername').value || '').trim();
+    const password = (document.getElementById('loginPassword').value || '').trim();
+    const roleRadio = document.querySelector('input[name="loginRole"]:checked');
+    const selectedRole = roleRadio ? roleRadio.value : 'admin';
+    const btn = document.getElementById('btnLoginSubmit');
+    const errBox = document.getElementById('loginErrorMsg');
+    const errText = document.getElementById('loginErrorText');
+
+    if (errBox) errBox.classList.add('hidden');
+
+    if (!username || !password) {
+        if (errBox && errText) {
+            errText.textContent = 'Please enter both username and password.';
+            errBox.classList.remove('hidden');
+        }
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Verifying...</span>`;
+    }
+
+    let authUser = null;
+
+    if (isServerMode) {
+        try {
+            const res = await fetch(`${API_BASE}/auth.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, role: selectedRole })
+            });
+            const data = await res.json();
+            if (res.ok && data.success && data.user) {
+                authUser = data.user;
+            } else {
+                throw new Error(data.error || 'Invalid credentials');
+            }
+        } catch (e) {
+            if (e.message && e.message.includes('Invalid credentials')) {
+                if (errBox && errText) {
+                    errText.textContent = e.message;
+                    errBox.classList.remove('hidden');
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Sign In to DairyMate</span> <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>`;
+                }
+                return;
+            }
+        }
+    }
+
+    // Local / Offline fallback validation
+    if (!authUser) {
+        const uLower = username.toLowerCase();
+        if (uLower === 'admin' && (password === 'admin123' || password === 'admin')) {
+            authUser = {
+                id: 1,
+                username: 'admin',
+                full_name: 'Farm Administrator',
+                role: 'admin'
+            };
+        } else if (uLower === 'farmer' && (password === 'farmer123' || password === 'farmer')) {
+            authUser = {
+                id: 2,
+                username: 'farmer',
+                full_name: 'Dairy Farmer / Operator',
+                role: 'farmer'
+            };
+        } else if (password.length >= 4) {
+            authUser = {
+                id: Date.now(),
+                username: username,
+                full_name: username.charAt(0).toUpperCase() + username.slice(1),
+                role: selectedRole
+            };
+        }
+    }
+
+    if (!authUser) {
+        if (errBox && errText) {
+            errText.textContent = 'Invalid username or password. (Hint: admin / admin123 or farmer / farmer123)';
+            errBox.classList.remove('hidden');
+        }
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<span>Sign In to DairyMate</span> <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>`;
+        }
+        return;
+    }
+
+    currentUser = authUser;
+    localStorage.setItem('dairymate_user', JSON.stringify(currentUser));
+    updateUserHeaderUI();
+    hideLoginOverlay();
+    showToast(`Welcome back, ${currentUser.full_name}! (${currentUser.role.toUpperCase()})`);
+
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Sign In to DairyMate</span> <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>`;
+    }
+}
+
+function updateUserHeaderUI() {
+    if (!currentUser) return;
+    const nameEl = document.getElementById('headerUserName');
+    const badgeEl = document.getElementById('headerRoleBadge');
+    const dropNameEl = document.getElementById('dropdownUserFullName');
+    const dropRoleEl = document.getElementById('dropdownRoleDesc');
+    const switchTextEl = document.getElementById('switchRoleText');
+
+    const isAdmin = (currentUser.role === 'admin');
+
+    if (nameEl) nameEl.textContent = currentUser.username || (isAdmin ? 'Admin' : 'Farmer');
+    if (badgeEl) {
+        badgeEl.textContent = isAdmin ? 'Admin' : 'Farmer';
+        badgeEl.className = isAdmin 
+            ? 'text-[9px] px-1.5 py-0.5 rounded-full bg-purple-700 text-white uppercase font-extrabold tracking-wider'
+            : 'text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-700 text-white uppercase font-extrabold tracking-wider';
+    }
+    if (dropNameEl) dropNameEl.textContent = currentUser.full_name || (isAdmin ? 'Farm Administrator' : 'Dairy Farmer');
+    if (dropRoleEl) {
+        dropRoleEl.textContent = isAdmin 
+            ? 'Role: Administrator (Full Access)' 
+            : 'Role: Farmer (Field Operations)';
+    }
+    if (switchTextEl) {
+        switchTextEl.textContent = isAdmin ? 'Switch to Farmer Role' : 'Switch to Admin Role';
+    }
+
+    enforceRolePermissions();
+}
+
+function enforceRolePermissions() {
+    if (!currentUser) return;
+    const isFarmer = (currentUser.role === 'farmer');
+    // Hide or disable delete feed ingredient buttons
+    document.querySelectorAll('.btn-delete-feed').forEach(b => {
+        b.style.display = isFarmer ? 'none' : 'inline-flex';
+    });
+    const cowDelBtn = document.getElementById('btnDeleteCowProfile');
+    if (cowDelBtn) {
+        cowDelBtn.style.display = isFarmer ? 'none' : 'inline-flex';
+    }
+}
+
+function toggleUserDropdown(event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('userDropdownMenu');
+    const btn = document.getElementById('userProfileBtn');
+    if (menu && !menu.classList.contains('hidden')) {
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    }
+});
+
+function switchUserRoleQuick() {
+    if (!currentUser) return;
+    const newRole = (currentUser.role === 'admin') ? 'farmer' : 'admin';
+    currentUser = {
+        id: newRole === 'admin' ? 1 : 2,
+        username: newRole,
+        full_name: newRole === 'admin' ? 'Farm Administrator' : 'Dairy Farmer / Operator',
+        role: newRole
+    };
+    localStorage.setItem('dairymate_user', JSON.stringify(currentUser));
+    updateUserHeaderUI();
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+    showToast(`Switched account role to: ${newRole.toUpperCase()}`);
+}
+
+async function handleUserLogout() {
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+
+    if (isServerMode) {
+        try {
+            await fetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' });
+        } catch (e) {}
+    }
+
+    currentUser = null;
+    localStorage.removeItem('dairymate_user');
+    showLoginOverlay();
+    showToast('Signed out successfully.');
+}
+
+// ================= CLINICAL SYMPTOMS SELECTOR =================
+function onHealthSymptomsSelect(val) {
+    const input = document.getElementById('healthSymptoms');
+    if (!input) return;
+    if (!val || val === 'Other') {
+        input.focus();
+        return;
+    }
+    if (!input.value.trim()) {
+        input.value = val;
+    } else if (!input.value.includes(val)) {
+        input.value = input.value.trim() + '; ' + val;
+    }
+}
+
+// ================= COW DELETION WITH ROLE PROTECTION =================
+async function deleteCow(cowId) {
+    if (currentUser && currentUser.role === 'farmer') {
+        showToast('Permission denied: Only Farm Administrators can remove animal profiles.', 'error');
+        return;
+    }
+    const cow = (cowsCache || []).find(c => c.id == cowId);
+    const tag = cow ? cow.tag_number : `ID ${cowId}`;
+    if (!confirm(`Are you sure you want to permanently delete animal profile ${tag}? All associated records will be removed.`)) {
+        return;
+    }
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/cows.php?id=${cowId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to delete cow.');
+        } else {
+            const store = getLocalStore();
+            store.cows = (store.cows || []).filter(c => c.id != cowId);
+            store.milk = (store.milk || []).filter(m => m.cow_id != cowId);
+            store.heat = (store.heat || []).filter(h => h.cow_id != cowId);
+            store.health = (store.health || []).filter(h => h.cow_id != cowId);
+            store.vaccinations = (store.vaccinations || []).filter(v => v.cow_id != cowId);
+            saveLocalStore(store);
+        }
+        showToast(`Cow profile ${tag} removed.`);
+        closeModal('modalCowDetail');
+        await loadCows();
+        await loadDashboard();
+    } catch (e) {
+        showToast('Failed to delete cow: ' + e.message, 'error');
+    }
+}
+
+// ================= FARM DATA BACKUP & RESTORE =================
+function openBackupRestoreModal() {
+    const menu = document.getElementById('userDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+    openModal('modalBackupRestore');
+}
+
+async function exportFarmBackupJson() {
+    try {
+        let backupData = {};
+        if (isServerMode) {
+            const [cowsRes, feedsRes, alertsRes] = await Promise.all([
+                fetch(`${API_BASE}/cows.php`),
+                fetch(`${API_BASE}/feeds.php?action=list_ingredients`),
+                fetch(`${API_BASE}/alerts.php`)
+            ]);
+            const cowsData = await cowsRes.json();
+            const feedsData = await feedsRes.json();
+            const alertsData = await alertsRes.json();
+            backupData = {
+                cows: cowsData.cows || [],
+                feeds: feedsData.feeds || [],
+                alerts: alertsData.alerts || []
+            };
+        } else {
+            backupData = getLocalStore();
+        }
+
+        const exportPayload = {
+            system: 'DairyMate - Farm Management System',
+            version: '2.4.0',
+            exported_at: new Date().toISOString(),
+            data: backupData
+        };
+
+        const jsonStr = JSON.stringify(exportPayload, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const dateStr = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `DairyMate_Farm_Backup_${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast('Farm database backup downloaded (.json)!');
+    } catch (e) {
+        showToast('Failed to export backup: ' + e.message, 'error');
+    }
+}
+
+async function importFarmBackupJson(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            const data = parsed.data || parsed;
+            if (!data.cows && !data.feeds) {
+                throw new Error('Invalid DairyMate backup format.');
+            }
+
+            const store = getLocalStore();
+            if (Array.isArray(data.cows)) store.cows = data.cows;
+            if (Array.isArray(data.milk)) store.milk = data.milk;
+            if (Array.isArray(data.heat)) store.heat = data.heat;
+            if (Array.isArray(data.health)) store.health = data.health;
+            if (Array.isArray(data.vaccinations)) store.vaccinations = data.vaccinations;
+            if (Array.isArray(data.feeds)) store.feeds = data.feeds;
+            if (Array.isArray(data.feed_logs)) store.feed_logs = data.feed_logs;
+            saveLocalStore(store);
+
+            closeModal('modalBackupRestore');
+            showToast('Farm backup restored successfully!');
+
+            await loadCows();
+            await loadDashboard();
+            await loadFeedIngredients();
+        } catch (err) {
+            showToast('Failed to restore backup: ' + err.message, 'error');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
 
 

@@ -197,6 +197,10 @@ if ($method === 'POST') {
 
     // 2. Delete Feed Ingredient
     if ($action === 'delete_ingredient') {
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        if (!empty($_SESSION['user']) && $_SESSION['user']['role'] === 'farmer') {
+            jsonResponse(['error' => 'Permission denied. Only Farm Administrators can delete feed ingredients.'], 403);
+        }
         $id = (int)($data['id'] ?? 0);
         if ($id <= 0) {
             jsonResponse(['error' => 'Invalid feed ingredient ID.'], 422);
