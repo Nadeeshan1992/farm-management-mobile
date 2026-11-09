@@ -250,6 +250,36 @@ foreach ($milkDrops as $m) {
     ];
 }
 
+// 8. Low Feed Stock Alerts (Feeds at or below reorder threshold)
+try {
+    $lowFeeds = $db->query("
+        SELECT id, name, category, current_stock_kg, min_stock_alert_kg, unit_cost 
+        FROM feeds 
+        WHERE current_stock_kg <= min_stock_alert_kg
+        ORDER BY current_stock_kg ASC
+    ")->fetchAll();
+
+    foreach ($lowFeeds as $lf) {
+        $stockKg = (float)$lf['current_stock_kg'];
+        $minKg = (float)$lf['min_stock_alert_kg'];
+        $isOut = ($stockKg <= 0);
+
+        $alerts[] = [
+            'category' => 'low_feed_stock',
+            'badge' => $isOut ? 'Out of Stock' : 'Low Feed Stock',
+            'badge_class' => $isOut ? 'badge-red' : 'badge-yellow',
+            'cow_id' => 0,
+            'tag_number' => 'FEED',
+            'title' => ($isOut ? 'Out of Stock: ' : 'Low Stock Alert: ') . $lf['name'] . " ({$stockKg} kg left)",
+            'message' => "Warehouse inventory for {$lf['name']} ({$lf['category']}) has dropped to {$stockKg} kg (Reorder threshold: {$minKg} kg). Restock soon to prevent ration disruption.",
+            'action_label' => 'Restock Feed',
+            'action_type' => 'feed_stock',
+            'record_id' => $lf['id'],
+            'date' => date('Y-m-d')
+        ];
+    }
+} catch (Exception $e) {}
+
 if ($category !== 'all') {
     $alerts = array_values(array_filter($alerts, function($a) use ($category) {
         return $a['category'] === $category;

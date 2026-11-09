@@ -108,13 +108,22 @@ const DEFAULT_SEED_DATA = {
         { id: 1, recorded_at: '2026-09-10 12:00:00', temperature: 30.5, humidity: 68.0, thi_value: 81.2, stress_level: 'Moderate Stress', notes: 'Fans on' }
     ],
     feeds: [
-        { id: 1, name: 'TMR', category: 'Forage / TMR', dm_pct: 45.00, cp_pct: 16.00, fat_pct: 3.50, fiber_pct: 18.00, ndf_pct: 35.00, adf_pct: 22.00, starch_pct: 24.00, sugar_pct: 4.50, ash_pct: 7.20, ca_pct: 0.800, p_pct: 0.450, mg_pct: 0.250, k_pct: 1.300, na_pct: 0.350, s_pct: 0.200, me_mj: 11.20, nel_mj: 6.80, notes: 'Total Mixed Ration' },
-        { id: 2, name: 'Concentrate', category: 'Concentrate', dm_pct: 88.00, cp_pct: 18.00, fat_pct: 4.00, fiber_pct: 8.00, ndf_pct: 18.00, adf_pct: 11.00, starch_pct: 38.00, sugar_pct: 5.00, ash_pct: 6.50, ca_pct: 0.900, p_pct: 0.600, mg_pct: 0.350, k_pct: 1.100, na_pct: 0.450, s_pct: 0.220, me_mj: 12.80, nel_mj: 7.60, notes: 'Commercial Dairy Pellets 18%' },
-        { id: 3, name: 'Maize Silage', category: 'Silage', dm_pct: 35.00, cp_pct: 8.00, fat_pct: 3.00, fiber_pct: 23.00, ndf_pct: 45.00, adf_pct: 26.00, starch_pct: 32.00, sugar_pct: 2.00, ash_pct: 4.50, ca_pct: 0.250, p_pct: 0.220, mg_pct: 0.180, k_pct: 1.150, na_pct: 0.020, s_pct: 0.120, me_mj: 10.80, nel_mj: 6.40, notes: 'Chopped corn silage' },
-        { id: 4, name: 'Grass/Forage', category: 'Forage / TMR', dm_pct: 25.00, cp_pct: 10.50, fat_pct: 2.50, fiber_pct: 30.00, ndf_pct: 55.00, adf_pct: 35.00, starch_pct: 2.00, sugar_pct: 8.50, ash_pct: 8.00, ca_pct: 0.400, p_pct: 0.250, mg_pct: 0.200, k_pct: 2.200, na_pct: 0.150, s_pct: 0.220, me_mj: 9.50, nel_mj: 5.60, notes: 'Fresh green pasture forage' },
-        { id: 5, name: 'Alfalfa Hay', category: 'Forage / TMR', dm_pct: 88.00, cp_pct: 19.50, fat_pct: 2.20, fiber_pct: 28.00, ndf_pct: 40.00, adf_pct: 30.00, starch_pct: 2.50, sugar_pct: 6.00, ash_pct: 9.50, ca_pct: 1.400, p_pct: 0.280, mg_pct: 0.300, k_pct: 2.400, na_pct: 0.100, s_pct: 0.250, me_mj: 9.80, nel_mj: 5.90, notes: 'Premium legume hay' },
-        { id: 6, name: 'Soybean Meal', category: 'Concentrate', dm_pct: 90.00, cp_pct: 48.00, fat_pct: 1.50, fiber_pct: 6.00, ndf_pct: 11.00, adf_pct: 8.00, starch_pct: 5.00, sugar_pct: 9.00, ash_pct: 6.50, ca_pct: 0.320, p_pct: 0.650, mg_pct: 0.280, k_pct: 2.100, na_pct: 0.040, s_pct: 0.450, me_mj: 13.50, nel_mj: 8.20, notes: 'Solvent extracted 48% protein meal' },
-        { id: 7, name: 'Cottonseed (Whole)', category: 'Concentrate', dm_pct: 91.00, cp_pct: 23.00, fat_pct: 19.50, fiber_pct: 24.00, ndf_pct: 48.00, adf_pct: 38.00, starch_pct: 1.50, sugar_pct: 3.00, ash_pct: 4.80, ca_pct: 0.160, p_pct: 0.600, mg_pct: 0.380, k_pct: 1.250, na_pct: 0.050, s_pct: 0.240, me_mj: 14.20, nel_mj: 8.80, notes: 'Fuzzy whole cottonseed' }
+        { id: 1, name: 'TMR', category: 'Forage / TMR', dm_pct: 45.00, cp_pct: 16.00, fat_pct: 3.50, fiber_pct: 18.00, ndf_pct: 35.00, adf_pct: 22.00, starch_pct: 24.00, sugar_pct: 4.50, ash_pct: 7.20, ca_pct: 0.800, p_pct: 0.450, mg_pct: 0.250, k_pct: 1.300, na_pct: 0.350, s_pct: 0.200, me_mj: 11.20, nel_mj: 6.80, current_stock_kg: 1250.00, min_stock_alert_kg: 300.00, unit_cost: 45.00, notes: 'Total Mixed Ration' },
+        { id: 2, name: 'Concentrate', category: 'Concentrate', dm_pct: 88.00, cp_pct: 18.00, fat_pct: 4.00, fiber_pct: 8.00, ndf_pct: 18.00, adf_pct: 11.00, starch_pct: 38.00, sugar_pct: 5.00, ash_pct: 6.50, ca_pct: 0.900, p_pct: 0.600, mg_pct: 0.350, k_pct: 1.100, na_pct: 0.450, s_pct: 0.220, me_mj: 12.80, nel_mj: 7.60, current_stock_kg: 450.00, min_stock_alert_kg: 150.00, unit_cost: 115.00, notes: 'Commercial Dairy Pellets 18%' },
+        { id: 3, name: 'Maize Silage', category: 'Silage', dm_pct: 35.00, cp_pct: 8.00, fat_pct: 3.00, fiber_pct: 23.00, ndf_pct: 45.00, adf_pct: 26.00, starch_pct: 32.00, sugar_pct: 2.00, ash_pct: 4.50, ca_pct: 0.250, p_pct: 0.220, mg_pct: 0.180, k_pct: 1.150, na_pct: 0.020, s_pct: 0.120, me_mj: 10.80, nel_mj: 6.40, current_stock_kg: 2800.00, min_stock_alert_kg: 500.00, unit_cost: 28.00, notes: 'Chopped corn silage' },
+        { id: 4, name: 'Grass/Forage', category: 'Forage / TMR', dm_pct: 25.00, cp_pct: 10.50, fat_pct: 2.50, fiber_pct: 30.00, ndf_pct: 55.00, adf_pct: 35.00, starch_pct: 2.00, sugar_pct: 8.50, ash_pct: 8.00, ca_pct: 0.400, p_pct: 0.250, mg_pct: 0.200, k_pct: 2.200, na_pct: 0.150, s_pct: 0.220, me_mj: 9.50, nel_mj: 5.60, current_stock_kg: 900.00, min_stock_alert_kg: 200.00, unit_cost: 15.00, notes: 'Fresh green pasture forage' },
+        { id: 5, name: 'Alfalfa Hay', category: 'Forage / TMR', dm_pct: 88.00, cp_pct: 19.50, fat_pct: 2.20, fiber_pct: 28.00, ndf_pct: 40.00, adf_pct: 30.00, starch_pct: 2.50, sugar_pct: 6.00, ash_pct: 9.50, ca_pct: 1.400, p_pct: 0.280, mg_pct: 0.300, k_pct: 2.400, na_pct: 0.100, s_pct: 0.250, me_mj: 9.80, nel_mj: 5.90, current_stock_kg: 380.00, min_stock_alert_kg: 100.00, unit_cost: 95.00, notes: 'Premium legume hay' },
+        { id: 6, name: 'Soybean Meal', category: 'Concentrate', dm_pct: 90.00, cp_pct: 48.00, fat_pct: 1.50, fiber_pct: 6.00, ndf_pct: 11.00, adf_pct: 8.00, starch_pct: 5.00, sugar_pct: 9.00, ash_pct: 6.50, ca_pct: 0.320, p_pct: 0.650, mg_pct: 0.280, k_pct: 2.100, na_pct: 0.040, s_pct: 0.450, me_mj: 13.50, nel_mj: 8.20, current_stock_kg: 180.00, min_stock_alert_kg: 100.00, unit_cost: 175.00, notes: 'Solvent extracted 48% protein meal' },
+        { id: 7, name: 'Cottonseed (Whole)', category: 'Concentrate', dm_pct: 91.00, cp_pct: 23.00, fat_pct: 19.50, fiber_pct: 24.00, ndf_pct: 48.00, adf_pct: 38.00, starch_pct: 1.50, sugar_pct: 3.00, ash_pct: 4.80, ca_pct: 0.160, p_pct: 0.600, mg_pct: 0.380, k_pct: 1.250, na_pct: 0.050, s_pct: 0.240, me_mj: 14.20, nel_mj: 8.80, current_stock_kg: 90.00, min_stock_alert_kg: 100.00, unit_cost: 140.00, notes: 'Fuzzy whole cottonseed' }
+    ],
+    feed_stock_transactions: [
+        { id: 1, feed_id: 3, feed_name: 'Maize Silage', type: 'in', quantity_kg: 3000.00, previous_stock_kg: 0, new_stock_kg: 3000.00, unit_cost: 28.00, total_cost: 84000.00, transaction_date: '2026-10-26', notes: 'Bulk Maize Silage Bunker Harvest' },
+        { id: 2, feed_id: 1, feed_name: 'TMR', type: 'in', quantity_kg: 1500.00, previous_stock_kg: 0, new_stock_kg: 1500.00, unit_cost: 45.00, total_cost: 67500.00, transaction_date: '2026-10-30', notes: 'Commercial Lactation TMR Mixed Batch' },
+        { id: 3, feed_id: 2, feed_name: 'Concentrate', type: 'in', quantity_kg: 500.00, previous_stock_kg: 0, new_stock_kg: 500.00, unit_cost: 115.00, total_cost: 57500.00, transaction_date: '2026-11-02', notes: '10 Bags (50kg) Dairy Concentrate Pellets' },
+        { id: 4, feed_id: 4, feed_name: 'Grass/Forage', type: 'in', quantity_kg: 1000.00, previous_stock_kg: 0, new_stock_kg: 1000.00, unit_cost: 15.00, total_cost: 15000.00, transaction_date: '2026-11-04', notes: 'Fresh Green Forage Harvest' },
+        { id: 5, feed_id: 5, feed_name: 'Alfalfa Hay', type: 'in', quantity_kg: 400.00, previous_stock_kg: 0, new_stock_kg: 400.00, unit_cost: 95.00, total_cost: 38000.00, transaction_date: '2026-11-05', notes: 'Alfalfa Hay Bales' },
+        { id: 6, feed_id: 6, feed_name: 'Soybean Meal', type: 'in', quantity_kg: 200.00, previous_stock_kg: 0, new_stock_kg: 200.00, unit_cost: 175.00, total_cost: 35000.00, transaction_date: '2026-11-06', notes: 'High Protein Soybean Meal Supplement' },
+        { id: 7, feed_id: 7, feed_name: 'Cottonseed (Whole)', type: 'in', quantity_kg: 100.00, previous_stock_kg: 0, new_stock_kg: 100.00, unit_cost: 140.00, total_cost: 14000.00, transaction_date: '2026-11-07', notes: 'Whole Fuzzy Cottonseed 2 Bags' }
     ],
     feed_logs: [
         {
@@ -189,6 +198,7 @@ function getLocalStore() {
         if (!parsed.feeds || parsed.feeds.length === 0) {
             parsed.feeds = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feeds));
             parsed.feed_logs = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feed_logs));
+            parsed.feed_stock_transactions = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feed_stock_transactions));
             changed = true;
         } else {
             parsed.feeds.forEach(f => {
@@ -196,7 +206,22 @@ function getLocalStore() {
                     f.category = 'Concentrate';
                     changed = true;
                 }
+                if (typeof f.current_stock_kg === 'undefined') {
+                    if (f.name.includes('TMR')) { f.current_stock_kg = 1250; f.min_stock_alert_kg = 300; f.unit_cost = 45; }
+                    else if (f.name.includes('Concentrate')) { f.current_stock_kg = 450; f.min_stock_alert_kg = 150; f.unit_cost = 115; }
+                    else if (f.name.includes('Silage')) { f.current_stock_kg = 2800; f.min_stock_alert_kg = 500; f.unit_cost = 28; }
+                    else if (f.name.includes('Grass')) { f.current_stock_kg = 900; f.min_stock_alert_kg = 200; f.unit_cost = 15; }
+                    else if (f.name.includes('Alfalfa')) { f.current_stock_kg = 380; f.min_stock_alert_kg = 100; f.unit_cost = 95; }
+                    else if (f.name.includes('Soybean')) { f.current_stock_kg = 180; f.min_stock_alert_kg = 100; f.unit_cost = 175; }
+                    else if (f.name.includes('Cottonseed')) { f.current_stock_kg = 90; f.min_stock_alert_kg = 100; f.unit_cost = 140; }
+                    else { f.current_stock_kg = 500; f.min_stock_alert_kg = 100; f.unit_cost = 50; }
+                    changed = true;
+                }
             });
+            if (!parsed.feed_stock_transactions) {
+                parsed.feed_stock_transactions = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feed_stock_transactions || []));
+                changed = true;
+            }
         }
         if (changed) {
             saveLocalStore(parsed);
@@ -2340,6 +2365,27 @@ async function loadAllAlerts(category = 'all') {
                 }
             });
 
+            // Dynamic Low Feed Stock alerts for offline store
+            (store.feeds || []).forEach(f => {
+                const curKg = parseFloat(f.current_stock_kg || 0);
+                const minKg = parseFloat(f.min_stock_alert_kg || 100);
+                if (curKg <= minKg) {
+                    alerts.push({
+                        category: 'low_feed_stock',
+                        badge: 'Low Feed Stock',
+                        badge_class: 'badge-yellow',
+                        cow_id: 0,
+                        tag_number: 'FEED',
+                        title: `Low Stock Alert: ${f.name} (${curKg} kg left)`,
+                        message: `Barn inventory for ${f.name} (${f.category || 'Feed'}) has dropped to ${curKg} kg (Reorder threshold: ${minKg} kg). Restock soon.`,
+                        action_label: 'Restock Feed',
+                        action_type: 'feed_stock',
+                        record_id: f.id,
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                }
+            });
+
             if (category !== 'all') {
                 alerts = alerts.filter(a => a.category === category);
             }
@@ -2389,6 +2435,12 @@ function handleAlertAction(type, cowId, recordId, vaxName = '', dueDate = null, 
     if (type === 'calving') openLogCalvingModal(cowId);
     if (type === 'vaccine') openLogVaccineModal(cowId, vaxName, dueDate, nextDueDate, treatmentType);
     if (type === 'health' || type === 'health_check') openLogHealthModal(cowId);
+    if (type === 'feed_stock') {
+        try { closeModal('modalAlerts'); } catch(e) {}
+        switchTab('feed');
+        switchFeedSubTab('stock', document.getElementById('btnSubTabFeedStock'));
+        if (recordId) openModalFeedStockIn(recordId);
+    }
 }
 
 // THI Interactive Calculator Logic
@@ -3143,13 +3195,16 @@ function switchFeedSubTab(subTab, btn) {
     const viewCalc = document.getElementById('feedContentCalculator');
     const viewLib = document.getElementById('feedContentLibrary');
     const viewHist = document.getElementById('feedContentHistory');
+    const viewStock = document.getElementById('feedContentStock');
 
     if (viewCalc) viewCalc.style.display = subTab === 'calculator' ? 'block' : 'none';
     if (viewLib) viewLib.style.display = subTab === 'library' ? 'block' : 'none';
     if (viewHist) viewHist.style.display = subTab === 'history' ? 'block' : 'none';
+    if (viewStock) viewStock.style.display = subTab === 'stock' ? 'block' : 'none';
 
     if (subTab === 'library') renderFeedLibrary();
     if (subTab === 'history') loadFeedHistory();
+    if (subTab === 'stock') loadFeedStock();
 }
 
 async function loadFeedModule(subTab = null) {
@@ -3177,7 +3232,11 @@ async function loadFeedModule(subTab = null) {
     }
 
     if (subTab) {
-        const btn = document.getElementById(subTab === 'library' ? 'btnSubTabFeedLibrary' : (subTab === 'history' ? 'btnSubTabFeedHistory' : 'btnSubTabFeedCalc'));
+        const btn = document.getElementById(
+            subTab === 'library' ? 'btnSubTabFeedLibrary' :
+            (subTab === 'history' ? 'btnSubTabFeedHistory' :
+            (subTab === 'stock' ? 'btnSubTabFeedStock' : 'btnSubTabFeedCalc'))
+        );
         switchFeedSubTab(subTab, btn);
     }
 }
@@ -3201,6 +3260,23 @@ async function loadFeedIngredients() {
     // Update badge count
     const badge = document.getElementById('feedCountBadge');
     if (badge) badge.innerText = feedsCache.length;
+
+    // Update low stock warning badge
+    let lowCount = 0;
+    (feedsCache || []).forEach(f => {
+        const cur = parseFloat(f.current_stock_kg || 0);
+        const min = parseFloat(f.min_stock_alert_kg || 100);
+        if (cur <= min) lowCount++;
+    });
+    const lowBadge = document.getElementById('feedStockLowBadge');
+    if (lowBadge) {
+        if (lowCount > 0) {
+            lowBadge.textContent = `${lowCount} Low`;
+            lowBadge.classList.remove('hidden');
+        } else {
+            lowBadge.classList.add('hidden');
+        }
+    }
 }
 
 // Recalculate nutrient intake for each feed & daily total intake
@@ -3542,6 +3618,9 @@ async function saveCurrentFeedRation() {
         return;
     }
 
+    const chkAutoDeduct = document.getElementById('chkAutoDeductFeedStock');
+    const autoDeduct = chkAutoDeduct ? chkAutoDeduct.checked : true;
+
     try {
         if (isServerMode) {
             const res = await fetch(`${API_BASE}/feeds.php`, {
@@ -3552,7 +3631,8 @@ async function saveCurrentFeedRation() {
                     cow_id: cowId,
                     log_date: logDate,
                     notes: notes,
-                    items: items
+                    items: items,
+                    deduct_stock: autoDeduct
                 })
             });
             const data = await res.json();
@@ -3560,6 +3640,7 @@ async function saveCurrentFeedRation() {
         } else {
             const store = getLocalStore();
             if (!store.feed_logs) store.feed_logs = [];
+            if (!store.feed_stock_transactions) store.feed_stock_transactions = [];
             let tAsFed = 0, tDm = 0, tCp = 0, tFat = 0, tFiber = 0, tNdf = 0, tCa = 0, tP = 0;
             const processedItems = items.map(it => {
                 const f = feedsCache.find(x => x.id === it.feed_id) || {};
@@ -3590,6 +3671,35 @@ async function saveCurrentFeedRation() {
                 };
             });
 
+            // If auto-deduct is enabled, decrement stock in offline store
+            if (autoDeduct) {
+                const cowObj = (cowsCache || []).find(c => c.id === cowId);
+                const cowName = cowObj ? `${cowObj.tag_number} (${cowObj.name})` : `Cow #${cowId}`;
+                items.forEach(it => {
+                    const f = (store.feeds || []).find(x => x.id === it.feed_id);
+                    if (f) {
+                        const cur = parseFloat(f.current_stock_kg || 0);
+                        const newStock = Math.max(0, cur - it.amount_as_fed_kg);
+                        const uCost = parseFloat(f.unit_cost || 0);
+                        f.current_stock_kg = parseFloat(newStock.toFixed(2));
+                        store.feed_stock_transactions.unshift({
+                            id: Date.now() + Math.floor(Math.random() * 1000),
+                            feed_id: it.feed_id,
+                            feed_name: f.name,
+                            type: 'fed',
+                            quantity_kg: it.amount_as_fed_kg,
+                            previous_stock_kg: cur,
+                            new_stock_kg: f.current_stock_kg,
+                            unit_cost: uCost,
+                            total_cost: parseFloat((it.amount_as_fed_kg * uCost).toFixed(2)),
+                            transaction_date: logDate,
+                            notes: `Fed to ${cowName}`,
+                            created_at: new Date().toISOString()
+                        });
+                    }
+                });
+            }
+
             const newLog = {
                 id: Date.now(),
                 cow_id: cowId,
@@ -3612,6 +3722,7 @@ async function saveCurrentFeedRation() {
         showToast('Daily feeding record saved successfully!');
         if (notesInput) notesInput.value = '';
         loadFeedHistory(cowId);
+        await loadFeedIngredients();
     } catch (err) {
         showToast(err.message, true);
     }
@@ -3685,6 +3796,23 @@ function renderFeedLibrary(filterCat = 'all', searchQuery = '') {
                 <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">Ca: <b>${parseFloat(f.ca_pct).toFixed(2)}%</b></span>
                 <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">P: <b>${parseFloat(f.p_pct).toFixed(2)}%</b></span>
                 <span class="bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">NEL: <b>${parseFloat(f.nel_mj).toFixed(1)} MJ</b></span>
+            </div>
+
+            <!-- Feed Stock Status & Quick Action Bar -->
+            <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[11px] text-slate-500">Barn Stock:</span>
+                    <span class="font-extrabold ${parseFloat(f.current_stock_kg || 0) <= parseFloat(f.min_stock_alert_kg || 100) ? 'text-amber-600' : 'text-emerald-700'}">
+                        ${parseFloat(f.current_stock_kg || 0).toLocaleString()} kg
+                    </span>
+                    ${parseFloat(f.current_stock_kg || 0) <= parseFloat(f.min_stock_alert_kg || 100) ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-700 font-bold">⚠️ Low</span>' : ''}
+                </div>
+                <div class="flex items-center gap-2 text-[11px]">
+                    <span class="text-slate-500">Rate: <b class="text-slate-800">Rs. ${parseFloat(f.unit_cost || 0).toFixed(2)}/kg</b></span>
+                    <button type="button" class="px-2 py-0.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-bold text-[10px] flex items-center gap-1" onclick="openModalFeedStockIn(${f.id})">
+                        <i class="fa-solid fa-plus-circle text-[9px]"></i> Stock In
+                    </button>
+                </div>
             </div>
         </div>
     `).join('');
@@ -4008,6 +4136,665 @@ function openFeedCalculatorForCow(cowId) {
     if (sel) {
         sel.value = cowId;
         onFeedCowSelectionChange(cowId);
+    }
+}
+
+// ================= DAIRY FEED STOCK & INVENTORY ENGINE =================
+let feedStockCache = { kpis: {}, feeds: [], transactions: [] };
+let feedStockStatusFilter = 'all';
+let feedStockSearchQuery = '';
+
+async function loadFeedStock() {
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php?action=get_stock`);
+            if (res.ok) {
+                const data = await res.json();
+                feedStockCache = data;
+            } else {
+                throw new Error('Server stock fetch error');
+            }
+        } else {
+            // Local / Offline fallback calculation
+            const store = getLocalStore();
+            const feeds = store.feeds || [];
+            const txs = store.feed_stock_transactions || [];
+
+            let totalStockKg = 0;
+            let totalValue = 0;
+            let lowStockCount = 0;
+            let outOfStockCount = 0;
+
+            const computedFeeds = feeds.map(f => {
+                const curKg = parseFloat(f.current_stock_kg || 0);
+                const minKg = parseFloat(f.min_stock_alert_kg || 100);
+                const uCost = parseFloat(f.unit_cost || 0);
+                const val = curKg * uCost;
+
+                let status = 'good';
+                if (curKg <= 0) {
+                    status = 'out';
+                    outOfStockCount++;
+                    lowStockCount++;
+                } else if (curKg <= minKg) {
+                    status = 'low';
+                    lowStockCount++;
+                }
+
+                totalStockKg += curKg;
+                totalValue += val;
+
+                return {
+                    ...f,
+                    current_stock_kg: curKg,
+                    min_stock_alert_kg: minKg,
+                    unit_cost: uCost,
+                    total_value: parseFloat(val.toFixed(2)),
+                    status: status
+                };
+            });
+
+            feedStockCache = {
+                success: true,
+                kpis: {
+                    total_stock_kg: parseFloat(totalStockKg.toFixed(2)),
+                    total_stock_tons: parseFloat((totalStockKg / 1000).toFixed(2)),
+                    total_value: parseFloat(totalValue.toFixed(2)),
+                    low_stock_count: lowStockCount,
+                    out_of_stock_count: outOfStockCount,
+                    total_feeds_count: computedFeeds.length
+                },
+                feeds: computedFeeds,
+                transactions: (txs || []).slice(0, 40)
+            };
+        }
+    } catch (e) {
+        console.error('Error loading feed stock:', e);
+    }
+
+    renderFeedStockKPIs(feedStockCache.kpis || {});
+    applyFeedStockFiltersAndRender();
+    renderFeedStockTransactions(feedStockCache.transactions || []);
+}
+
+function renderFeedStockKPIs(kpis) {
+    const elTotalKg = document.getElementById('kpiTotalStockKg');
+    const elTotalTons = document.getElementById('kpiTotalStockTons');
+    const elTotalVal = document.getElementById('kpiStockTotalValue');
+    const elLowCount = document.getElementById('kpiStockLowCount');
+    const elFeedsCount = document.getElementById('kpiStockFeedsCount');
+    const elLowBadge = document.getElementById('feedStockLowBadge');
+
+    if (elTotalKg) elTotalKg.textContent = `${(kpis.total_stock_kg || 0).toLocaleString()} kg`;
+    if (elTotalTons) elTotalTons.textContent = `${(kpis.total_stock_tons || 0).toFixed(2)} Tons in Barn`;
+    if (elTotalVal) elTotalVal.textContent = `Rs. ${(kpis.total_value || 0).toLocaleString()}`;
+    if (elLowCount) elLowCount.textContent = kpis.low_stock_count || 0;
+    if (elFeedsCount) elFeedsCount.textContent = kpis.total_feeds_count || 0;
+
+    if (elLowBadge) {
+        if ((kpis.low_stock_count || 0) > 0) {
+            elLowBadge.textContent = `${kpis.low_stock_count} Low`;
+            elLowBadge.classList.remove('hidden');
+        } else {
+            elLowBadge.classList.add('hidden');
+        }
+    }
+}
+
+function applyFeedStockFiltersAndRender() {
+    let list = (feedStockCache.feeds || []);
+
+    if (feedStockStatusFilter === 'low') {
+        list = list.filter(f => f.status === 'low' || f.status === 'out');
+    } else if (feedStockStatusFilter === 'good') {
+        list = list.filter(f => f.status === 'good');
+    }
+
+    if (feedStockSearchQuery && feedStockSearchQuery.trim() !== '') {
+        const q = feedStockSearchQuery.toLowerCase().trim();
+        list = list.filter(f => (f.name && f.name.toLowerCase().includes(q)) || (f.category && f.category.toLowerCase().includes(q)));
+    }
+
+    renderFeedStockCards(list);
+}
+
+function filterFeedStockStatus(status, btn = null) {
+    feedStockStatusFilter = status;
+    const chips = [
+        { id: 'chipStockFilterAll', val: 'all' },
+        { id: 'chipStockFilterLow', val: 'low' },
+        { id: 'chipStockFilterGood', val: 'good' }
+    ];
+
+    chips.forEach(c => {
+        const el = document.getElementById(c.id);
+        if (el) {
+            if (c.val === status) {
+                el.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 filter-chip active';
+            } else {
+                el.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 filter-chip';
+            }
+        }
+    });
+
+    applyFeedStockFiltersAndRender();
+}
+
+function onFeedStockSearch(val) {
+    feedStockSearchQuery = val || '';
+    applyFeedStockFiltersAndRender();
+}
+
+function renderFeedStockCards(feeds) {
+    const container = document.getElementById('feedStockCardsContainer');
+    if (!container) return;
+
+    if (!feeds || feeds.length === 0) {
+        container.innerHTML = `
+            <div class="p-6 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-100 shadow-xs">
+                <i class="fa-solid fa-boxes-stacked text-2xl text-slate-300 mb-2 block"></i>
+                No feed inventory items matching the current filter.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = feeds.map(f => {
+        const curKg = parseFloat(f.current_stock_kg || 0);
+        const minAlert = parseFloat(f.min_stock_alert_kg || 100);
+        const uCost = parseFloat(f.unit_cost || 0);
+        const totVal = curKg * uCost;
+
+        // Health percentage bar: based on 2.5x threshold as full
+        const targetCapacity = Math.max(minAlert * 2.5, 100);
+        const pct = Math.min(100, Math.round((curKg / targetCapacity) * 100));
+
+        let badgeHtml = '';
+        let barColor = 'bg-emerald-500';
+        let borderColor = 'border-slate-100';
+
+        if (f.status === 'out') {
+            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">Out of Stock</span>`;
+            barColor = 'bg-rose-500';
+            borderColor = 'border-rose-200 bg-rose-50/20';
+        } else if (f.status === 'low') {
+            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 flex items-center gap-1">⚠️ Low Stock</span>`;
+            barColor = 'bg-amber-500';
+            borderColor = 'border-amber-200 bg-amber-50/20';
+        } else {
+            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Healthy</span>`;
+            barColor = 'bg-emerald-500';
+        }
+
+        return `
+            <div class="bg-white rounded-2xl border ${borderColor} p-3.5 shadow-xs transition hover:shadow-sm">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-slate-900 text-sm">${f.name}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-semibold">${f.category || 'Feed'}</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Alert Level: &lt; ${minAlert.toLocaleString()} kg &bull; Rate: Rs. ${uCost.toFixed(2)}/kg</div>
+                    </div>
+                    <div>
+                        ${badgeHtml}
+                    </div>
+                </div>
+
+                <!-- Stock Quantity & Financial Value -->
+                <div class="mt-2.5 flex items-baseline justify-between">
+                    <div>
+                        <span class="text-xl font-black text-slate-800">${curKg.toLocaleString()}</span>
+                        <span class="text-xs font-bold text-slate-500 ml-0.5">kg</span>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-extrabold text-emerald-700">Rs. ${totVal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</div>
+                        <div class="text-[10px] text-slate-400">Total Value</div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mt-2">
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div class="${barColor} h-2 rounded-full transition-all duration-300" style="width: ${Math.max(4, pct)}%;"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+                        <span>Safe: &gt; ${minAlert} kg</span>
+                        <span>${pct}% safe level</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Footer -->
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-1.5">
+                    <button type="button" class="flex-1 py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1" onclick="openModalFeedStockIn(${f.id})">
+                        <i class="fa-solid fa-plus-circle text-[11px]"></i> Stock In
+                    </button>
+                    <button type="button" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1" onclick="openModalFeedStockAdjust(${f.id})">
+                        <i class="fa-solid fa-scale-balanced text-[11px]"></i> Adjust / Audit
+                    </button>
+                    <button type="button" class="py-1.5 px-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold text-xs rounded-xl transition flex items-center justify-center" onclick="openModalFeedStockSettings(${f.id})" title="Stock Alert & Cost Settings">
+                        <i class="fa-solid fa-sliders text-[11px]"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderFeedStockTransactions(transactions) {
+    const container = document.getElementById('feedStockTransactionsList');
+    const countBadge = document.getElementById('stockTxCount');
+    if (!container) return;
+
+    if (countBadge) {
+        countBadge.textContent = `${transactions ? transactions.length : 0} entries`;
+    }
+
+    if (!transactions || transactions.length === 0) {
+        container.innerHTML = `
+            <div class="p-4 text-center text-slate-400 text-xs">
+                No inventory transactions recorded yet.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = transactions.map(t => {
+        let typeBadge = '';
+        let qtyDisplay = '';
+
+        if (t.type === 'in') {
+            typeBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800">+ Stock In</span>`;
+            qtyDisplay = `<span class="font-extrabold text-emerald-700">+${parseFloat(t.quantity_kg).toLocaleString()} kg</span>`;
+        } else if (t.type === 'out') {
+            typeBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-100 text-rose-800">- Loss/Out</span>`;
+            qtyDisplay = `<span class="font-extrabold text-rose-700">-${parseFloat(t.quantity_kg).toLocaleString()} kg</span>`;
+        } else if (t.type === 'fed') {
+            typeBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800">🥣 Fed</span>`;
+            qtyDisplay = `<span class="font-extrabold text-blue-700">-${parseFloat(t.quantity_kg).toLocaleString()} kg</span>`;
+        } else {
+            typeBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800">⇄ Audit</span>`;
+            qtyDisplay = `<span class="font-extrabold text-amber-700">Set to ${parseFloat(t.new_stock_kg).toLocaleString()} kg</span>`;
+        }
+
+        const dateStr = t.transaction_date || (t.created_at ? t.created_at.split(' ')[0] : 'Today');
+        const prevNewStr = `${parseFloat(t.previous_stock_kg || 0).toLocaleString()} &rarr; ${parseFloat(t.new_stock_kg || 0).toLocaleString()} kg`;
+        const costStr = (parseFloat(t.total_cost || 0) > 0) ? ` &bull; Rs. ${parseFloat(t.total_cost).toLocaleString()}` : '';
+
+        return `
+            <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition text-xs">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5 font-bold text-slate-800">
+                        ${typeBadge}
+                        <span>${t.feed_name || 'Feed'}</span>
+                    </div>
+                    <div>${qtyDisplay}</div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                    <span>${dateStr} &bull; ${prevNewStr}${costStr}</span>
+                </div>
+                ${t.notes ? `<div class="text-[10.5px] text-slate-400 mt-0.5 italic"><i class="fa-regular fa-note-sticky mr-1"></i>${t.notes}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+// Modal helper: Populate feed select dropdowns
+function populateFeedStockSelect(selectId, selectedFeedId = null) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+
+    let feeds = (feedStockCache.feeds && feedStockCache.feeds.length) ? feedStockCache.feeds : feedsCache;
+    let html = `<option value="">-- Select Feed Ingredient --</option>`;
+    feeds.forEach(f => {
+        const selAttr = (selectedFeedId && f.id == selectedFeedId) ? 'selected' : '';
+        const curKg = parseFloat(f.current_stock_kg || 0);
+        html += `<option value="${f.id}" data-cost="${f.unit_cost || 0}" data-stock="${curKg}" ${selAttr}>${f.name} (${f.category || 'Feed'}) — Barn: ${curKg.toLocaleString()} kg</option>`;
+    });
+    sel.innerHTML = html;
+}
+
+// Stock In Modal
+function openModalFeedStockIn(preselectFeedId = null) {
+    populateFeedStockSelect('feedStockInFeedId', preselectFeedId);
+    const dateInput = document.getElementById('feedStockInDate');
+    if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+    const qtyInp = document.getElementById('feedStockInQty');
+    if (qtyInp) qtyInp.value = '';
+
+    const notesInp = document.getElementById('feedStockInNotes');
+    if (notesInp) notesInp.value = '';
+
+    if (preselectFeedId) {
+        onFeedStockInFeedChange(preselectFeedId);
+    } else {
+        const costInp = document.getElementById('feedStockInUnitCost');
+        if (costInp) costInp.value = '';
+        const hint = document.getElementById('feedStockInCurrentHint');
+        if (hint) hint.textContent = 'Current stock: -';
+        calculateFeedStockInTotal();
+    }
+
+    openModal('modalFeedStockIn');
+}
+
+function onFeedStockInFeedChange(feedId) {
+    const sel = document.getElementById('feedStockInFeedId');
+    const opt = sel ? sel.options[sel.selectedIndex] : null;
+    const costInp = document.getElementById('feedStockInUnitCost');
+    const hint = document.getElementById('feedStockInCurrentHint');
+
+    if (opt && opt.value) {
+        const cost = parseFloat(opt.dataset.cost || 0);
+        const stock = parseFloat(opt.dataset.stock || 0);
+        if (costInp && (!costInp.value || parseFloat(costInp.value) === 0)) {
+            costInp.value = cost > 0 ? cost : '';
+        }
+        if (hint) hint.textContent = `Current stock in barn: ${stock.toLocaleString()} kg`;
+    } else {
+        if (hint) hint.textContent = 'Current stock: -';
+    }
+    calculateFeedStockInTotal();
+}
+
+function calculateFeedStockInTotal() {
+    const qty = parseFloat(document.getElementById('feedStockInQty')?.value || 0);
+    const cost = parseFloat(document.getElementById('feedStockInUnitCost')?.value || 0);
+    const totalEl = document.getElementById('feedStockInTotalCost');
+    if (totalEl) {
+        const tot = qty * cost;
+        totalEl.textContent = `Rs. ${tot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+}
+
+async function submitFeedStockIn(e) {
+    if (e) e.preventDefault();
+    const feedId = parseInt(document.getElementById('feedStockInFeedId').value);
+    const qty = parseFloat(document.getElementById('feedStockInQty').value);
+    const unitCost = parseFloat(document.getElementById('feedStockInUnitCost').value || 0);
+    const date = document.getElementById('feedStockInDate').value || new Date().toISOString().split('T')[0];
+    const notes = (document.getElementById('feedStockInNotes').value || '').trim();
+
+    if (!feedId || isNaN(qty) || qty <= 0) {
+        showToast('Please enter a valid feed and positive quantity.', true);
+        return;
+    }
+
+    const btn = document.getElementById('btnSubmitStockIn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Adding...`;
+    }
+
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'add_stock_transaction',
+                    feed_id: feedId,
+                    type: 'in',
+                    quantity_kg: qty,
+                    unit_cost: unitCost,
+                    transaction_date: date,
+                    notes: notes
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to add stock');
+        } else {
+            // Local store update
+            const store = getLocalStore();
+            const feed = (store.feeds || []).find(f => f.id == feedId);
+            if (!feed) throw new Error('Feed ingredient not found');
+
+            const prevStock = parseFloat(feed.current_stock_kg || 0);
+            const newStock = prevStock + qty;
+            feed.current_stock_kg = parseFloat(newStock.toFixed(2));
+            if (unitCost > 0) feed.unit_cost = parseFloat(unitCost.toFixed(2));
+
+            if (!store.feed_stock_transactions) store.feed_stock_transactions = [];
+            store.feed_stock_transactions.unshift({
+                id: Date.now(),
+                feed_id: feedId,
+                feed_name: feed.name,
+                type: 'in',
+                quantity_kg: qty,
+                previous_stock_kg: prevStock,
+                new_stock_kg: newStock,
+                unit_cost: unitCost > 0 ? unitCost : parseFloat(feed.unit_cost || 0),
+                total_cost: parseFloat((qty * (unitCost > 0 ? unitCost : parseFloat(feed.unit_cost || 0))).toFixed(2)),
+                transaction_date: date,
+                notes: notes,
+                created_at: new Date().toISOString()
+            });
+
+            saveLocalStore(store);
+        }
+
+        closeModal('modalFeedStockIn');
+        showToast(`Added ${qty} kg to stock successfully!`);
+        await loadFeedIngredients();
+        await loadFeedStock();
+    } catch (err) {
+        showToast(err.message, true);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-plus-circle mr-1"></i> Add to Stock`;
+        }
+    }
+}
+
+// Stock Adjustment / Audit Modal
+function openModalFeedStockAdjust(preselectFeedId = null) {
+    populateFeedStockSelect('feedStockAdjustFeedId', preselectFeedId);
+    const dateInput = document.getElementById('feedStockAdjustDate');
+    if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+    const typeSel = document.getElementById('feedStockAdjustType');
+    if (typeSel) typeSel.value = 'adjustment';
+    onFeedStockAdjustTypeChange('adjustment');
+
+    const qtyInp = document.getElementById('feedStockAdjustQty');
+    if (qtyInp) qtyInp.value = '';
+
+    const notesInp = document.getElementById('feedStockAdjustNotes');
+    if (notesInp) notesInp.value = '';
+
+    if (preselectFeedId) {
+        onFeedStockAdjustFeedChange(preselectFeedId);
+    } else {
+        const curDisp = document.getElementById('feedStockAdjustCurrentDisplay');
+        if (curDisp) curDisp.textContent = '-';
+    }
+
+    openModal('modalFeedStockAdjust');
+}
+
+function onFeedStockAdjustFeedChange(feedId) {
+    const sel = document.getElementById('feedStockAdjustFeedId');
+    const opt = sel ? sel.options[sel.selectedIndex] : null;
+    const curDisp = document.getElementById('feedStockAdjustCurrentDisplay');
+
+    if (opt && opt.value) {
+        const stock = parseFloat(opt.dataset.stock || 0);
+        if (curDisp) curDisp.textContent = `${stock.toLocaleString()} kg`;
+        const qtyInp = document.getElementById('feedStockAdjustQty');
+        const typeSel = document.getElementById('feedStockAdjustType');
+        if (qtyInp && typeSel && typeSel.value === 'adjustment' && !qtyInp.value) {
+            qtyInp.value = stock;
+        }
+    } else {
+        if (curDisp) curDisp.textContent = '-';
+    }
+}
+
+function onFeedStockAdjustTypeChange(type) {
+    const lbl = document.getElementById('lblFeedStockAdjustQty');
+    const hint = document.getElementById('feedStockAdjustDifferenceHint');
+    const btn = document.getElementById('btnSubmitStockAdjust');
+
+    if (type === 'out') {
+        if (lbl) lbl.textContent = 'Quantity to Deduct / Loss (kg) *';
+        if (hint) hint.textContent = 'Enter quantity spoiled, discarded or lost from barn.';
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-minus-circle mr-1"></i> Deduct Stock`;
+    } else {
+        if (lbl) lbl.textContent = 'New Counted Physical Stock (kg) *';
+        if (hint) hint.textContent = 'Enter actual physical stock count verified in barn.';
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Set New Balance`;
+    }
+}
+
+async function submitFeedStockAdjust(e) {
+    if (e) e.preventDefault();
+    const feedId = parseInt(document.getElementById('feedStockAdjustFeedId').value);
+    const type = document.getElementById('feedStockAdjustType').value;
+    const qty = parseFloat(document.getElementById('feedStockAdjustQty').value);
+    const date = document.getElementById('feedStockAdjustDate').value || new Date().toISOString().split('T')[0];
+    const notes = (document.getElementById('feedStockAdjustNotes').value || '').trim();
+
+    if (!feedId || isNaN(qty) || qty < 0) {
+        showToast('Please enter a valid feed and quantity.', true);
+        return;
+    }
+
+    const btn = document.getElementById('btnSubmitStockAdjust');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Updating...`;
+    }
+
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'add_stock_transaction',
+                    feed_id: feedId,
+                    type: type,
+                    quantity_kg: qty,
+                    transaction_date: date,
+                    notes: notes
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to adjust stock');
+        } else {
+            const store = getLocalStore();
+            const feed = (store.feeds || []).find(f => f.id == feedId);
+            if (!feed) throw new Error('Feed ingredient not found');
+
+            const prevStock = parseFloat(feed.current_stock_kg || 0);
+            let newStock = prevStock;
+            if (type === 'adjustment') {
+                newStock = Math.max(0, qty);
+            } else if (type === 'out') {
+                newStock = Math.max(0, prevStock - qty);
+            }
+
+            feed.current_stock_kg = parseFloat(newStock.toFixed(2));
+
+            if (!store.feed_stock_transactions) store.feed_stock_transactions = [];
+            store.feed_stock_transactions.unshift({
+                id: Date.now(),
+                feed_id: feedId,
+                feed_name: feed.name,
+                type: type,
+                quantity_kg: qty,
+                previous_stock_kg: prevStock,
+                new_stock_kg: newStock,
+                unit_cost: parseFloat(feed.unit_cost || 0),
+                total_cost: parseFloat((Math.abs(newStock - prevStock) * parseFloat(feed.unit_cost || 0)).toFixed(2)),
+                transaction_date: date,
+                notes: notes,
+                created_at: new Date().toISOString()
+            });
+
+            saveLocalStore(store);
+        }
+
+        closeModal('modalFeedStockAdjust');
+        showToast('Stock count adjusted successfully!');
+        await loadFeedIngredients();
+        await loadFeedStock();
+    } catch (err) {
+        showToast(err.message, true);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Update Balance`;
+        }
+    }
+}
+
+// Stock Settings Modal
+function openModalFeedStockSettings(feedId) {
+    const feed = (feedStockCache.feeds || []).find(f => f.id == feedId) || (feedsCache || []).find(f => f.id == feedId);
+    if (!feed) {
+        showToast('Feed ingredient not found.', true);
+        return;
+    }
+
+    const idInp = document.getElementById('feedStockSettingsFeedId');
+    const nameEl = document.getElementById('feedStockSettingsFeedName');
+    const catEl = document.getElementById('feedStockSettingsCategory');
+    const alertInp = document.getElementById('feedStockSettingsMinAlert');
+    const costInp = document.getElementById('feedStockSettingsUnitCost');
+
+    if (idInp) idInp.value = feed.id;
+    if (nameEl) nameEl.textContent = feed.name;
+    if (catEl) catEl.textContent = `Category: ${feed.category || 'General Feed'}`;
+    if (alertInp) alertInp.value = parseFloat(feed.min_stock_alert_kg || 100);
+    if (costInp) costInp.value = parseFloat(feed.unit_cost || 0);
+
+    openModal('modalFeedStockSettings');
+}
+
+async function submitFeedStockSettings(e) {
+    if (e) e.preventDefault();
+    const feedId = parseInt(document.getElementById('feedStockSettingsFeedId').value);
+    const minAlert = parseFloat(document.getElementById('feedStockSettingsMinAlert').value);
+    const unitCost = parseFloat(document.getElementById('feedStockSettingsUnitCost').value || 0);
+
+    if (!feedId || isNaN(minAlert) || minAlert < 0) {
+        showToast('Please enter a valid alert threshold.', true);
+        return;
+    }
+
+    try {
+        if (isServerMode) {
+            const res = await fetch(`${API_BASE}/feeds.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update_stock_settings',
+                    feed_id: feedId,
+                    min_stock_alert_kg: minAlert,
+                    unit_cost: unitCost
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to update settings');
+        } else {
+            const store = getLocalStore();
+            const feed = (store.feeds || []).find(f => f.id == feedId);
+            if (feed) {
+                feed.min_stock_alert_kg = parseFloat(minAlert.toFixed(2));
+                feed.unit_cost = parseFloat(unitCost.toFixed(2));
+                saveLocalStore(store);
+            }
+        }
+
+        closeModal('modalFeedStockSettings');
+        showToast('Stock settings updated!');
+        await loadFeedIngredients();
+        await loadFeedStock();
+    } catch (err) {
+        showToast(err.message, true);
     }
 }
 

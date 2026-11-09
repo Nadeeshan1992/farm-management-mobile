@@ -134,6 +134,58 @@ function getDb(): PDO {
             $pdo->exec("ALTER TABLE `cows` MODIFY COLUMN `reproductive_status` VARCHAR(50) DEFAULT 'Open'");
         } catch (Exception $e) {}
 
+        // Ensure feed stock columns exist in feeds table
+        try {
+            $pdo->query("SELECT `current_stock_kg` FROM `feeds` LIMIT 1");
+        } catch (Exception $e) {
+            try {
+                $pdo->exec("ALTER TABLE `feeds` ADD COLUMN `current_stock_kg` DECIMAL(10,2) NOT NULL DEFAULT 500.00 AFTER `nel_mj`");
+                $pdo->exec("ALTER TABLE `feeds` ADD COLUMN `min_stock_alert_kg` DECIMAL(10,2) NOT NULL DEFAULT 100.00 AFTER `current_stock_kg`");
+                $pdo->exec("ALTER TABLE `feeds` ADD COLUMN `unit_cost` DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER `min_stock_alert_kg`");
+
+                // Populate realistic initial stock values
+                $pdo->exec("UPDATE `feeds` SET `current_stock_kg` = 1250.00, `min_stock_alert_kg` = 300.00, `unit_cost` = 45.00 WHERE `name` LIKE '%TMR%'");
+                $pdo->exec("UPDATE `feeds` SET `current_stock_kg` = 450.00, `min_stock_alert_kg` = 150.00, `unit_cost` = 115.00 WHERE `name` LIKE '%Concentrate%'");
+                $pdo->exec("UPDATE `feeds` SET `current_stock_kg` = 2800.00, `min_stock_alert_kg` = 500.00, `unit_cost` = 28.00 WHERE `name` LIKE '%Silage%'");
+                $pdo->exec("UPDATE `feeds` SET `current_stock_kg` = 900.00, `min_stock_alert_kg` = 200.00, `unit_cost` = 15.00 WHERE `name` LIKE '%Grass%'");
+                $pdo->exec("UPDATE `feeds` SET `current_stock_kg` = 380.00, `min_stock_alert_kg` = 100.00, `unit_cost` = 95.00 WHERE `name` LIKE '%Alfalfa%'");
+                $pdo->exec("UPDATE `feeds` SET `current_stock_kg` = 180.00, `min_stock_alert_kg` = 100.00, `unit_cost` = 175.00 WHERE `name` LIKE '%Soybean%'");
+                $pdo->exec("UPDATE `feeds` SET `current_stock_kg` = 90.00, `min_stock_alert_kg` = 100.00, `unit_cost` = 140.00 WHERE `name` LIKE '%Cottonseed%'");
+            } catch (Exception $ex) {}
+        }
+
+        // Ensure feed_stock_transactions table exists
+        try {
+            $pdo->query("SELECT 1 FROM `feed_stock_transactions` LIMIT 1");
+        } catch (Exception $e) {
+            try {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS `feed_stock_transactions` (
+                    `id` INT AUTO_INCREMENT PRIMARY KEY,
+                    `feed_id` INT NOT NULL,
+                    `type` ENUM('in', 'out', 'fed', 'adjustment') NOT NULL DEFAULT 'in',
+                    `quantity_kg` DECIMAL(10,2) NOT NULL,
+                    `previous_stock_kg` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    `new_stock_kg` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                    `unit_cost` DECIMAL(10,2) NULL DEFAULT 0.00,
+                    `total_cost` DECIMAL(10,2) NULL DEFAULT 0.00,
+                    `transaction_date` DATE NOT NULL,
+                    `notes` TEXT NULL,
+                    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (`feed_id`) REFERENCES `feeds`(`id`) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+                // Seed some initial purchase records
+                $pdo->exec("INSERT INTO `feed_stock_transactions` (`feed_id`, `type`, `quantity_kg`, `previous_stock_kg`, `new_stock_kg`, `unit_cost`, `total_cost`, `transaction_date`, `notes`) VALUES
+                (3, 'in', 3000.00, 0.00, 3000.00, 28.00, 84000.00, DATE_SUB(CURDATE(), INTERVAL 14 DAY), 'Bulk Maize Silage Bunker Harvest'),
+                (1, 'in', 1500.00, 0.00, 1500.00, 45.00, 67500.00, DATE_SUB(CURDATE(), INTERVAL 10 DAY), 'Commercial Lactation TMR Mixed Batch'),
+                (2, 'in', 500.00, 0.00, 500.00, 115.00, 57500.00, DATE_SUB(CURDATE(), INTERVAL 7 DAY), '10 Bags (50kg) Dairy Concentrate Pellets'),
+                (4, 'in', 1000.00, 0.00, 1000.00, 15.00, 15000.00, DATE_SUB(CURDATE(), INTERVAL 5 DAY), 'Fresh Green Forage Harvest'),
+                (5, 'in', 400.00, 0.00, 400.00, 95.00, 38000.00, DATE_SUB(CURDATE(), INTERVAL 4 DAY), 'Alfalfa Hay Bales'),
+                (6, 'in', 200.00, 0.00, 200.00, 175.00, 35000.00, DATE_SUB(CURDATE(), INTERVAL 3 DAY), 'High Protein Soybean Meal Supplement'),
+                (7, 'in', 100.00, 0.00, 100.00, 140.00, 14000.00, DATE_SUB(CURDATE(), INTERVAL 2 DAY), 'Whole Fuzzy Cottonseed 2 Bags')");
+            } catch (Exception $ex) {}
+        }
+
         return $pdo;
     } catch (PDOException $e) {
         jsonResponse([

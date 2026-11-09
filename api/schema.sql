@@ -158,9 +158,28 @@ CREATE TABLE IF NOT EXISTS `feeds` (
     `s_pct` DECIMAL(6,3) NOT NULL DEFAULT 0.000,       -- Sulfur (S % DM)
     `me_mj` DECIMAL(6,2) NOT NULL DEFAULT 0.00,        -- ME (MJ/kg DM)
     `nel_mj` DECIMAL(6,2) NOT NULL DEFAULT 0.00,       -- NEL (MJ/kg DM)
+    `current_stock_kg` DECIMAL(10,2) NOT NULL DEFAULT 500.00,  -- Current physical warehouse stock (kg)
+    `min_stock_alert_kg` DECIMAL(10,2) NOT NULL DEFAULT 100.00,-- Minimum threshold for reorder alert
+    `unit_cost` DECIMAL(10,2) NOT NULL DEFAULT 0.00,   -- Purchase cost per kg (LKR/kg)
     `notes` TEXT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 10B. Feed Stock Inventory Movement Transactions
+CREATE TABLE IF NOT EXISTS `feed_stock_transactions` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `feed_id` INT NOT NULL,
+    `type` ENUM('in', 'out', 'fed', 'adjustment') NOT NULL DEFAULT 'in',
+    `quantity_kg` DECIMAL(10,2) NOT NULL,
+    `previous_stock_kg` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    `new_stock_kg` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    `unit_cost` DECIMAL(10,2) NULL DEFAULT 0.00,
+    `total_cost` DECIMAL(10,2) NULL DEFAULT 0.00,
+    `transaction_date` DATE NOT NULL,
+    `notes` TEXT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`feed_id`) REFERENCES `feeds`(`id`) ON DELETE CASCADE
 );
 
 -- 11. Daily Feed Logs (Aggregated per cow & day)

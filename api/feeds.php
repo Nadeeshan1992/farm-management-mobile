@@ -82,7 +82,72 @@ if ($method === 'GET') {
         jsonResponse(['logs' => $logs]);
     }
 
-    // 4. Default or list_ingredients: list all feed ingredients & recent logs
+    // 4. Get Feed Stock Summary & Recent Transactions
+    if ($action === 'get_stock') {
+        $stockStmt = $db->query("
+            SELECT id, name, category, dm_pct, current_stock_kg, min_stock_alert_kg, unit_cost, notes 
+            FROM feeds 
+            ORDER BY category ASC, name ASC
+        ");
+        $stockFeeds = $stockStmt->fetchAll();
+
+        $totalStockKg = 0;
+        $totalValue = 0;
+        $lowStockCount = 0;
+        $outOfStockCount = 0;
+
+        foreach ($stockFeeds as &$sf) {
+            $currentKg = (float)$sf['current_stock_kg'];
+            $minAlertKg = (float)$sf['min_stock_alert_kg'];
+            $cost = (float)$sf['unit_cost'];
+            $val = $currentKg * $cost;
+
+            $sf['current_stock_kg'] = $currentKg;
+            $sf['min_stock_alert_kg'] = $minAlertKg;
+            $sf['unit_cost'] = $cost;
+            $sf['total_value'] = round($val, 2);
+
+            if ($currentKg <= 0) {
+                $sf['status'] = 'out';
+                $outOfStockCount++;
+                $lowStockCount++;
+            } elseif ($currentKg <= $minAlertKg) {
+                $sf['status'] = 'low';
+                $lowStockCount++;
+            } else {
+                $sf['status'] = 'good';
+            }
+
+            $totalStockKg += $currentKg;
+            $totalValue += $val;
+        }
+
+        // Recent stock movement transactions
+        $txStmt = $db->query("
+            SELECT t.*, f.name as feed_name, f.category as feed_category
+            FROM feed_stock_transactions t
+            JOIN feeds f ON t.feed_id = f.id
+            ORDER BY t.transaction_date DESC, t.id DESC
+            LIMIT 40
+        ");
+        $transactions = $txStmt->fetchAll();
+
+        jsonResponse([
+            'success' => true,
+            'kpis' => [
+                'total_stock_kg' => round($totalStockKg, 2),
+                'total_stock_tons' => round($totalStockKg / 1000, 2),
+                'total_value' => round($totalValue, 2),
+                'low_stock_count' => $lowStockCount,
+                'out_of_stock_count' => $outOfStockCount,
+                'total_feeds_count' => count($stockFeeds)
+            ],
+            'feeds' => $stockFeeds,
+            'transactions' => $transactions
+        ]);
+    }
+
+    // 5. Default or list_ingredients: list all feed ingredients & recent logs
     $feedStmt = $db->query("SELECT * FROM feeds ORDER BY category ASC, name ASC");
     $feeds = $feedStmt->fetchAll();
 
@@ -451,6 +516,41 @@ if ($method === 'POST') {
                 ]);
             }
 
+            // Automatic feed stock deduction if enabled (default true)
+            $deductStock = isset($data['deduct_stock']) ? (bool)$data['deduct_stock'] : true;
+            if ($deductStock) {
+                $cowTagStmt = $db->prepare("SELECT tag_number, name FROM cows WHERE id = ?");
+                $cowTagStmt->execute([$cowId]);
+                $cRow = $cowTagStmt->fetch();
+                $cName = $cRow ? "{$cRow['tag_number']} ({$cRow['name']})" : "Cow #{$cowId}";
+
+                foreach ($processedItems as $pi) {
+                    $fId = (int)($pi['feed_id'] ?? 0);
+                    $amountFed = (float)($pi['amount_as_fed_kg'] ?? 0);
+                    if ($fId > 0 && $amountFed > 0) {
+                        $fQuery = $db->prepare("SELECT current_stock_kg, unit_cost FROM feeds WHERE id = ?");
+                        $fQuery->execute([$fId]);
+                        $fData = $fQuery->fetch();
+                        if ($fData) {
+                            $curStock = (float)$fData['current_stock_kg'];
+                            $newStock = max(0, $curStock - $amountFed);
+                            $uCost = (float)$fData['unit_cost'];
+
+                            $db->prepare("UPDATE feeds SET current_stock_kg = ? WHERE id = ?")->execute([$newStock, $fId]);
+
+                            $db->prepare("
+                                INSERT INTO feed_stock_transactions (
+                                    feed_id, type, quantity_kg, previous_stock_kg, new_stock_kg, unit_cost, total_cost, transaction_date, notes
+                                ) VALUES (?, 'fed', ?, ?, ?, ?, ?, ?, ?)
+                            ")->execute([
+                                $fId, round($amountFed, 2), round($curStock, 2), round($newStock, 2),
+                                round($uCost, 2), round($amountFed * $uCost, 2), $logDate, "Fed to {$cName}"
+                            ]);
+                        }
+                    }
+                }
+            }
+
             $db->commit();
 
             // Fetch newly saved log with items
@@ -477,6 +577,103 @@ if ($method === 'POST') {
             $db->rollBack();
             jsonResponse(['error' => 'Failed to save feed log: ' . $e->getMessage()], 500);
         }
+    }
+
+    // 5. Stock Transaction (Stock In, Out, or Adjustment)
+    if ($action === 'add_stock_transaction') {
+        $feedId = (int)($data['feed_id'] ?? 0);
+        $type = trim($data['type'] ?? 'in'); // 'in', 'out', 'adjustment'
+        $qty = (float)($data['quantity_kg'] ?? 0);
+        $unitCost = isset($data['unit_cost']) ? (float)$data['unit_cost'] : 0;
+        $txDate = trim($data['transaction_date'] ?? date('Y-m-d'));
+        $notes = trim($data['notes'] ?? '');
+
+        if ($feedId <= 0) {
+            jsonResponse(['error' => 'Please select a feed ingredient.'], 422);
+        }
+        if ($qty <= 0) {
+            jsonResponse(['error' => 'Quantity must be greater than 0 kg.'], 422);
+        }
+        if (empty($txDate)) {
+            $txDate = date('Y-m-d');
+        }
+
+        $fStmt = $db->prepare("SELECT * FROM feeds WHERE id = ?");
+        $fStmt->execute([$feedId]);
+        $feed = $fStmt->fetch();
+        if (!$feed) {
+            jsonResponse(['error' => 'Feed ingredient not found.'], 404);
+        }
+
+        $prevStock = (float)$feed['current_stock_kg'];
+        $feedCost = (float)$feed['unit_cost'];
+        $effectiveCost = ($unitCost > 0) ? $unitCost : $feedCost;
+
+        if ($type === 'in') {
+            $newStock = $prevStock + $qty;
+            $totalCost = round($qty * $effectiveCost, 2);
+        } elseif ($type === 'out') {
+            $newStock = max(0, $prevStock - $qty);
+            $totalCost = round($qty * $effectiveCost, 2);
+        } elseif ($type === 'adjustment') {
+            $newStock = max(0, $qty);
+            $diff = abs($newStock - $prevStock);
+            $totalCost = round($diff * $effectiveCost, 2);
+        } else {
+            jsonResponse(['error' => 'Invalid transaction type.'], 422);
+        }
+
+        $db->beginTransaction();
+        try {
+            if ($unitCost > 0 && $type === 'in') {
+                $upd = $db->prepare("UPDATE feeds SET current_stock_kg = ?, unit_cost = ? WHERE id = ?");
+                $upd->execute([round($newStock, 2), round($unitCost, 2), $feedId]);
+            } else {
+                $upd = $db->prepare("UPDATE feeds SET current_stock_kg = ? WHERE id = ?");
+                $upd->execute([round($newStock, 2), $feedId]);
+            }
+
+            $ins = $db->prepare("
+                INSERT INTO feed_stock_transactions (
+                    feed_id, type, quantity_kg, previous_stock_kg, new_stock_kg, unit_cost, total_cost, transaction_date, notes
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $ins->execute([
+                $feedId, $type, round($qty, 2), round($prevStock, 2), round($newStock, 2),
+                round($effectiveCost, 2), round($totalCost, 2), $txDate, $notes
+            ]);
+
+            $db->commit();
+
+            jsonResponse([
+                'success' => true,
+                'message' => 'Stock updated successfully.',
+                'new_stock_kg' => round($newStock, 2),
+                'feed_id' => $feedId
+            ]);
+        } catch (Exception $e) {
+            $db->rollBack();
+            jsonResponse(['error' => 'Failed to record transaction: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // 6. Update Feed Stock Thresholds & Cost Settings
+    if ($action === 'update_stock_settings') {
+        $feedId = (int)($data['feed_id'] ?? 0);
+        $minStock = (float)($data['min_stock_alert_kg'] ?? 100);
+        $unitCost = (float)($data['unit_cost'] ?? 0);
+
+        if ($feedId <= 0) {
+            jsonResponse(['error' => 'Invalid feed ID.'], 422);
+        }
+
+        $upd = $db->prepare("UPDATE feeds SET min_stock_alert_kg = ?, unit_cost = ? WHERE id = ?");
+        $upd->execute([round($minStock, 2), round($unitCost, 2), $feedId]);
+
+        jsonResponse([
+            'success' => true,
+            'message' => 'Stock settings updated successfully.'
+        ]);
     }
 
     jsonResponse(['error' => 'Unknown action.'], 400);
