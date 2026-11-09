@@ -100,7 +100,7 @@ INSERT INTO `feeds` (`id`, `name`, `category`, `dm_pct`, `cp_pct`, `fat_pct`, `f
 (4, 'Grass/Forage', 'Forage / TMR', 25.00, 10.50, 2.50, 30.00, 55.00, 35.00, 2.00, 8.50, 8.00, 0.400, 0.250, 0.200, 2.200, 0.150, 0.220, 9.50, 5.60, 'Fresh cut green pasture forage'),
 (5, 'Alfalfa Hay', 'Forage / TMR', 88.00, 19.50, 2.20, 28.00, 40.00, 30.00, 2.50, 6.00, 9.50, 1.400, 0.280, 0.300, 2.400, 0.100, 0.250, 9.80, 5.90, 'High quality dry legume hay'),
 (6, 'Soybean Meal', 'Concentrate', 90.00, 48.00, 1.50, 6.00, 11.00, 8.00, 5.00, 9.00, 6.50, 0.320, 0.650, 0.280, 2.100, 0.040, 0.450, 13.50, 8.20, 'Dehulled solvent-extracted protein supplement'),
-(7, 'Cottonseed (Whole)', 'By-product', 91.00, 23.00, 19.50, 24.00, 48.00, 38.00, 1.50, 3.00, 4.80, 0.160, 0.600, 0.380, 1.250, 0.050, 0.240, 14.20, 8.80, 'Fuzzy whole cottonseed - energy and fat booster')
+(7, 'Cottonseed (Whole)', 'Concentrate', 91.00, 23.00, 19.50, 24.00, 48.00, 38.00, 1.50, 3.00, 4.80, 0.160, 0.600, 0.380, 1.250, 0.050, 0.240, 14.20, 8.80, 'Fuzzy whole cottonseed - energy and fat booster')
 ON DUPLICATE KEY UPDATE name=VALUES(name), category=VALUES(category), dm_pct=VALUES(dm_pct), cp_pct=VALUES(cp_pct), fat_pct=VALUES(fat_pct), fiber_pct=VALUES(fiber_pct), ndf_pct=VALUES(ndf_pct), adf_pct=VALUES(adf_pct), starch_pct=VALUES(starch_pct), sugar_pct=VALUES(sugar_pct), ash_pct=VALUES(ash_pct), ca_pct=VALUES(ca_pct), p_pct=VALUES(p_pct), mg_pct=VALUES(mg_pct), k_pct=VALUES(k_pct), na_pct=VALUES(na_pct), s_pct=VALUES(s_pct), me_mj=VALUES(me_mj), nel_mj=VALUES(nel_mj);
 
 -- 11. Initial Sample Daily Feed Log (Cow 1: Daisy - Matching exact specification example)

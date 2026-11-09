@@ -114,7 +114,7 @@ const DEFAULT_SEED_DATA = {
         { id: 4, name: 'Grass/Forage', category: 'Forage / TMR', dm_pct: 25.00, cp_pct: 10.50, fat_pct: 2.50, fiber_pct: 30.00, ndf_pct: 55.00, adf_pct: 35.00, starch_pct: 2.00, sugar_pct: 8.50, ash_pct: 8.00, ca_pct: 0.400, p_pct: 0.250, mg_pct: 0.200, k_pct: 2.200, na_pct: 0.150, s_pct: 0.220, me_mj: 9.50, nel_mj: 5.60, notes: 'Fresh green pasture forage' },
         { id: 5, name: 'Alfalfa Hay', category: 'Forage / TMR', dm_pct: 88.00, cp_pct: 19.50, fat_pct: 2.20, fiber_pct: 28.00, ndf_pct: 40.00, adf_pct: 30.00, starch_pct: 2.50, sugar_pct: 6.00, ash_pct: 9.50, ca_pct: 1.400, p_pct: 0.280, mg_pct: 0.300, k_pct: 2.400, na_pct: 0.100, s_pct: 0.250, me_mj: 9.80, nel_mj: 5.90, notes: 'Premium legume hay' },
         { id: 6, name: 'Soybean Meal', category: 'Concentrate', dm_pct: 90.00, cp_pct: 48.00, fat_pct: 1.50, fiber_pct: 6.00, ndf_pct: 11.00, adf_pct: 8.00, starch_pct: 5.00, sugar_pct: 9.00, ash_pct: 6.50, ca_pct: 0.320, p_pct: 0.650, mg_pct: 0.280, k_pct: 2.100, na_pct: 0.040, s_pct: 0.450, me_mj: 13.50, nel_mj: 8.20, notes: 'Solvent extracted 48% protein meal' },
-        { id: 7, name: 'Cottonseed (Whole)', category: 'By-product', dm_pct: 91.00, cp_pct: 23.00, fat_pct: 19.50, fiber_pct: 24.00, ndf_pct: 48.00, adf_pct: 38.00, starch_pct: 1.50, sugar_pct: 3.00, ash_pct: 4.80, ca_pct: 0.160, p_pct: 0.600, mg_pct: 0.380, k_pct: 1.250, na_pct: 0.050, s_pct: 0.240, me_mj: 14.20, nel_mj: 8.80, notes: 'Fuzzy whole cottonseed' }
+        { id: 7, name: 'Cottonseed (Whole)', category: 'Concentrate', dm_pct: 91.00, cp_pct: 23.00, fat_pct: 19.50, fiber_pct: 24.00, ndf_pct: 48.00, adf_pct: 38.00, starch_pct: 1.50, sugar_pct: 3.00, ash_pct: 4.80, ca_pct: 0.160, p_pct: 0.600, mg_pct: 0.380, k_pct: 1.250, na_pct: 0.050, s_pct: 0.240, me_mj: 14.20, nel_mj: 8.80, notes: 'Fuzzy whole cottonseed' }
     ],
     feed_logs: [
         {
@@ -190,6 +190,13 @@ function getLocalStore() {
             parsed.feeds = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feeds));
             parsed.feed_logs = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA.feed_logs));
             changed = true;
+        } else {
+            parsed.feeds.forEach(f => {
+                if (f.category === 'By-product') {
+                    f.category = 'Concentrate';
+                    changed = true;
+                }
+            });
         }
         if (changed) {
             saveLocalStore(parsed);

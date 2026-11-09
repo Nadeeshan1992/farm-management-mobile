@@ -99,6 +99,11 @@ function getDb(): PDO {
             } catch (Exception $ex) {}
         }
 
+        // Migrate any By-product feed category to Concentrate
+        try {
+            $pdo->exec("UPDATE `feeds` SET `category` = 'Concentrate' WHERE `category` = 'By-product'");
+        } catch (Exception $e) {}
+
         // Ensure users table exists with default admin and farmer accounts
         try {
             $pdo->query("SELECT 1 FROM `users` LIMIT 1");
