@@ -11,7 +11,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="assets/style.css?v=2.4">
+    <link rel="stylesheet" href="assets/style.css?v=2.5">
     <script>
         function handleUserLogout(e) {
             if (e && e.preventDefault) e.preventDefault();
@@ -409,6 +409,9 @@
                     <button class="filter-chip active" id="btnSubTabFeedCalc" onclick="switchFeedSubTab('calculator', this)">
                         <i class="fa-solid fa-calculator text-[10px] mr-1"></i> Daily Calculator
                     </button>
+                    <button class="filter-chip" id="btnSubTabFeedStock" onclick="switchFeedSubTab('stock', this)">
+                        <i class="fa-solid fa-boxes-stacked text-[10px] mr-1"></i> Feed Stock <span id="feedStockLowBadge" class="hidden ml-1 px-1.5 py-0.5 rounded-full bg-amber-500 text-white text-[9px] font-bold">1 Low</span>
+                    </button>
                     <button class="filter-chip" id="btnSubTabFeedLibrary" onclick="switchFeedSubTab('library', this)">
                         <i class="fa-solid fa-seedling text-[10px] mr-1"></i> Feed Library (<span id="feedCountBadge">7</span>)
                     </button>
@@ -595,6 +598,12 @@
                         <input type="text" id="feedLogNotes" class="form-control" placeholder="e.g. Standard lactation TMR + fresh forage supplement.">
                     </div>
 
+                    <div class="flex items-center gap-2 mb-3 p-2.5 bg-emerald-50/60 rounded-xl border border-emerald-100">
+                        <input type="checkbox" id="chkAutoDeductFeedStock" checked class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer">
+                        <label for="chkAutoDeductFeedStock" class="text-xs text-emerald-900 font-semibold cursor-pointer flex-1">
+                            Auto-deduct ration from Barn Feed Stock inventory
+                        </label>
+                    </div>
                     <button type="button" class="btn-submit mb-4" onclick="saveCurrentFeedRation()">
                         <i class="fa-solid fa-floppy-disk mr-1.5"></i> Save Daily Feeding Record
                     </button>
@@ -637,6 +646,93 @@
 
                     <div id="feedHistoryContainer">
                         <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- SUBTAB 4: FEED STOCK INVENTORY -->
+                <div id="feedContentStock" style="display:none;">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Barn Feed Stock Inventory
+                            </span>
+                            <div class="text-[11px] text-slate-400">Current barn stock balances, safe levels & financial value</div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1" onclick="openModalFeedStockAdjust()">
+                                <i class="fa-solid fa-scale-balanced text-[11px]"></i> Audit
+                            </button>
+                            <button type="button" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1" onclick="openModalFeedStockIn()">
+                                <i class="fa-solid fa-plus text-[11px]"></i> Stock In
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4 Stock KPI Summary Cards -->
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Feed Stock</span>
+                                <span class="text-xs text-emerald-600 font-bold">📦</span>
+                            </div>
+                            <div class="text-lg font-black text-slate-800 mt-0.5" id="kpiTotalStockKg">0 kg</div>
+                            <div class="text-[10px] text-emerald-600 font-semibold" id="kpiTotalStockTons">0.00 Tons in Barn</div>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Inventory Value</span>
+                                <span class="text-xs text-emerald-600 font-bold">💰</span>
+                            </div>
+                            <div class="text-lg font-black text-slate-800 mt-0.5" id="kpiStockTotalValue">Rs. 0</div>
+                            <div class="text-[10px] text-slate-500 font-medium">Est. Financial Value</div>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs cursor-pointer hover:border-amber-300 transition" onclick="filterFeedStockStatus('low')">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] uppercase font-bold text-amber-600 tracking-wider">Low Stock Feeds</span>
+                                <span class="text-xs text-amber-500 font-bold">⚠️</span>
+                            </div>
+                            <div class="text-lg font-black text-amber-700 mt-0.5" id="kpiStockLowCount">0</div>
+                            <div class="text-[10px] text-amber-600 font-semibold" id="kpiStockLowSub">Reorder Thresholds</div>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tracked Feeds</span>
+                                <span class="text-xs text-slate-400 font-bold">🌱</span>
+                            </div>
+                            <div class="text-lg font-black text-slate-800 mt-0.5" id="kpiStockFeedsCount">0</div>
+                            <div class="text-[10px] text-slate-500 font-medium">In Active Library</div>
+                        </div>
+                    </div>
+
+                    <!-- Search and Status Chips Filter -->
+                    <div class="bg-white p-2 rounded-2xl border border-slate-100 mb-3 shadow-xs flex flex-wrap items-center justify-between gap-2">
+                        <div class="relative flex-1 min-w-[130px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+                            <input type="text" id="feedStockSearch" oninput="onFeedStockSearch(this.value)" placeholder="Search feed stock..." class="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 filter-chip active" id="chipStockFilterAll" onclick="filterFeedStockStatus('all', this)">All</button>
+                            <button type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 filter-chip" id="chipStockFilterLow" onclick="filterFeedStockStatus('low', this)">⚠️ Low</button>
+                            <button type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 filter-chip" id="chipStockFilterGood" onclick="filterFeedStockStatus('good', this)">Healthy</button>
+                        </div>
+                    </div>
+
+                    <!-- Stock Feeds Cards Container -->
+                    <div id="feedStockCardsContainer" class="space-y-2.5 mb-4">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Recent Stock Transactions Movement Log -->
+                    <div class="bg-white rounded-2xl border border-slate-100 p-3 shadow-xs mb-4">
+                        <div class="flex items-center justify-between mb-2.5 border-b border-slate-100 pb-2">
+                            <span class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-500"></i> Stock Movements Log
+                            </span>
+                            <span class="text-[10px] text-slate-400" id="stockTxCount">Recent entries</span>
+                        </div>
+                        <div id="feedStockTransactionsList" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+                            <!-- Populated by JS -->
+                        </div>
                     </div>
                 </div>
 
@@ -1901,6 +1997,6 @@
         document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"><\/script>');
     }
 </script>
-<script src="assets/app.js?v=2.4"></script>
+<script src="assets/app.js?v=2.5"></script>
 </body>
 </html>
